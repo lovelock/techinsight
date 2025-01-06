@@ -1,0 +1,8 @@
+{{ $type := .Get 0 }}  <!-- 获取第一个参数 -->
+{{ $content := .Inner }}  <!-- 获取内容 -->
+
+<div class="callout callout-{{ $type | lower }}">
+    <strong>{{ $type | title }}:</strong>
+    {{ $content }}
+</div>
+

@@ -1,3 +1,38 @@
 /*
     You can add your own custom styles here.
 */
+
+$callout-border-color: #d1e7dd;
+$callout-info-bg: #d1ecf1;
+$callout-info-text-color: #0c5460;
+$callout-warning-bg: #fff3cd;
+$callout-warning-text-color: #856404;
+$callout-danger-bg: #f8d7da;
+$callout-danger-text-color: #721c24;
+
+.callout {
+    border: 1px solid $callout-border-color; // 边框颜色
+    border-radius: 5px;
+    padding: 10px;
+    margin: 15px 0;
+
+    &.callout-info {
+        background-color: $callout-info-bg; // 信息背景
+        color: $callout-info-text-color; // 信息文本颜色
+        border-color: lighten($callout-info-bg, 10%); // 边框颜色
+    }
+
+    &.callout-warning {
+        background-color: $callout-warning-bg; // 警告背景
+        color: $callout-warning-text-color; // 警告文本颜色
+        border-color: lighten($callout-warning-bg, 10%); // 边框颜色
+    }
+
+    &.callout-danger {
+        background-color: $callout-danger-bg; // 危险背景
+        color: $callout-danger-text-color; // 危险文本颜色
+        border-color: lighten($callout-danger-bg, 10%); // 边框颜色
+    }
+
+    // 可以根据需要添加更多类型
+}
