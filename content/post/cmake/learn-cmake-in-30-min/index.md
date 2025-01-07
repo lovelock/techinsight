@@ -1,6 +1,6 @@
 ---
 title: "Learn Cmake in 30 Min"
-date: 2025-01-06T22:17:27+08:00
+date: 2023-01-06T22:17:27+08:00
 tags: ["linux", "cmake", "c", "cxx"]
 categories: ["in-action"]
 image: cover.png
