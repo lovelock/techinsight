@@ -1,8 +1,12 @@
-{{ $type := .Get 0 }}  <!-- 获取第一个参数 -->
-{{ $content := .Inner }}  <!-- 获取内容 -->
+{{ $type := .Get 0 }} <!-- 获取类型参数 -->
+{{ $title := .Get 1 }} <!-- 获取标题参数 -->
+{{ $content := .Inner }} <!-- 获取内容 -->
 
 <div class="callout callout-{{ $type | lower }}">
-    <strong>{{ $type | title }}:</strong>
-    {{ $content }}
+    <h5>{{ $title | title }}</h5> <!-- 显示标题 -->
+    {{ if gt (len $content) 1 }}
+        <blockquote>
+            {{  $content }}
+        </blockquote>
+    {{ end }}
 </div>
-

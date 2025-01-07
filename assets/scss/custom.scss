@@ -1,8 +1,4 @@
-/*
-    You can add your own custom styles here.
-*/
-
-$callout-border-color: #d1e7dd;
+$callout-border-color: #c3e6cb; // 默认边框颜色（可根据需要调整）
 $callout-info-bg: #d1ecf1;
 $callout-info-text-color: #0c5460;
 $callout-warning-bg: #fff3cd;
@@ -11,28 +7,42 @@ $callout-danger-bg: #f8d7da;
 $callout-danger-text-color: #721c24;
 
 .callout {
-    border: 1px solid $callout-border-color; // 边框颜色
+    max-width: 100%; // 确保不会超出父容器的宽度
     border-radius: 5px;
-    padding: 10px;
-    margin: 15px 0;
+    padding: 15px; // 外边距
+    margin: 15px 0; // 内边距
+    border: 1px solid $callout-border-color; // 边框颜色
+
+    h5 {
+        margin-top: 0; // 标题的上边距
+        font-size: 1.5rem; // 标题字体大小
+        font-weight: bold; // 加粗标题
+    }
+
+    blockquote {
+        max-width: 100%; // 确保不会超出父容器的宽度
+        margin: 10px 0; // 设置 blockquote 的上下边距
+        padding: 10px 15px; // 设置 blockquote 的内边距
+        border-left: 5px solid darken($callout-border-color, 10%);
+        background-color: rgba(0, 0, 0, 0.03); // 可选：设置背景色来增加可读性
+        overflow-wrap: break-word; // 处理文本超出部分
+    }
 
     &.callout-info {
-        background-color: $callout-info-bg; // 信息背景
-        color: $callout-info-text-color; // 信息文本颜色
-        border-color: lighten($callout-info-bg, 10%); // 边框颜色
+        background-color: $callout-info-bg;
+        color: $callout-info-text-color;
+        border-color: lighten($callout-info-bg, 10%);
     }
 
     &.callout-warning {
-        background-color: $callout-warning-bg; // 警告背景
-        color: $callout-warning-text-color; // 警告文本颜色
-        border-color: lighten($callout-warning-bg, 10%); // 边框颜色
+        background-color: $callout-warning-bg;
+        color: $callout-warning-text-color;
+        border-color: lighten($callout-warning-bg, 10%);
     }
 
     &.callout-danger {
-        background-color: $callout-danger-bg; // 危险背景
-        color: $callout-danger-text-color; // 危险文本颜色
-        border-color: lighten($callout-danger-bg, 10%); // 边框颜色
+        background-color: $callout-danger-bg;
+        color: $callout-danger-text-color;
+        border-color: lighten($callout-danger-bg, 10%);
     }
-
-    // 可以根据需要添加更多类型
 }
