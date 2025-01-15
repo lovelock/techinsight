@@ -46,3 +46,8 @@ $callout-danger-text-color: #721c24;
         border-color: lighten($callout-danger-bg, 10%);
     }
 }
+.article-page .main-article .article-content img {
+    max-width: 60%;
+    height: auto;
+    display: inline-block;
+}
