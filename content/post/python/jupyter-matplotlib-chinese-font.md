@@ -1,5 +1,5 @@
 ---
-title: "Jupyter Matplotlib Chinese Font"
+title: "Jupyter Matplotlib 的中文字体问题"
 description:
 date: 2025-01-17T14:44:07+08:00
 image:
