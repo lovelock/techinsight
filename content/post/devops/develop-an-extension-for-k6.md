@@ -52,6 +52,12 @@ func (c *YarClient) Call(request protocol.Request, params ...any) (*protocol.Res
 ### 2.2 创建 k6 扩展
 接下来，我将这个 YAR 客户端封装为 k6 扩展。k6 允许通过 Go 编写扩展，并将其暴露给 JavaScript 运行时。
 
+```bash
+go install go.k6.io/xk6/cmd/xk6@latest
+```
+
+这会安装`xk6`到`$GOAPTH`中，具体的目录是`$GOPATH/bin/xk6`，如果它不在你的`$PATH`中，可以指定绝对路径。
+
 ```go
 package yar
 
@@ -140,7 +146,7 @@ k6 的 `modules.Register` 方法会将 Go 结构体的方法暴露给 JavaScript
 在 `xk6 build` 过程中，我发现 `go mod replace` 指令未生效，导致构建工具仍然尝试从原始路径下载依赖。通过显式指定 `replace` 标志解决了这个问题：
 
 ```bash
-xk6 build --with k6-yar=. -replace git.happyhacker.fun/frost/yargo=../path/to/your/yar/client
+xk6 build --with k6-yar=. --replace git.happyhacker.fun/frost/yargo=../path/to/your/yar/client
 ```
 
 ### 4.2 VU 配置
