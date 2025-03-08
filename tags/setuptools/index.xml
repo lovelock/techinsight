@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Setuptools on Tech In Sight</title><link>https://techinsight.pages.dev/tags/setuptools/</link><description>Recent content in Setuptools on Tech In Sight</description><generator>Hugo -- gohugo.io</generator><language>zh-cn</language><lastBuildDate>Mon, 08 Jul 2024 14:25:52 +0800</lastBuildDate><atom:link href="https://techinsight.pages.dev/tags/setuptools/index.xml" rel="self" type="application/rss+xml"/><item><title>Python构建工具</title><link>https://techinsight.pages.dev/p/python%E6%9E%84%E5%BB%BA%E5%B7%A5%E5%85%B7/</link><pubDate>Mon, 08 Jul 2024 14:25:52 +0800</pubDate><guid>https://techinsight.pages.dev/p/python%E6%9E%84%E5%BB%BA%E5%B7%A5%E5%85%B7/</guid><description>&lt;img src="https://techinsight.pages.dev/images/covers/python-builders.png" alt="Featured image of post Python构建工具" />&lt;p>虽然 Python 是一种解释型脚本语言，不需要像 C 或 C++ 那样进行编译，但在开发和发布 Python 项目时，仍然有一些构建步骤是必要的。这些步骤可以包括依赖管理、打包、测试、文档生成等。因此，Python 项目通常需要一些构建工具来简化和自动化这些任务。&lt;/p>
+&lt;h3 id="常见的-python-构建工具">&lt;a href="#%e5%b8%b8%e8%a7%81%e7%9a%84-python-%e6%9e%84%e5%bb%ba%e5%b7%a5%e5%85%b7" class="header-anchor">&lt;/a>常见的 Python 构建工具
+&lt;/h3>&lt;ol>
+&lt;li>
+&lt;p>&lt;strong>&lt;code>setuptools&lt;/code>&lt;/strong>：&lt;/p>
+&lt;ul>
+&lt;li>&lt;strong>功能&lt;/strong>：提供基础的打包和分发功能，支持依赖管理、入口点和扩展等。&lt;/li>
+&lt;li>&lt;strong>使用&lt;/strong>：通过 &lt;code>setup.py&lt;/code> 和 &lt;code>pyproject.toml&lt;/code> 文件进行配置。&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;li>
+&lt;p>&lt;strong>&lt;code>wheel&lt;/code>&lt;/strong>：&lt;/p>
+&lt;ul>
+&lt;li>&lt;strong>功能&lt;/strong>：将 Python 项目打包成 &lt;code>.whl&lt;/code> 格式的二进制分发包，方便用户安装。&lt;/li>
+&lt;li>&lt;strong>使用&lt;/strong>：通常与 &lt;code>setuptools&lt;/code> 一起使用，通过 &lt;code>python setup.py bdist_wheel&lt;/code> 命令生成。&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;li>
+&lt;p>&lt;strong>&lt;code>pip&lt;/code>&lt;/strong>：&lt;/p>
+&lt;ul>
+&lt;li>&lt;strong>功能&lt;/strong>：主要用于包管理和安装，但也支持从源代码进行构建和安装。&lt;/li>
+&lt;li>&lt;strong>使用&lt;/strong>：通过 &lt;code>requirements.txt&lt;/code> 或 &lt;code>pyproject.toml&lt;/code> 文件定义依赖。&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;li>
+&lt;p>&lt;strong>&lt;code>build&lt;/code>&lt;/strong>：&lt;/p>
+&lt;ul>
+&lt;li>&lt;strong>功能&lt;/strong>：一个现代的构建工具，用于生成源代码分发包（&lt;code>sdist&lt;/code>）和二进制分发包（&lt;code>wheel&lt;/code>）。&lt;/li>
+&lt;li>&lt;strong>使用&lt;/strong>：通过 &lt;code>python -m build&lt;/code> 命令执行。&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;li>
+&lt;p>&lt;strong>&lt;code>tox&lt;/code>&lt;/strong>：&lt;/p>
+&lt;ul>
+&lt;li>&lt;strong>功能&lt;/strong>：用于自动化测试和环境管理，支持在多个 Python 版本和虚拟环境中运行测试。&lt;/li>
+&lt;li>&lt;strong>使用&lt;/strong>：通过 &lt;code>tox.ini&lt;/code> 文件进行配置。&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;li>
+&lt;p>&lt;strong>&lt;code>flit&lt;/code>&lt;/strong>：&lt;/p>
+&lt;ul>
+&lt;li>&lt;strong>功能&lt;/strong>：一个简化的打包和发布工具，主要用于纯 Python 包。&lt;/li>
+&lt;li>&lt;strong>使用&lt;/strong>：通过 &lt;code>pyproject.toml&lt;/code> 文件进行配置。&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;li>
+&lt;p>&lt;strong>&lt;code>poetry&lt;/code>&lt;/strong>：&lt;/p>
+&lt;ul>
+&lt;li>&lt;strong>功能&lt;/strong>：一个现代的依赖管理和打包工具，集成了构建、依赖管理、版本管理和发布等功能。&lt;/li>
+&lt;li>&lt;strong>使用&lt;/strong>：通过 &lt;code>pyproject.toml&lt;/code> 文件进行配置，并且有自己的 &lt;code>poetry.lock&lt;/code> 文件。&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;li>
+&lt;p>&lt;strong>&lt;code>pbr&lt;/code>&lt;/strong>：&lt;/p>
+&lt;ul>
+&lt;li>&lt;strong>功能&lt;/strong>：专注于简化 &lt;code>setuptools&lt;/code> 配置，自动化版本控制和包信息管理。&lt;/li>
+&lt;li>&lt;strong>使用&lt;/strong>：通过 &lt;code>setup.cfg&lt;/code> 文件进行配置。&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;/ol>
+&lt;h3 id="为什么-python-需要构建">&lt;a href="#%e4%b8%ba%e4%bb%80%e4%b9%88-python-%e9%9c%80%e8%a6%81%e6%9e%84%e5%bb%ba" class="header-anchor">&lt;/a>为什么 Python 需要构建？
+&lt;/h3>&lt;p>尽管 Python 是解释型语言，但在实际开发和发布过程中，仍然有一些任务需要构建步骤：&lt;/p>
+&lt;ol>
+&lt;li>
+&lt;p>&lt;strong>依赖管理&lt;/strong>：&lt;/p>
+&lt;ul>
+&lt;li>确保项目在不同环境中有相同的依赖版本，避免兼容性问题。&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;li>
+&lt;p>&lt;strong>打包和分发&lt;/strong>：&lt;/p>
+&lt;ul>
+&lt;li>将项目打包成标准格式（如 &lt;code>wheel&lt;/code> 或 &lt;code>sdist&lt;/code>），方便用户安装和使用。&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;li>
+&lt;p>&lt;strong>性能优化&lt;/strong>：&lt;/p>
+&lt;ul>
+&lt;li>通过构建，将一些关键模块编译为 C 扩展，以提高性能。&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;li>
+&lt;p>&lt;strong>代码检查和测试&lt;/strong>：&lt;/p>
+&lt;ul>
+&lt;li>自动化运行代码检查工具（如 &lt;code>flake8&lt;/code>、&lt;code>pylint&lt;/code>）和测试框架（如 &lt;code>pytest&lt;/code>），确保代码质量。&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;li>
+&lt;p>&lt;strong>文档生成&lt;/strong>：&lt;/p>
+&lt;ul>
+&lt;li>使用工具（如 &lt;code>Sphinx&lt;/code>）生成项目文档，确保文档的一致性和可维护性。&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;/ol>
+&lt;h3 id="构建生成的结果">&lt;a href="#%e6%9e%84%e5%bb%ba%e7%94%9f%e6%88%90%e7%9a%84%e7%bb%93%e6%9e%9c" class="header-anchor">&lt;/a>构建生成的结果
+&lt;/h3>&lt;ol>
+&lt;li>
+&lt;p>&lt;strong>源代码分发包（sdist）&lt;/strong>：&lt;/p>
+&lt;ul>
+&lt;li>包含项目的源代码和元数据，通常是一个 &lt;code>.tar.gz&lt;/code> 文件。&lt;/li>
+&lt;li>通过 &lt;code>python setup.py sdist&lt;/code> 或 &lt;code>python -m build&lt;/code> 生成。&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;li>
+&lt;p>&lt;strong>二进制分发包（wheel）&lt;/strong>：&lt;/p>
+&lt;ul>
+&lt;li>包含编译后的二进制文件，通常是一个 &lt;code>.whl&lt;/code> 文件。&lt;/li>
+&lt;li>通过 &lt;code>python setup.py bdist_wheel&lt;/code> 或 &lt;code>python -m build&lt;/code> 生成。&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;li>
+&lt;p>&lt;strong>安装包&lt;/strong>：&lt;/p>
+&lt;ul>
+&lt;li>最终用户可以通过 &lt;code>pip install&lt;/code> 命令安装打包好的项目，而不需要关心底层的构建细节。&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;/ol>
+&lt;h3 id="总结">&lt;a href="#%e6%80%bb%e7%bb%93" class="header-anchor">&lt;/a>总结
+&lt;/h3>&lt;p>尽管 Python 是解释型语言，但项目的开发和发布过程仍然需要构建步骤来管理依赖、打包、测试和优化。通过使用适当的构建工具，可以显著简化和自动化这些任务，提高项目的可维护性和可移植性。&lt;/p></description></item></channel></rss>

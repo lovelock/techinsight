@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Commons on Tech In Sight</title><link>https://techinsight.pages.dev/tags/commons/</link><description>Recent content in Commons on Tech In Sight</description><generator>Hugo -- gohugo.io</generator><language>zh-cn</language><lastBuildDate>Fri, 19 Jul 2024 14:43:20 +0800</lastBuildDate><atom:link href="https://techinsight.pages.dev/tags/commons/index.xml" rel="self" type="application/rss+xml"/><item><title>Apache Commons 系列库简介</title><link>https://techinsight.pages.dev/p/apache-commons-%E7%B3%BB%E5%88%97%E5%BA%93%E7%AE%80%E4%BB%8B/</link><pubDate>Fri, 19 Jul 2024 14:43:20 +0800</pubDate><guid>https://techinsight.pages.dev/p/apache-commons-%E7%B3%BB%E5%88%97%E5%BA%93%E7%AE%80%E4%BB%8B/</guid><description>&lt;p>Apache Commons 是一个由Apache软件基金会维护的Java库的集合，旨在提供一系列可重用的开源Java组件。这些库通常解决了广泛的编程问题，使得Java开发者可以更加高效地编码，避免重复造轮子。Apache Commons 系列包括许多不同的组件，每个组件都专注于解冒特定的问题域。下面是一些比较常用的Apache Commons组件的简介：&lt;/p>
+&lt;ol>
+&lt;li>
+&lt;p>&lt;strong>Commons Lang&lt;/strong>：&lt;/p>
+&lt;ul>
+&lt;li>&lt;code>commons-lang&lt;/code> 提供了一些核心的Java库的补充，这些库对于日常的Java开发非常有用。它包括工具类来处理字符串操作、数值计算、并发、反射以及更多。&lt;/li>
+&lt;/ul>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
+&lt;/span>&lt;span class="lnt">2
+&lt;/span>&lt;span class="lnt">3
+&lt;/span>&lt;span class="lnt">4
+&lt;/span>&lt;span class="lnt">5
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-xml" data-lang="xml">&lt;span class="line">&lt;span class="cl">&lt;span class="nt">&amp;lt;dependency&amp;gt;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nt">&amp;lt;groupId&amp;gt;&lt;/span>org.apache.commons&lt;span class="nt">&amp;lt;/groupId&amp;gt;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nt">&amp;lt;artifactId&amp;gt;&lt;/span>commons-lang3&lt;span class="nt">&amp;lt;/artifactId&amp;gt;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nt">&amp;lt;version&amp;gt;&lt;/span>3.14.0&lt;span class="nt">&amp;lt;/version&amp;gt;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nt">&amp;lt;/dependency&amp;gt;&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;/li>
+&lt;li>
+&lt;p>&lt;strong>Commons IO&lt;/strong>：&lt;/p>
+&lt;ul>
+&lt;li>&lt;code>commons-io&lt;/code> 提供了一系列实用工具，以简化文件、流和文件系统的操作。这些功能包括文件复制、文件过滤、文件监视以及对输入/输出流的操作。&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;li>
+&lt;p>&lt;strong>Commons Collections&lt;/strong>：&lt;/p>
+&lt;ul>
+&lt;li>&lt;code>commons-collections&lt;/code> 提供了扩展和优化的集合类，这些集合类在Java标准库中未被包含。它包括新类型的集合，如双向映射、多值映射、有序集合等。&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;li>
+&lt;p>&lt;strong>Commons Codec&lt;/strong>：&lt;/p>
+&lt;ul>
+&lt;li>&lt;code>commons-codec&lt;/code> 包括对常见的编解码算法的实现，如Base64、Hex、Phonetic 和 MD5。这些工具类帮助开发者在Java应用中轻松地实现数据编解码。&lt;/li>
+&lt;/ul>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
+&lt;/span>&lt;span class="lnt">2
+&lt;/span>&lt;span class="lnt">3
+&lt;/span>&lt;span class="lnt">4
+&lt;/span>&lt;span class="lnt">5
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-xml" data-lang="xml">&lt;span class="line">&lt;span class="cl">&lt;span class="nt">&amp;lt;dependency&amp;gt;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nt">&amp;lt;groupId&amp;gt;&lt;/span>commons-codec&lt;span class="nt">&amp;lt;/groupId&amp;gt;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nt">&amp;lt;artifactId&amp;gt;&lt;/span>commons-codec&lt;span class="nt">&amp;lt;/artifactId&amp;gt;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nt">&amp;lt;version&amp;gt;&lt;/span>1.17.1&lt;span class="nt">&amp;lt;/version&amp;gt;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nt">&amp;lt;/dependency&amp;gt;&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;/li>
+&lt;li>
+&lt;p>&lt;strong>Commons Net&lt;/strong>：&lt;/p>
+&lt;ul>
+&lt;li>&lt;code>commons-net&lt;/code> 包含了许多用于开发网络应用的类，支持许多网络协议，包括FTP、SMTP、Telnet和NNTP。它为这些协议的客户端实现提供了一个框架。&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;li>
+&lt;p>&lt;strong>Commons Math&lt;/strong>：&lt;/p>
+&lt;ul>
+&lt;li>&lt;code>commons-math&lt;/code> 是一个涵盖数学和统计组件的库，提供了工具类和方法，用于数学运算、统计分析和数值计算。&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;li>
+&lt;p>&lt;strong>Commons Configuration&lt;/strong>：&lt;/p>
+&lt;ul>
+&lt;li>&lt;code>commons-configuration&lt;/code> 提供了各种格式的配置文件（如XML、JSON、Properties文件）的读写支持，以及配置信息的管理。&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;li>
+&lt;p>&lt;strong>Commons DBUtils&lt;/strong>：&lt;/p>
+&lt;ul>
+&lt;li>&lt;code>commons-dbutils&lt;/code> 是一个小型的，用来简化JDBC的库，它封装了JDBC的操作，减少常见的数据库编程任务的代码量。&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;/ol>
+&lt;p>这些组件通常是通过 Maven 或 Gradle 等构建工具引入到项目中的。Apache Commons 库的主要优点是它的稳定性、广泛的测试和活跃的社区支持。使用这些库可以显著提高开发效率并增强应用程序的稳定性和功能。&lt;/p></description></item></channel></rss>

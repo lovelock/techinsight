@@ -1,0 +1,1270 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Homebrew on Tech In Sight</title><link>https://techinsight.pages.dev/tags/homebrew/</link><description>Recent content in Homebrew on Tech In Sight</description><generator>Hugo -- gohugo.io</generator><language>zh-cn</language><lastBuildDate>Thu, 14 Jan 2021 16:28:04 +0800</lastBuildDate><atom:link href="https://techinsight.pages.dev/tags/homebrew/index.xml" rel="self" type="application/rss+xml"/><item><title>通过 homebrew 安装 JDK</title><link>https://techinsight.pages.dev/p/%E9%80%9A%E8%BF%87-homebrew-%E5%AE%89%E8%A3%85-jdk/</link><pubDate>Thu, 14 Jan 2021 16:28:04 +0800</pubDate><guid>https://techinsight.pages.dev/p/%E9%80%9A%E8%BF%87-homebrew-%E5%AE%89%E8%A3%85-jdk/</guid><description>&lt;p>Oracle JDK 现在收费了，macOS 上安装个 JDK 还挺麻烦。&lt;/p>
+&lt;h2 id="tldr">&lt;a href="#tldr" class="header-anchor">&lt;/a>TL；DR
+&lt;/h2>&lt;p>简单来讲，可以直接运行&lt;code>brew search openjdk&lt;/code>&lt;/p>
+&lt;p>&lt;img src="https://techinsight.pages.dev/images/2021-01-14-17-13-40.png"
+loading="lazy"
+alt="Oracle OpenJDK"
+>&lt;/p>
+&lt;p>这样搜索出来的是 Oracle 发布的 OpenJDK。其中&lt;code>openjdk&lt;/code>就是最新版本的，带&lt;code>@&lt;/code>的就是指定版本的，其中 8 和 11 是 LTS 版本，所以可以拥有姓名，至于其他的短期版本，这里就干脆也没有了。&lt;/p>
+&lt;h2 id="adoptopenjdk">&lt;a href="#adoptopenjdk" class="header-anchor">&lt;/a>AdoptOpenJDK
+&lt;/h2>&lt;p>这个名字有点长，其实是 Eclipse 基金会在维护的发行版，它和 Oracle OpenJDK 的关系有点类似于 MIUI 和 Andriod AOSP 的关系，功能上应该是一样的，不过添加了一些特色的功能，如图所示&lt;/p>
+&lt;p>&lt;img src="https://techinsight.pages.dev/images/2021-01-14-17-17-47.png"
+loading="lazy"
+alt="AdoptOpenJDK"
+>&lt;/p>
+&lt;p>它提供了不同的垃圾收集器和所有的版本号，社区应该也比较流行吧（好吧，其实更多人还是会去下载 Oracle JDK，只是它的免费的 JDK1.8 永远的停留在了8u231）。&lt;/p>
+&lt;p>参考这个&lt;a class="link" href="https://github.com/AdoptOpenJDK/homebrew-openjdk" target="_blank" rel="noopener"
+>https://github.com/AdoptOpenJDK/homebrew-openjdk&lt;/a>&lt;/p>
+&lt;p>强烈推荐使用这个脚本&lt;/p>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
+&lt;/span>&lt;span class="lnt">2
+&lt;/span>&lt;span class="lnt">3
+&lt;/span>&lt;span class="lnt">4
+&lt;/span>&lt;span class="lnt">5
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-bash" data-lang="bash">&lt;span class="line">&lt;span class="cl">jdk&lt;span class="o">()&lt;/span> &lt;span class="o">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nv">version&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="nv">$1&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nb">export&lt;/span> &lt;span class="nv">JAVA_HOME&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="k">$(&lt;/span>/usr/libexec/java_home -v&lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="nv">$version&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="k">)&lt;/span>&lt;span class="p">;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> java -version
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="o">}&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;p>可以让你在不同版本的 JDK 中自由切换。&lt;/p></description></item><item><title>中国大陆安装homebrew的最优方法</title><link>https://techinsight.pages.dev/p/%E4%B8%AD%E5%9B%BD%E5%A4%A7%E9%99%86%E5%AE%89%E8%A3%85homebrew%E7%9A%84%E6%9C%80%E4%BC%98%E6%96%B9%E6%B3%95/</link><pubDate>Sat, 16 May 2020 00:20:48 +0800</pubDate><guid>https://techinsight.pages.dev/p/%E4%B8%AD%E5%9B%BD%E5%A4%A7%E9%99%86%E5%AE%89%E8%A3%85homebrew%E7%9A%84%E6%9C%80%E4%BC%98%E6%96%B9%E6%B3%95/</guid><description>&lt;p>不知道为什么好像家里的网络对github很不友好，网页能打开，但通过curl访问就有问题，所以安装homebrew时如果使用官方提供的花里胡哨的curl或者wget的方式就安装不上。&lt;/p>
+&lt;p>姑且说安装成功了吧，后面安装其他软件的时候又会各种慢。国内&lt;a class="link" href="http://mirrors.ustc.edu.cn" target="_blank" rel="noopener"
+>中科大&lt;/a>(个人认为国内做的最好的开源镜像站点)和清华大学都提供了homebrew的镜像，但比较吊诡的是他们提供的都是&lt;strong>post-installation&lt;/strong>，也就是前提是你已经安装好了brew。殊不知很多人（网络环境）这一步都过不了关了。&lt;/p>
+&lt;p>所以我看了一下官方的安装脚本，参考了中科大的文档，把安装脚本中的github地址给改成中科大的，然后加上了brew-cask和brew-core，并把其中的&lt;code>brew update --force&lt;/code>命令后面加了个&lt;code>-v&lt;/code>，方便在安装的时候可以看到具体的进度。&lt;/p>
+&lt;p>脚本正文直接贴出来，有想看github的&lt;a class="link" href="https://github.com/lovelock/install" target="_blank" rel="noopener"
+>在这里&lt;/a>。&lt;/p>
+&lt;p>&lt;strong>脚本默认你使用的是zsh，有偏好使用bash的同学可以自行修改&lt;/strong>&lt;/p>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt"> 1
+&lt;/span>&lt;span class="lnt"> 2
+&lt;/span>&lt;span class="lnt"> 3
+&lt;/span>&lt;span class="lnt"> 4
+&lt;/span>&lt;span class="lnt"> 5
+&lt;/span>&lt;span class="lnt"> 6
+&lt;/span>&lt;span class="lnt"> 7
+&lt;/span>&lt;span class="lnt"> 8
+&lt;/span>&lt;span class="lnt"> 9
+&lt;/span>&lt;span class="lnt"> 10
+&lt;/span>&lt;span class="lnt"> 11
+&lt;/span>&lt;span class="lnt"> 12
+&lt;/span>&lt;span class="lnt"> 13
+&lt;/span>&lt;span class="lnt"> 14
+&lt;/span>&lt;span class="lnt"> 15
+&lt;/span>&lt;span class="lnt"> 16
+&lt;/span>&lt;span class="lnt"> 17
+&lt;/span>&lt;span class="lnt"> 18
+&lt;/span>&lt;span class="lnt"> 19
+&lt;/span>&lt;span class="lnt"> 20
+&lt;/span>&lt;span class="lnt"> 21
+&lt;/span>&lt;span class="lnt"> 22
+&lt;/span>&lt;span class="lnt"> 23
+&lt;/span>&lt;span class="lnt"> 24
+&lt;/span>&lt;span class="lnt"> 25
+&lt;/span>&lt;span class="lnt"> 26
+&lt;/span>&lt;span class="lnt"> 27
+&lt;/span>&lt;span class="lnt"> 28
+&lt;/span>&lt;span class="lnt"> 29
+&lt;/span>&lt;span class="lnt"> 30
+&lt;/span>&lt;span class="lnt"> 31
+&lt;/span>&lt;span class="lnt"> 32
+&lt;/span>&lt;span class="lnt"> 33
+&lt;/span>&lt;span class="lnt"> 34
+&lt;/span>&lt;span class="lnt"> 35
+&lt;/span>&lt;span class="lnt"> 36
+&lt;/span>&lt;span class="lnt"> 37
+&lt;/span>&lt;span class="lnt"> 38
+&lt;/span>&lt;span class="lnt"> 39
+&lt;/span>&lt;span class="lnt"> 40
+&lt;/span>&lt;span class="lnt"> 41
+&lt;/span>&lt;span class="lnt"> 42
+&lt;/span>&lt;span class="lnt"> 43
+&lt;/span>&lt;span class="lnt"> 44
+&lt;/span>&lt;span class="lnt"> 45
+&lt;/span>&lt;span class="lnt"> 46
+&lt;/span>&lt;span class="lnt"> 47
+&lt;/span>&lt;span class="lnt"> 48
+&lt;/span>&lt;span class="lnt"> 49
+&lt;/span>&lt;span class="lnt"> 50
+&lt;/span>&lt;span class="lnt"> 51
+&lt;/span>&lt;span class="lnt"> 52
+&lt;/span>&lt;span class="lnt"> 53
+&lt;/span>&lt;span class="lnt"> 54
+&lt;/span>&lt;span class="lnt"> 55
+&lt;/span>&lt;span class="lnt"> 56
+&lt;/span>&lt;span class="lnt"> 57
+&lt;/span>&lt;span class="lnt"> 58
+&lt;/span>&lt;span class="lnt"> 59
+&lt;/span>&lt;span class="lnt"> 60
+&lt;/span>&lt;span class="lnt"> 61
+&lt;/span>&lt;span class="lnt"> 62
+&lt;/span>&lt;span class="lnt"> 63
+&lt;/span>&lt;span class="lnt"> 64
+&lt;/span>&lt;span class="lnt"> 65
+&lt;/span>&lt;span class="lnt"> 66
+&lt;/span>&lt;span class="lnt"> 67
+&lt;/span>&lt;span class="lnt"> 68
+&lt;/span>&lt;span class="lnt"> 69
+&lt;/span>&lt;span class="lnt"> 70
+&lt;/span>&lt;span class="lnt"> 71
+&lt;/span>&lt;span class="lnt"> 72
+&lt;/span>&lt;span class="lnt"> 73
+&lt;/span>&lt;span class="lnt"> 74
+&lt;/span>&lt;span class="lnt"> 75
+&lt;/span>&lt;span class="lnt"> 76
+&lt;/span>&lt;span class="lnt"> 77
+&lt;/span>&lt;span class="lnt"> 78
+&lt;/span>&lt;span class="lnt"> 79
+&lt;/span>&lt;span class="lnt"> 80
+&lt;/span>&lt;span class="lnt"> 81
+&lt;/span>&lt;span class="lnt"> 82
+&lt;/span>&lt;span class="lnt"> 83
+&lt;/span>&lt;span class="lnt"> 84
+&lt;/span>&lt;span class="lnt"> 85
+&lt;/span>&lt;span class="lnt"> 86
+&lt;/span>&lt;span class="lnt"> 87
+&lt;/span>&lt;span class="lnt"> 88
+&lt;/span>&lt;span class="lnt"> 89
+&lt;/span>&lt;span class="lnt"> 90
+&lt;/span>&lt;span class="lnt"> 91
+&lt;/span>&lt;span class="lnt"> 92
+&lt;/span>&lt;span class="lnt"> 93
+&lt;/span>&lt;span class="lnt"> 94
+&lt;/span>&lt;span class="lnt"> 95
+&lt;/span>&lt;span class="lnt"> 96
+&lt;/span>&lt;span class="lnt"> 97
+&lt;/span>&lt;span class="lnt"> 98
+&lt;/span>&lt;span class="lnt"> 99
+&lt;/span>&lt;span class="lnt">100
+&lt;/span>&lt;span class="lnt">101
+&lt;/span>&lt;span class="lnt">102
+&lt;/span>&lt;span class="lnt">103
+&lt;/span>&lt;span class="lnt">104
+&lt;/span>&lt;span class="lnt">105
+&lt;/span>&lt;span class="lnt">106
+&lt;/span>&lt;span class="lnt">107
+&lt;/span>&lt;span class="lnt">108
+&lt;/span>&lt;span class="lnt">109
+&lt;/span>&lt;span class="lnt">110
+&lt;/span>&lt;span class="lnt">111
+&lt;/span>&lt;span class="lnt">112
+&lt;/span>&lt;span class="lnt">113
+&lt;/span>&lt;span class="lnt">114
+&lt;/span>&lt;span class="lnt">115
+&lt;/span>&lt;span class="lnt">116
+&lt;/span>&lt;span class="lnt">117
+&lt;/span>&lt;span class="lnt">118
+&lt;/span>&lt;span class="lnt">119
+&lt;/span>&lt;span class="lnt">120
+&lt;/span>&lt;span class="lnt">121
+&lt;/span>&lt;span class="lnt">122
+&lt;/span>&lt;span class="lnt">123
+&lt;/span>&lt;span class="lnt">124
+&lt;/span>&lt;span class="lnt">125
+&lt;/span>&lt;span class="lnt">126
+&lt;/span>&lt;span class="lnt">127
+&lt;/span>&lt;span class="lnt">128
+&lt;/span>&lt;span class="lnt">129
+&lt;/span>&lt;span class="lnt">130
+&lt;/span>&lt;span class="lnt">131
+&lt;/span>&lt;span class="lnt">132
+&lt;/span>&lt;span class="lnt">133
+&lt;/span>&lt;span class="lnt">134
+&lt;/span>&lt;span class="lnt">135
+&lt;/span>&lt;span class="lnt">136
+&lt;/span>&lt;span class="lnt">137
+&lt;/span>&lt;span class="lnt">138
+&lt;/span>&lt;span class="lnt">139
+&lt;/span>&lt;span class="lnt">140
+&lt;/span>&lt;span class="lnt">141
+&lt;/span>&lt;span class="lnt">142
+&lt;/span>&lt;span class="lnt">143
+&lt;/span>&lt;span class="lnt">144
+&lt;/span>&lt;span class="lnt">145
+&lt;/span>&lt;span class="lnt">146
+&lt;/span>&lt;span class="lnt">147
+&lt;/span>&lt;span class="lnt">148
+&lt;/span>&lt;span class="lnt">149
+&lt;/span>&lt;span class="lnt">150
+&lt;/span>&lt;span class="lnt">151
+&lt;/span>&lt;span class="lnt">152
+&lt;/span>&lt;span class="lnt">153
+&lt;/span>&lt;span class="lnt">154
+&lt;/span>&lt;span class="lnt">155
+&lt;/span>&lt;span class="lnt">156
+&lt;/span>&lt;span class="lnt">157
+&lt;/span>&lt;span class="lnt">158
+&lt;/span>&lt;span class="lnt">159
+&lt;/span>&lt;span class="lnt">160
+&lt;/span>&lt;span class="lnt">161
+&lt;/span>&lt;span class="lnt">162
+&lt;/span>&lt;span class="lnt">163
+&lt;/span>&lt;span class="lnt">164
+&lt;/span>&lt;span class="lnt">165
+&lt;/span>&lt;span class="lnt">166
+&lt;/span>&lt;span class="lnt">167
+&lt;/span>&lt;span class="lnt">168
+&lt;/span>&lt;span class="lnt">169
+&lt;/span>&lt;span class="lnt">170
+&lt;/span>&lt;span class="lnt">171
+&lt;/span>&lt;span class="lnt">172
+&lt;/span>&lt;span class="lnt">173
+&lt;/span>&lt;span class="lnt">174
+&lt;/span>&lt;span class="lnt">175
+&lt;/span>&lt;span class="lnt">176
+&lt;/span>&lt;span class="lnt">177
+&lt;/span>&lt;span class="lnt">178
+&lt;/span>&lt;span class="lnt">179
+&lt;/span>&lt;span class="lnt">180
+&lt;/span>&lt;span class="lnt">181
+&lt;/span>&lt;span class="lnt">182
+&lt;/span>&lt;span class="lnt">183
+&lt;/span>&lt;span class="lnt">184
+&lt;/span>&lt;span class="lnt">185
+&lt;/span>&lt;span class="lnt">186
+&lt;/span>&lt;span class="lnt">187
+&lt;/span>&lt;span class="lnt">188
+&lt;/span>&lt;span class="lnt">189
+&lt;/span>&lt;span class="lnt">190
+&lt;/span>&lt;span class="lnt">191
+&lt;/span>&lt;span class="lnt">192
+&lt;/span>&lt;span class="lnt">193
+&lt;/span>&lt;span class="lnt">194
+&lt;/span>&lt;span class="lnt">195
+&lt;/span>&lt;span class="lnt">196
+&lt;/span>&lt;span class="lnt">197
+&lt;/span>&lt;span class="lnt">198
+&lt;/span>&lt;span class="lnt">199
+&lt;/span>&lt;span class="lnt">200
+&lt;/span>&lt;span class="lnt">201
+&lt;/span>&lt;span class="lnt">202
+&lt;/span>&lt;span class="lnt">203
+&lt;/span>&lt;span class="lnt">204
+&lt;/span>&lt;span class="lnt">205
+&lt;/span>&lt;span class="lnt">206
+&lt;/span>&lt;span class="lnt">207
+&lt;/span>&lt;span class="lnt">208
+&lt;/span>&lt;span class="lnt">209
+&lt;/span>&lt;span class="lnt">210
+&lt;/span>&lt;span class="lnt">211
+&lt;/span>&lt;span class="lnt">212
+&lt;/span>&lt;span class="lnt">213
+&lt;/span>&lt;span class="lnt">214
+&lt;/span>&lt;span class="lnt">215
+&lt;/span>&lt;span class="lnt">216
+&lt;/span>&lt;span class="lnt">217
+&lt;/span>&lt;span class="lnt">218
+&lt;/span>&lt;span class="lnt">219
+&lt;/span>&lt;span class="lnt">220
+&lt;/span>&lt;span class="lnt">221
+&lt;/span>&lt;span class="lnt">222
+&lt;/span>&lt;span class="lnt">223
+&lt;/span>&lt;span class="lnt">224
+&lt;/span>&lt;span class="lnt">225
+&lt;/span>&lt;span class="lnt">226
+&lt;/span>&lt;span class="lnt">227
+&lt;/span>&lt;span class="lnt">228
+&lt;/span>&lt;span class="lnt">229
+&lt;/span>&lt;span class="lnt">230
+&lt;/span>&lt;span class="lnt">231
+&lt;/span>&lt;span class="lnt">232
+&lt;/span>&lt;span class="lnt">233
+&lt;/span>&lt;span class="lnt">234
+&lt;/span>&lt;span class="lnt">235
+&lt;/span>&lt;span class="lnt">236
+&lt;/span>&lt;span class="lnt">237
+&lt;/span>&lt;span class="lnt">238
+&lt;/span>&lt;span class="lnt">239
+&lt;/span>&lt;span class="lnt">240
+&lt;/span>&lt;span class="lnt">241
+&lt;/span>&lt;span class="lnt">242
+&lt;/span>&lt;span class="lnt">243
+&lt;/span>&lt;span class="lnt">244
+&lt;/span>&lt;span class="lnt">245
+&lt;/span>&lt;span class="lnt">246
+&lt;/span>&lt;span class="lnt">247
+&lt;/span>&lt;span class="lnt">248
+&lt;/span>&lt;span class="lnt">249
+&lt;/span>&lt;span class="lnt">250
+&lt;/span>&lt;span class="lnt">251
+&lt;/span>&lt;span class="lnt">252
+&lt;/span>&lt;span class="lnt">253
+&lt;/span>&lt;span class="lnt">254
+&lt;/span>&lt;span class="lnt">255
+&lt;/span>&lt;span class="lnt">256
+&lt;/span>&lt;span class="lnt">257
+&lt;/span>&lt;span class="lnt">258
+&lt;/span>&lt;span class="lnt">259
+&lt;/span>&lt;span class="lnt">260
+&lt;/span>&lt;span class="lnt">261
+&lt;/span>&lt;span class="lnt">262
+&lt;/span>&lt;span class="lnt">263
+&lt;/span>&lt;span class="lnt">264
+&lt;/span>&lt;span class="lnt">265
+&lt;/span>&lt;span class="lnt">266
+&lt;/span>&lt;span class="lnt">267
+&lt;/span>&lt;span class="lnt">268
+&lt;/span>&lt;span class="lnt">269
+&lt;/span>&lt;span class="lnt">270
+&lt;/span>&lt;span class="lnt">271
+&lt;/span>&lt;span class="lnt">272
+&lt;/span>&lt;span class="lnt">273
+&lt;/span>&lt;span class="lnt">274
+&lt;/span>&lt;span class="lnt">275
+&lt;/span>&lt;span class="lnt">276
+&lt;/span>&lt;span class="lnt">277
+&lt;/span>&lt;span class="lnt">278
+&lt;/span>&lt;span class="lnt">279
+&lt;/span>&lt;span class="lnt">280
+&lt;/span>&lt;span class="lnt">281
+&lt;/span>&lt;span class="lnt">282
+&lt;/span>&lt;span class="lnt">283
+&lt;/span>&lt;span class="lnt">284
+&lt;/span>&lt;span class="lnt">285
+&lt;/span>&lt;span class="lnt">286
+&lt;/span>&lt;span class="lnt">287
+&lt;/span>&lt;span class="lnt">288
+&lt;/span>&lt;span class="lnt">289
+&lt;/span>&lt;span class="lnt">290
+&lt;/span>&lt;span class="lnt">291
+&lt;/span>&lt;span class="lnt">292
+&lt;/span>&lt;span class="lnt">293
+&lt;/span>&lt;span class="lnt">294
+&lt;/span>&lt;span class="lnt">295
+&lt;/span>&lt;span class="lnt">296
+&lt;/span>&lt;span class="lnt">297
+&lt;/span>&lt;span class="lnt">298
+&lt;/span>&lt;span class="lnt">299
+&lt;/span>&lt;span class="lnt">300
+&lt;/span>&lt;span class="lnt">301
+&lt;/span>&lt;span class="lnt">302
+&lt;/span>&lt;span class="lnt">303
+&lt;/span>&lt;span class="lnt">304
+&lt;/span>&lt;span class="lnt">305
+&lt;/span>&lt;span class="lnt">306
+&lt;/span>&lt;span class="lnt">307
+&lt;/span>&lt;span class="lnt">308
+&lt;/span>&lt;span class="lnt">309
+&lt;/span>&lt;span class="lnt">310
+&lt;/span>&lt;span class="lnt">311
+&lt;/span>&lt;span class="lnt">312
+&lt;/span>&lt;span class="lnt">313
+&lt;/span>&lt;span class="lnt">314
+&lt;/span>&lt;span class="lnt">315
+&lt;/span>&lt;span class="lnt">316
+&lt;/span>&lt;span class="lnt">317
+&lt;/span>&lt;span class="lnt">318
+&lt;/span>&lt;span class="lnt">319
+&lt;/span>&lt;span class="lnt">320
+&lt;/span>&lt;span class="lnt">321
+&lt;/span>&lt;span class="lnt">322
+&lt;/span>&lt;span class="lnt">323
+&lt;/span>&lt;span class="lnt">324
+&lt;/span>&lt;span class="lnt">325
+&lt;/span>&lt;span class="lnt">326
+&lt;/span>&lt;span class="lnt">327
+&lt;/span>&lt;span class="lnt">328
+&lt;/span>&lt;span class="lnt">329
+&lt;/span>&lt;span class="lnt">330
+&lt;/span>&lt;span class="lnt">331
+&lt;/span>&lt;span class="lnt">332
+&lt;/span>&lt;span class="lnt">333
+&lt;/span>&lt;span class="lnt">334
+&lt;/span>&lt;span class="lnt">335
+&lt;/span>&lt;span class="lnt">336
+&lt;/span>&lt;span class="lnt">337
+&lt;/span>&lt;span class="lnt">338
+&lt;/span>&lt;span class="lnt">339
+&lt;/span>&lt;span class="lnt">340
+&lt;/span>&lt;span class="lnt">341
+&lt;/span>&lt;span class="lnt">342
+&lt;/span>&lt;span class="lnt">343
+&lt;/span>&lt;span class="lnt">344
+&lt;/span>&lt;span class="lnt">345
+&lt;/span>&lt;span class="lnt">346
+&lt;/span>&lt;span class="lnt">347
+&lt;/span>&lt;span class="lnt">348
+&lt;/span>&lt;span class="lnt">349
+&lt;/span>&lt;span class="lnt">350
+&lt;/span>&lt;span class="lnt">351
+&lt;/span>&lt;span class="lnt">352
+&lt;/span>&lt;span class="lnt">353
+&lt;/span>&lt;span class="lnt">354
+&lt;/span>&lt;span class="lnt">355
+&lt;/span>&lt;span class="lnt">356
+&lt;/span>&lt;span class="lnt">357
+&lt;/span>&lt;span class="lnt">358
+&lt;/span>&lt;span class="lnt">359
+&lt;/span>&lt;span class="lnt">360
+&lt;/span>&lt;span class="lnt">361
+&lt;/span>&lt;span class="lnt">362
+&lt;/span>&lt;span class="lnt">363
+&lt;/span>&lt;span class="lnt">364
+&lt;/span>&lt;span class="lnt">365
+&lt;/span>&lt;span class="lnt">366
+&lt;/span>&lt;span class="lnt">367
+&lt;/span>&lt;span class="lnt">368
+&lt;/span>&lt;span class="lnt">369
+&lt;/span>&lt;span class="lnt">370
+&lt;/span>&lt;span class="lnt">371
+&lt;/span>&lt;span class="lnt">372
+&lt;/span>&lt;span class="lnt">373
+&lt;/span>&lt;span class="lnt">374
+&lt;/span>&lt;span class="lnt">375
+&lt;/span>&lt;span class="lnt">376
+&lt;/span>&lt;span class="lnt">377
+&lt;/span>&lt;span class="lnt">378
+&lt;/span>&lt;span class="lnt">379
+&lt;/span>&lt;span class="lnt">380
+&lt;/span>&lt;span class="lnt">381
+&lt;/span>&lt;span class="lnt">382
+&lt;/span>&lt;span class="lnt">383
+&lt;/span>&lt;span class="lnt">384
+&lt;/span>&lt;span class="lnt">385
+&lt;/span>&lt;span class="lnt">386
+&lt;/span>&lt;span class="lnt">387
+&lt;/span>&lt;span class="lnt">388
+&lt;/span>&lt;span class="lnt">389
+&lt;/span>&lt;span class="lnt">390
+&lt;/span>&lt;span class="lnt">391
+&lt;/span>&lt;span class="lnt">392
+&lt;/span>&lt;span class="lnt">393
+&lt;/span>&lt;span class="lnt">394
+&lt;/span>&lt;span class="lnt">395
+&lt;/span>&lt;span class="lnt">396
+&lt;/span>&lt;span class="lnt">397
+&lt;/span>&lt;span class="lnt">398
+&lt;/span>&lt;span class="lnt">399
+&lt;/span>&lt;span class="lnt">400
+&lt;/span>&lt;span class="lnt">401
+&lt;/span>&lt;span class="lnt">402
+&lt;/span>&lt;span class="lnt">403
+&lt;/span>&lt;span class="lnt">404
+&lt;/span>&lt;span class="lnt">405
+&lt;/span>&lt;span class="lnt">406
+&lt;/span>&lt;span class="lnt">407
+&lt;/span>&lt;span class="lnt">408
+&lt;/span>&lt;span class="lnt">409
+&lt;/span>&lt;span class="lnt">410
+&lt;/span>&lt;span class="lnt">411
+&lt;/span>&lt;span class="lnt">412
+&lt;/span>&lt;span class="lnt">413
+&lt;/span>&lt;span class="lnt">414
+&lt;/span>&lt;span class="lnt">415
+&lt;/span>&lt;span class="lnt">416
+&lt;/span>&lt;span class="lnt">417
+&lt;/span>&lt;span class="lnt">418
+&lt;/span>&lt;span class="lnt">419
+&lt;/span>&lt;span class="lnt">420
+&lt;/span>&lt;span class="lnt">421
+&lt;/span>&lt;span class="lnt">422
+&lt;/span>&lt;span class="lnt">423
+&lt;/span>&lt;span class="lnt">424
+&lt;/span>&lt;span class="lnt">425
+&lt;/span>&lt;span class="lnt">426
+&lt;/span>&lt;span class="lnt">427
+&lt;/span>&lt;span class="lnt">428
+&lt;/span>&lt;span class="lnt">429
+&lt;/span>&lt;span class="lnt">430
+&lt;/span>&lt;span class="lnt">431
+&lt;/span>&lt;span class="lnt">432
+&lt;/span>&lt;span class="lnt">433
+&lt;/span>&lt;span class="lnt">434
+&lt;/span>&lt;span class="lnt">435
+&lt;/span>&lt;span class="lnt">436
+&lt;/span>&lt;span class="lnt">437
+&lt;/span>&lt;span class="lnt">438
+&lt;/span>&lt;span class="lnt">439
+&lt;/span>&lt;span class="lnt">440
+&lt;/span>&lt;span class="lnt">441
+&lt;/span>&lt;span class="lnt">442
+&lt;/span>&lt;span class="lnt">443
+&lt;/span>&lt;span class="lnt">444
+&lt;/span>&lt;span class="lnt">445
+&lt;/span>&lt;span class="lnt">446
+&lt;/span>&lt;span class="lnt">447
+&lt;/span>&lt;span class="lnt">448
+&lt;/span>&lt;span class="lnt">449
+&lt;/span>&lt;span class="lnt">450
+&lt;/span>&lt;span class="lnt">451
+&lt;/span>&lt;span class="lnt">452
+&lt;/span>&lt;span class="lnt">453
+&lt;/span>&lt;span class="lnt">454
+&lt;/span>&lt;span class="lnt">455
+&lt;/span>&lt;span class="lnt">456
+&lt;/span>&lt;span class="lnt">457
+&lt;/span>&lt;span class="lnt">458
+&lt;/span>&lt;span class="lnt">459
+&lt;/span>&lt;span class="lnt">460
+&lt;/span>&lt;span class="lnt">461
+&lt;/span>&lt;span class="lnt">462
+&lt;/span>&lt;span class="lnt">463
+&lt;/span>&lt;span class="lnt">464
+&lt;/span>&lt;span class="lnt">465
+&lt;/span>&lt;span class="lnt">466
+&lt;/span>&lt;span class="lnt">467
+&lt;/span>&lt;span class="lnt">468
+&lt;/span>&lt;span class="lnt">469
+&lt;/span>&lt;span class="lnt">470
+&lt;/span>&lt;span class="lnt">471
+&lt;/span>&lt;span class="lnt">472
+&lt;/span>&lt;span class="lnt">473
+&lt;/span>&lt;span class="lnt">474
+&lt;/span>&lt;span class="lnt">475
+&lt;/span>&lt;span class="lnt">476
+&lt;/span>&lt;span class="lnt">477
+&lt;/span>&lt;span class="lnt">478
+&lt;/span>&lt;span class="lnt">479
+&lt;/span>&lt;span class="lnt">480
+&lt;/span>&lt;span class="lnt">481
+&lt;/span>&lt;span class="lnt">482
+&lt;/span>&lt;span class="lnt">483
+&lt;/span>&lt;span class="lnt">484
+&lt;/span>&lt;span class="lnt">485
+&lt;/span>&lt;span class="lnt">486
+&lt;/span>&lt;span class="lnt">487
+&lt;/span>&lt;span class="lnt">488
+&lt;/span>&lt;span class="lnt">489
+&lt;/span>&lt;span class="lnt">490
+&lt;/span>&lt;span class="lnt">491
+&lt;/span>&lt;span class="lnt">492
+&lt;/span>&lt;span class="lnt">493
+&lt;/span>&lt;span class="lnt">494
+&lt;/span>&lt;span class="lnt">495
+&lt;/span>&lt;span class="lnt">496
+&lt;/span>&lt;span class="lnt">497
+&lt;/span>&lt;span class="lnt">498
+&lt;/span>&lt;span class="lnt">499
+&lt;/span>&lt;span class="lnt">500
+&lt;/span>&lt;span class="lnt">501
+&lt;/span>&lt;span class="lnt">502
+&lt;/span>&lt;span class="lnt">503
+&lt;/span>&lt;span class="lnt">504
+&lt;/span>&lt;span class="lnt">505
+&lt;/span>&lt;span class="lnt">506
+&lt;/span>&lt;span class="lnt">507
+&lt;/span>&lt;span class="lnt">508
+&lt;/span>&lt;span class="lnt">509
+&lt;/span>&lt;span class="lnt">510
+&lt;/span>&lt;span class="lnt">511
+&lt;/span>&lt;span class="lnt">512
+&lt;/span>&lt;span class="lnt">513
+&lt;/span>&lt;span class="lnt">514
+&lt;/span>&lt;span class="lnt">515
+&lt;/span>&lt;span class="lnt">516
+&lt;/span>&lt;span class="lnt">517
+&lt;/span>&lt;span class="lnt">518
+&lt;/span>&lt;span class="lnt">519
+&lt;/span>&lt;span class="lnt">520
+&lt;/span>&lt;span class="lnt">521
+&lt;/span>&lt;span class="lnt">522
+&lt;/span>&lt;span class="lnt">523
+&lt;/span>&lt;span class="lnt">524
+&lt;/span>&lt;span class="lnt">525
+&lt;/span>&lt;span class="lnt">526
+&lt;/span>&lt;span class="lnt">527
+&lt;/span>&lt;span class="lnt">528
+&lt;/span>&lt;span class="lnt">529
+&lt;/span>&lt;span class="lnt">530
+&lt;/span>&lt;span class="lnt">531
+&lt;/span>&lt;span class="lnt">532
+&lt;/span>&lt;span class="lnt">533
+&lt;/span>&lt;span class="lnt">534
+&lt;/span>&lt;span class="lnt">535
+&lt;/span>&lt;span class="lnt">536
+&lt;/span>&lt;span class="lnt">537
+&lt;/span>&lt;span class="lnt">538
+&lt;/span>&lt;span class="lnt">539
+&lt;/span>&lt;span class="lnt">540
+&lt;/span>&lt;span class="lnt">541
+&lt;/span>&lt;span class="lnt">542
+&lt;/span>&lt;span class="lnt">543
+&lt;/span>&lt;span class="lnt">544
+&lt;/span>&lt;span class="lnt">545
+&lt;/span>&lt;span class="lnt">546
+&lt;/span>&lt;span class="lnt">547
+&lt;/span>&lt;span class="lnt">548
+&lt;/span>&lt;span class="lnt">549
+&lt;/span>&lt;span class="lnt">550
+&lt;/span>&lt;span class="lnt">551
+&lt;/span>&lt;span class="lnt">552
+&lt;/span>&lt;span class="lnt">553
+&lt;/span>&lt;span class="lnt">554
+&lt;/span>&lt;span class="lnt">555
+&lt;/span>&lt;span class="lnt">556
+&lt;/span>&lt;span class="lnt">557
+&lt;/span>&lt;span class="lnt">558
+&lt;/span>&lt;span class="lnt">559
+&lt;/span>&lt;span class="lnt">560
+&lt;/span>&lt;span class="lnt">561
+&lt;/span>&lt;span class="lnt">562
+&lt;/span>&lt;span class="lnt">563
+&lt;/span>&lt;span class="lnt">564
+&lt;/span>&lt;span class="lnt">565
+&lt;/span>&lt;span class="lnt">566
+&lt;/span>&lt;span class="lnt">567
+&lt;/span>&lt;span class="lnt">568
+&lt;/span>&lt;span class="lnt">569
+&lt;/span>&lt;span class="lnt">570
+&lt;/span>&lt;span class="lnt">571
+&lt;/span>&lt;span class="lnt">572
+&lt;/span>&lt;span class="lnt">573
+&lt;/span>&lt;span class="lnt">574
+&lt;/span>&lt;span class="lnt">575
+&lt;/span>&lt;span class="lnt">576
+&lt;/span>&lt;span class="lnt">577
+&lt;/span>&lt;span class="lnt">578
+&lt;/span>&lt;span class="lnt">579
+&lt;/span>&lt;span class="lnt">580
+&lt;/span>&lt;span class="lnt">581
+&lt;/span>&lt;span class="lnt">582
+&lt;/span>&lt;span class="lnt">583
+&lt;/span>&lt;span class="lnt">584
+&lt;/span>&lt;span class="lnt">585
+&lt;/span>&lt;span class="lnt">586
+&lt;/span>&lt;span class="lnt">587
+&lt;/span>&lt;span class="lnt">588
+&lt;/span>&lt;span class="lnt">589
+&lt;/span>&lt;span class="lnt">590
+&lt;/span>&lt;span class="lnt">591
+&lt;/span>&lt;span class="lnt">592
+&lt;/span>&lt;span class="lnt">593
+&lt;/span>&lt;span class="lnt">594
+&lt;/span>&lt;span class="lnt">595
+&lt;/span>&lt;span class="lnt">596
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-bash" data-lang="bash">&lt;span class="line">&lt;span class="cl">&lt;span class="cp">#!/bin/bash
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="cp">&lt;/span>&lt;span class="nb">set&lt;/span> -u
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1"># First check if the OS is Linux.&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="k">if&lt;/span> &lt;span class="o">[[&lt;/span> &lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="k">$(&lt;/span>uname&lt;span class="k">)&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="s2">&amp;#34;Linux&amp;#34;&lt;/span> &lt;span class="o">]]&lt;/span>&lt;span class="p">;&lt;/span> &lt;span class="k">then&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nv">HOMEBREW_ON_LINUX&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="m">1&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="k">fi&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1"># On macOS, this script installs to /usr/local only.&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1"># On Linux, it installs to /home/linuxbrew/.linuxbrew if you have sudo access&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1"># and ~/.linuxbrew otherwise.&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1"># To install elsewhere (which is unsupported)&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1"># you can untar https://github.com/Homebrew/brew/tarball/master&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1"># anywhere you like.&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="k">if&lt;/span> &lt;span class="o">[[&lt;/span> -z &lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="si">${&lt;/span>&lt;span class="nv">HOMEBREW_ON_LINUX&lt;/span>&lt;span class="p">-&lt;/span>&lt;span class="si">}&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span> &lt;span class="o">]]&lt;/span>&lt;span class="p">;&lt;/span> &lt;span class="k">then&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nv">HOMEBREW_PREFIX&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="s2">&amp;#34;/usr/local&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nv">HOMEBREW_REPOSITORY&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="s2">&amp;#34;/usr/local/Homebrew&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nv">HOMEBREW_CACHE&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="si">${&lt;/span>&lt;span class="nv">HOME&lt;/span>&lt;span class="si">}&lt;/span>&lt;span class="s2">/Library/Caches/Homebrew&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nv">STAT&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="s2">&amp;#34;stat -f&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nv">CHOWN&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="s2">&amp;#34;/usr/sbin/chown&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nv">CHGRP&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="s2">&amp;#34;/usr/bin/chgrp&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nv">GROUP&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="s2">&amp;#34;admin&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nv">TOUCH&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="s2">&amp;#34;/usr/bin/touch&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="k">else&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nv">HOMEBREW_PREFIX_DEFAULT&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="s2">&amp;#34;/home/linuxbrew/.linuxbrew&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nv">HOMEBREW_CACHE&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="si">${&lt;/span>&lt;span class="nv">HOME&lt;/span>&lt;span class="si">}&lt;/span>&lt;span class="s2">/.cache/Homebrew&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nv">STAT&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="s2">&amp;#34;stat --printf&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nv">CHOWN&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="s2">&amp;#34;/bin/chown&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nv">CHGRP&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="s2">&amp;#34;/bin/chgrp&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nv">GROUP&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="k">$(&lt;/span>id -gn&lt;span class="k">)&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nv">TOUCH&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="s2">&amp;#34;/bin/touch&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="k">fi&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nv">BREW_REPO&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="s2">&amp;#34;http://mirrors.ustc.edu.cn/brew.git&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1"># TODO: bump version when new macOS is released&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nv">MACOS_LATEST_SUPPORTED&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="s2">&amp;#34;10.15&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1"># TODO: bump version when new macOS is released&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nv">MACOS_OLDEST_SUPPORTED&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="s2">&amp;#34;10.13&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1"># no analytics during installation&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nb">export&lt;/span> &lt;span class="nv">HOMEBREW_NO_ANALYTICS_THIS_RUN&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="m">1&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nb">export&lt;/span> &lt;span class="nv">HOMEBREW_NO_ANALYTICS_MESSAGE_OUTPUT&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="m">1&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1"># string formatters&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="k">if&lt;/span> &lt;span class="o">[[&lt;/span> -t &lt;span class="m">1&lt;/span> &lt;span class="o">]]&lt;/span>&lt;span class="p">;&lt;/span> &lt;span class="k">then&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> tty_escape&lt;span class="o">()&lt;/span> &lt;span class="o">{&lt;/span> &lt;span class="nb">printf&lt;/span> &lt;span class="s2">&amp;#34;\033[%sm&amp;#34;&lt;/span> &lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="nv">$1&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="p">;&lt;/span> &lt;span class="o">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="k">else&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> tty_escape&lt;span class="o">()&lt;/span> &lt;span class="o">{&lt;/span> :&lt;span class="p">;&lt;/span> &lt;span class="o">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="k">fi&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">tty_mkbold&lt;span class="o">()&lt;/span> &lt;span class="o">{&lt;/span> tty_escape &lt;span class="s2">&amp;#34;1;&lt;/span>&lt;span class="nv">$1&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="p">;&lt;/span> &lt;span class="o">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nv">tty_underline&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="k">$(&lt;/span>tty_escape &lt;span class="s2">&amp;#34;4;39&amp;#34;&lt;/span>&lt;span class="k">)&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nv">tty_blue&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="k">$(&lt;/span>tty_mkbold 34&lt;span class="k">)&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nv">tty_red&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="k">$(&lt;/span>tty_mkbold 31&lt;span class="k">)&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nv">tty_bold&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="k">$(&lt;/span>tty_mkbold 39&lt;span class="k">)&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nv">tty_reset&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="k">$(&lt;/span>tty_escape 0&lt;span class="k">)&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">have_sudo_access&lt;span class="o">()&lt;/span> &lt;span class="o">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">if&lt;/span> &lt;span class="o">[[&lt;/span> -z &lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="si">${&lt;/span>&lt;span class="nv">HAVE_SUDO_ACCESS&lt;/span>&lt;span class="p">-&lt;/span>&lt;span class="si">}&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span> &lt;span class="o">]]&lt;/span>&lt;span class="p">;&lt;/span> &lt;span class="k">then&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> /usr/bin/sudo -l mkdir &lt;span class="p">&amp;amp;&lt;/span>&amp;gt;/dev/null
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nv">HAVE_SUDO_ACCESS&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="nv">$?&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">fi&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">if&lt;/span> &lt;span class="o">[[&lt;/span> -z &lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="si">${&lt;/span>&lt;span class="nv">HOMEBREW_ON_LINUX&lt;/span>&lt;span class="p">-&lt;/span>&lt;span class="si">}&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span> &lt;span class="o">]]&lt;/span> &lt;span class="o">&amp;amp;&amp;amp;&lt;/span> &lt;span class="o">[[&lt;/span> &lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="nv">$HAVE_SUDO_ACCESS&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span> -ne &lt;span class="m">0&lt;/span> &lt;span class="o">]]&lt;/span>&lt;span class="p">;&lt;/span> &lt;span class="k">then&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> abort &lt;span class="s2">&amp;#34;Need sudo access on macOS!&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">fi&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">return&lt;/span> &lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="nv">$HAVE_SUDO_ACCESS&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="o">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">shell_join&lt;span class="o">()&lt;/span> &lt;span class="o">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nb">local&lt;/span> arg
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nb">printf&lt;/span> &lt;span class="s2">&amp;#34;%s&amp;#34;&lt;/span> &lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="nv">$1&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nb">shift&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">for&lt;/span> arg in &lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="nv">$@&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="p">;&lt;/span> &lt;span class="k">do&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nb">printf&lt;/span> &lt;span class="s2">&amp;#34; &amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nb">printf&lt;/span> &lt;span class="s2">&amp;#34;%s&amp;#34;&lt;/span> &lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="si">${&lt;/span>&lt;span class="nv">arg&lt;/span>&lt;span class="p">// /&lt;/span>&lt;span class="se">\ &lt;/span>&lt;span class="si">}&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">done&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="o">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">chomp&lt;span class="o">()&lt;/span> &lt;span class="o">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nb">printf&lt;/span> &lt;span class="s2">&amp;#34;%s&amp;#34;&lt;/span> &lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="si">${&lt;/span>&lt;span class="nv">1&lt;/span>&lt;span class="p">/&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span>$&lt;span class="s2">&amp;#39;\n&amp;#39;&amp;#34;&lt;/span>&lt;span class="p">/&lt;/span>&lt;span class="si">}&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="o">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">ohai&lt;span class="o">()&lt;/span> &lt;span class="o">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nb">printf&lt;/span> &lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="si">${&lt;/span>&lt;span class="nv">tty_blue&lt;/span>&lt;span class="si">}&lt;/span>&lt;span class="s2">==&amp;gt;&lt;/span>&lt;span class="si">${&lt;/span>&lt;span class="nv">tty_bold&lt;/span>&lt;span class="si">}&lt;/span>&lt;span class="s2"> %s&lt;/span>&lt;span class="si">${&lt;/span>&lt;span class="nv">tty_reset&lt;/span>&lt;span class="si">}&lt;/span>&lt;span class="s2">\n&amp;#34;&lt;/span> &lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="k">$(&lt;/span>shell_join &lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="nv">$@&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="k">)&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="o">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">warn&lt;span class="o">()&lt;/span> &lt;span class="o">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nb">printf&lt;/span> &lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="si">${&lt;/span>&lt;span class="nv">tty_red&lt;/span>&lt;span class="si">}&lt;/span>&lt;span class="s2">Warning&lt;/span>&lt;span class="si">${&lt;/span>&lt;span class="nv">tty_reset&lt;/span>&lt;span class="si">}&lt;/span>&lt;span class="s2">: %s\n&amp;#34;&lt;/span> &lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="k">$(&lt;/span>chomp &lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="nv">$1&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="k">)&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="o">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">abort&lt;span class="o">()&lt;/span> &lt;span class="o">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nb">printf&lt;/span> &lt;span class="s2">&amp;#34;%s\n&amp;#34;&lt;/span> &lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="nv">$1&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nb">exit&lt;/span> &lt;span class="m">1&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="o">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">execute&lt;span class="o">()&lt;/span> &lt;span class="o">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">if&lt;/span> ! &lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="nv">$@&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="p">;&lt;/span> &lt;span class="k">then&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> abort &lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="k">$(&lt;/span>&lt;span class="nb">printf&lt;/span> &lt;span class="s2">&amp;#34;Failed during: %s&amp;#34;&lt;/span> &lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="k">$(&lt;/span>shell_join &lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="nv">$@&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="k">)&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="k">)&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">fi&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="o">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">execute_sudo&lt;span class="o">()&lt;/span> &lt;span class="o">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nb">local&lt;/span> -a &lt;span class="nv">args&lt;/span>&lt;span class="o">=(&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="nv">$@&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="o">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">if&lt;/span> &lt;span class="o">[[&lt;/span> -n &lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="si">${&lt;/span>&lt;span class="nv">SUDO_ASKPASS&lt;/span>&lt;span class="p">-&lt;/span>&lt;span class="si">}&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span> &lt;span class="o">]]&lt;/span>&lt;span class="p">;&lt;/span> &lt;span class="k">then&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nv">args&lt;/span>&lt;span class="o">=(&lt;/span>&lt;span class="s2">&amp;#34;-A&amp;#34;&lt;/span> &lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="si">${&lt;/span>&lt;span class="nv">args&lt;/span>&lt;span class="p">[@]&lt;/span>&lt;span class="si">}&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="o">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">fi&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">if&lt;/span> have_sudo_access&lt;span class="p">;&lt;/span> &lt;span class="k">then&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> ohai &lt;span class="s2">&amp;#34;/usr/bin/sudo&amp;#34;&lt;/span> &lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="si">${&lt;/span>&lt;span class="nv">args&lt;/span>&lt;span class="p">[@]&lt;/span>&lt;span class="si">}&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> execute &lt;span class="s2">&amp;#34;/usr/bin/sudo&amp;#34;&lt;/span> &lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="si">${&lt;/span>&lt;span class="nv">args&lt;/span>&lt;span class="p">[@]&lt;/span>&lt;span class="si">}&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">else&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> ohai &lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="si">${&lt;/span>&lt;span class="nv">args&lt;/span>&lt;span class="p">[@]&lt;/span>&lt;span class="si">}&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> execute &lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="si">${&lt;/span>&lt;span class="nv">args&lt;/span>&lt;span class="p">[@]&lt;/span>&lt;span class="si">}&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">fi&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="o">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">getc&lt;span class="o">()&lt;/span> &lt;span class="o">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nb">local&lt;/span> save_state
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nv">save_state&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="k">$(&lt;/span>/bin/stty -g&lt;span class="k">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> /bin/stty raw -echo
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nv">IFS&lt;/span>&lt;span class="o">=&lt;/span> &lt;span class="nb">read&lt;/span> -r -n &lt;span class="m">1&lt;/span> -d &lt;span class="s1">&amp;#39;&amp;#39;&lt;/span> &lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="nv">$@&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> /bin/stty &lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="nv">$save_state&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="o">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">wait_for_user&lt;span class="o">()&lt;/span> &lt;span class="o">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nb">local&lt;/span> c
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nb">echo&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nb">echo&lt;/span> &lt;span class="s2">&amp;#34;Press RETURN to continue or any other key to abort&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> getc c
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="c1"># we test for \r and \n because some stuff does \r instead&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">if&lt;/span> ! &lt;span class="o">[[&lt;/span> &lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="nv">$c&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span> &lt;span class="o">==&lt;/span> &lt;span class="s1">$&amp;#39;\r&amp;#39;&lt;/span> &lt;span class="o">||&lt;/span> &lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="nv">$c&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span> &lt;span class="o">==&lt;/span> &lt;span class="s1">$&amp;#39;\n&amp;#39;&lt;/span> &lt;span class="o">]]&lt;/span>&lt;span class="p">;&lt;/span> &lt;span class="k">then&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nb">exit&lt;/span> &lt;span class="m">1&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">fi&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="o">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">major_minor&lt;span class="o">()&lt;/span> &lt;span class="o">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nb">echo&lt;/span> &lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="si">${&lt;/span>&lt;span class="nv">1&lt;/span>&lt;span class="p">%%.*&lt;/span>&lt;span class="si">}&lt;/span>&lt;span class="s2">.&lt;/span>&lt;span class="k">$(&lt;/span>&lt;span class="nv">x&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="si">${&lt;/span>&lt;span class="nv">1&lt;/span>&lt;span class="p">#*.&lt;/span>&lt;span class="si">}&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="p">;&lt;/span> &lt;span class="nb">echo&lt;/span> &lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="si">${&lt;/span>&lt;span class="nv">x&lt;/span>&lt;span class="p">%%.*&lt;/span>&lt;span class="si">}&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="k">)&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="o">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="k">if&lt;/span> &lt;span class="o">[[&lt;/span> -z &lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="si">${&lt;/span>&lt;span class="nv">HOMEBREW_ON_LINUX&lt;/span>&lt;span class="p">-&lt;/span>&lt;span class="si">}&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span> &lt;span class="o">]]&lt;/span>&lt;span class="p">;&lt;/span> &lt;span class="k">then&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nv">macos_version&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="k">$(&lt;/span>major_minor &lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="k">$(&lt;/span>/usr/bin/sw_vers -productVersion&lt;span class="k">)&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="k">)&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="k">fi&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">version_gt&lt;span class="o">()&lt;/span> &lt;span class="o">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="o">[[&lt;/span> &lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="si">${&lt;/span>&lt;span class="nv">1&lt;/span>&lt;span class="p">%.*&lt;/span>&lt;span class="si">}&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span> -gt &lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="si">${&lt;/span>&lt;span class="nv">2&lt;/span>&lt;span class="p">%.*&lt;/span>&lt;span class="si">}&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span> &lt;span class="o">]]&lt;/span> &lt;span class="o">||&lt;/span> &lt;span class="o">[[&lt;/span> &lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="si">${&lt;/span>&lt;span class="nv">1&lt;/span>&lt;span class="p">%.*&lt;/span>&lt;span class="si">}&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span> -eq &lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="si">${&lt;/span>&lt;span class="nv">2&lt;/span>&lt;span class="p">%.*&lt;/span>&lt;span class="si">}&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span> &lt;span class="o">&amp;amp;&amp;amp;&lt;/span> &lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="si">${&lt;/span>&lt;span class="nv">1&lt;/span>&lt;span class="p">#*.&lt;/span>&lt;span class="si">}&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span> -gt &lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="si">${&lt;/span>&lt;span class="nv">2&lt;/span>&lt;span class="p">#*.&lt;/span>&lt;span class="si">}&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span> &lt;span class="o">]]&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="o">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">version_ge&lt;span class="o">()&lt;/span> &lt;span class="o">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="o">[[&lt;/span> &lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="si">${&lt;/span>&lt;span class="nv">1&lt;/span>&lt;span class="p">%.*&lt;/span>&lt;span class="si">}&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span> -gt &lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="si">${&lt;/span>&lt;span class="nv">2&lt;/span>&lt;span class="p">%.*&lt;/span>&lt;span class="si">}&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span> &lt;span class="o">]]&lt;/span> &lt;span class="o">||&lt;/span> &lt;span class="o">[[&lt;/span> &lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="si">${&lt;/span>&lt;span class="nv">1&lt;/span>&lt;span class="p">%.*&lt;/span>&lt;span class="si">}&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span> -eq &lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="si">${&lt;/span>&lt;span class="nv">2&lt;/span>&lt;span class="p">%.*&lt;/span>&lt;span class="si">}&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span> &lt;span class="o">&amp;amp;&amp;amp;&lt;/span> &lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="si">${&lt;/span>&lt;span class="nv">1&lt;/span>&lt;span class="p">#*.&lt;/span>&lt;span class="si">}&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span> -ge &lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="si">${&lt;/span>&lt;span class="nv">2&lt;/span>&lt;span class="p">#*.&lt;/span>&lt;span class="si">}&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span> &lt;span class="o">]]&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="o">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">version_lt&lt;span class="o">()&lt;/span> &lt;span class="o">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="o">[[&lt;/span> &lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="si">${&lt;/span>&lt;span class="nv">1&lt;/span>&lt;span class="p">%.*&lt;/span>&lt;span class="si">}&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span> -lt &lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="si">${&lt;/span>&lt;span class="nv">2&lt;/span>&lt;span class="p">%.*&lt;/span>&lt;span class="si">}&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span> &lt;span class="o">]]&lt;/span> &lt;span class="o">||&lt;/span> &lt;span class="o">[[&lt;/span> &lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="si">${&lt;/span>&lt;span class="nv">1&lt;/span>&lt;span class="p">%.*&lt;/span>&lt;span class="si">}&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span> -eq &lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="si">${&lt;/span>&lt;span class="nv">2&lt;/span>&lt;span class="p">%.*&lt;/span>&lt;span class="si">}&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span> &lt;span class="o">&amp;amp;&amp;amp;&lt;/span> &lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="si">${&lt;/span>&lt;span class="nv">1&lt;/span>&lt;span class="p">#*.&lt;/span>&lt;span class="si">}&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span> -lt &lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="si">${&lt;/span>&lt;span class="nv">2&lt;/span>&lt;span class="p">#*.&lt;/span>&lt;span class="si">}&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span> &lt;span class="o">]]&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="o">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">should_install_git&lt;span class="o">()&lt;/span> &lt;span class="o">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">if&lt;/span> &lt;span class="o">[[&lt;/span> &lt;span class="k">$(&lt;/span>&lt;span class="nb">command&lt;/span> -v git&lt;span class="k">)&lt;/span> &lt;span class="o">]]&lt;/span>&lt;span class="p">;&lt;/span> &lt;span class="k">then&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">return&lt;/span> &lt;span class="m">1&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">fi&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="o">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">should_install_command_line_tools&lt;span class="o">()&lt;/span> &lt;span class="o">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">if&lt;/span> &lt;span class="o">[[&lt;/span> -n &lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="si">${&lt;/span>&lt;span class="nv">HOMEBREW_ON_LINUX&lt;/span>&lt;span class="p">-&lt;/span>&lt;span class="si">}&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span> &lt;span class="o">]]&lt;/span>&lt;span class="p">;&lt;/span> &lt;span class="k">then&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">return&lt;/span> &lt;span class="m">1&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">fi&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">if&lt;/span> version_gt &lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="nv">$macos_version&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span> &lt;span class="s2">&amp;#34;10.13&amp;#34;&lt;/span>&lt;span class="p">;&lt;/span> &lt;span class="k">then&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> ! &lt;span class="o">[[&lt;/span> -e &lt;span class="s2">&amp;#34;/Library/Developer/CommandLineTools/usr/bin/git&amp;#34;&lt;/span> &lt;span class="o">]]&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">else&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> ! &lt;span class="o">[[&lt;/span> -e &lt;span class="s2">&amp;#34;/Library/Developer/CommandLineTools/usr/bin/git&amp;#34;&lt;/span> &lt;span class="o">]]&lt;/span> &lt;span class="o">||&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> ! &lt;span class="o">[[&lt;/span> -e &lt;span class="s2">&amp;#34;/usr/include/iconv.h&amp;#34;&lt;/span> &lt;span class="o">]]&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">fi&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="o">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">get_permission&lt;span class="o">()&lt;/span> &lt;span class="o">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nv">$STAT&lt;/span> &lt;span class="s2">&amp;#34;%A&amp;#34;&lt;/span> &lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="nv">$1&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="o">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">user_only_chmod&lt;span class="o">()&lt;/span> &lt;span class="o">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="o">[[&lt;/span> -d &lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="nv">$1&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span> &lt;span class="o">]]&lt;/span> &lt;span class="o">&amp;amp;&amp;amp;&lt;/span> &lt;span class="o">[[&lt;/span> &lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="k">$(&lt;/span>get_permission &lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="nv">$1&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="k">)&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span> !&lt;span class="o">=&lt;/span> &lt;span class="s2">&amp;#34;755&amp;#34;&lt;/span> &lt;span class="o">]]&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="o">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">exists_but_not_writable&lt;span class="o">()&lt;/span> &lt;span class="o">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="o">[[&lt;/span> -e &lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="nv">$1&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span> &lt;span class="o">]]&lt;/span> &lt;span class="o">&amp;amp;&amp;amp;&lt;/span> ! &lt;span class="o">[[&lt;/span> -r &lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="nv">$1&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span> &lt;span class="o">&amp;amp;&amp;amp;&lt;/span> -w &lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="nv">$1&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span> &lt;span class="o">&amp;amp;&amp;amp;&lt;/span> -x &lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="nv">$1&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span> &lt;span class="o">]]&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="o">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">get_owner&lt;span class="o">()&lt;/span> &lt;span class="o">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nv">$STAT&lt;/span> &lt;span class="s2">&amp;#34;%u&amp;#34;&lt;/span> &lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="nv">$1&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="o">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">file_not_owned&lt;span class="o">()&lt;/span> &lt;span class="o">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="o">[[&lt;/span> &lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="k">$(&lt;/span>get_owner &lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="nv">$1&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="k">)&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span> !&lt;span class="o">=&lt;/span> &lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="k">$(&lt;/span>id -u&lt;span class="k">)&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span> &lt;span class="o">]]&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="o">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">get_group&lt;span class="o">()&lt;/span> &lt;span class="o">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nv">$STAT&lt;/span> &lt;span class="s2">&amp;#34;%g&amp;#34;&lt;/span> &lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="nv">$1&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="o">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">file_not_grpowned&lt;span class="o">()&lt;/span> &lt;span class="o">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="o">[[&lt;/span> &lt;span class="s2">&amp;#34; &lt;/span>&lt;span class="k">$(&lt;/span>id -G &lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="nv">$USER&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="k">)&lt;/span>&lt;span class="s2"> &amp;#34;&lt;/span> !&lt;span class="o">=&lt;/span> *&lt;span class="s2">&amp;#34; &lt;/span>&lt;span class="k">$(&lt;/span>get_group &lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="nv">$1&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="k">)&lt;/span>&lt;span class="s2"> &amp;#34;&lt;/span>* &lt;span class="o">]]&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="o">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1"># USER isn&amp;#39;t always set so provide a fall back for the installer and subprocesses.&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="k">if&lt;/span> &lt;span class="o">[[&lt;/span> -z &lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="si">${&lt;/span>&lt;span class="nv">USER&lt;/span>&lt;span class="p">-&lt;/span>&lt;span class="si">}&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span> &lt;span class="o">]]&lt;/span>&lt;span class="p">;&lt;/span> &lt;span class="k">then&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nv">USER&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="k">$(&lt;/span>chomp &lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="k">$(&lt;/span>id -un&lt;span class="k">)&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="k">)&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nb">export&lt;/span> USER
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="k">fi&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1"># Invalidate sudo timestamp before exiting (if it wasn&amp;#39;t active before).&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="k">if&lt;/span> ! /usr/bin/sudo -n -v 2&amp;gt;/dev/null&lt;span class="p">;&lt;/span> &lt;span class="k">then&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nb">trap&lt;/span> &lt;span class="s1">&amp;#39;/usr/bin/sudo -k&amp;#39;&lt;/span> EXIT
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="k">fi&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1"># Things can fail later if `pwd` doesn&amp;#39;t exist.&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1"># Also sudo prints a warning message for no good reason&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nb">cd&lt;/span> &lt;span class="s2">&amp;#34;/usr&amp;#34;&lt;/span> &lt;span class="o">||&lt;/span> &lt;span class="nb">exit&lt;/span> &lt;span class="m">1&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">####################################################################### script&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="k">if&lt;/span> should_install_git&lt;span class="p">;&lt;/span> &lt;span class="k">then&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> abort &lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="k">$(&lt;/span>cat &lt;span class="s">&amp;lt;&amp;lt;EOABORT
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="s">You must install Git before installing Homebrew. See:
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="s"> ${tty_underline}https://docs.brew.sh/Installation${tty_reset}
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="s">EOABORT&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="k">)&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="k">fi&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="k">if&lt;/span> &lt;span class="o">[[&lt;/span> -n &lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="si">${&lt;/span>&lt;span class="nv">HOMEBREW_ON_LINUX&lt;/span>&lt;span class="p">-&lt;/span>&lt;span class="si">}&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span> &lt;span class="o">]]&lt;/span>&lt;span class="p">;&lt;/span> &lt;span class="k">then&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">if&lt;/span> &lt;span class="o">[[&lt;/span> -n &lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="si">${&lt;/span>&lt;span class="nv">CI&lt;/span>&lt;span class="p">-&lt;/span>&lt;span class="si">}&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span> &lt;span class="o">]]&lt;/span> &lt;span class="o">||&lt;/span> &lt;span class="o">[[&lt;/span> -w &lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="nv">$HOMEBREW_PREFIX_DEFAULT&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span> &lt;span class="o">]]&lt;/span> &lt;span class="o">||&lt;/span> &lt;span class="o">[[&lt;/span> -w &lt;span class="s2">&amp;#34;/home/linuxbrew&amp;#34;&lt;/span> &lt;span class="o">]]&lt;/span> &lt;span class="o">||&lt;/span> &lt;span class="o">[[&lt;/span> -w &lt;span class="s2">&amp;#34;/home&amp;#34;&lt;/span> &lt;span class="o">]]&lt;/span>&lt;span class="p">;&lt;/span> &lt;span class="k">then&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nv">HOMEBREW_PREFIX&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="nv">$HOMEBREW_PREFIX_DEFAULT&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">else&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nb">trap&lt;/span> &lt;span class="nb">exit&lt;/span> SIGINT
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nv">sudo_output&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="k">$(&lt;/span>/usr/bin/sudo -n -l mkdir 2&amp;gt;&lt;span class="p">&amp;amp;&lt;/span>1&lt;span class="k">)&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nv">sudo_exit_code&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="nv">$?&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">if&lt;/span> &lt;span class="o">[[&lt;/span> &lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="nv">$sudo_exit_code&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span> -ne &lt;span class="m">0&lt;/span> &lt;span class="o">]]&lt;/span> &lt;span class="o">&amp;amp;&amp;amp;&lt;/span> &lt;span class="o">[[&lt;/span> &lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="nv">$sudo_output&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="s2">&amp;#34;sudo: a password is required&amp;#34;&lt;/span> &lt;span class="o">]]&lt;/span>&lt;span class="p">;&lt;/span> &lt;span class="k">then&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> ohai &lt;span class="s2">&amp;#34;Select the Homebrew installation directory&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nb">echo&lt;/span> &lt;span class="s2">&amp;#34;- &lt;/span>&lt;span class="si">${&lt;/span>&lt;span class="nv">tty_bold&lt;/span>&lt;span class="si">}&lt;/span>&lt;span class="s2">Enter your password&lt;/span>&lt;span class="si">${&lt;/span>&lt;span class="nv">tty_reset&lt;/span>&lt;span class="si">}&lt;/span>&lt;span class="s2"> to install to &lt;/span>&lt;span class="si">${&lt;/span>&lt;span class="nv">tty_underline&lt;/span>&lt;span class="si">}${&lt;/span>&lt;span class="nv">HOMEBREW_PREFIX_DEFAULT&lt;/span>&lt;span class="si">}${&lt;/span>&lt;span class="nv">tty_reset&lt;/span>&lt;span class="si">}&lt;/span>&lt;span class="s2"> (&lt;/span>&lt;span class="si">${&lt;/span>&lt;span class="nv">tty_bold&lt;/span>&lt;span class="si">}&lt;/span>&lt;span class="s2">recommended&lt;/span>&lt;span class="si">${&lt;/span>&lt;span class="nv">tty_reset&lt;/span>&lt;span class="si">}&lt;/span>&lt;span class="s2">)&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nb">echo&lt;/span> &lt;span class="s2">&amp;#34;- &lt;/span>&lt;span class="si">${&lt;/span>&lt;span class="nv">tty_bold&lt;/span>&lt;span class="si">}&lt;/span>&lt;span class="s2">Press Control-D&lt;/span>&lt;span class="si">${&lt;/span>&lt;span class="nv">tty_reset&lt;/span>&lt;span class="si">}&lt;/span>&lt;span class="s2"> to install to &lt;/span>&lt;span class="si">${&lt;/span>&lt;span class="nv">tty_underline&lt;/span>&lt;span class="si">}&lt;/span>&lt;span class="nv">$HOME&lt;/span>&lt;span class="s2">/.linuxbrew&lt;/span>&lt;span class="si">${&lt;/span>&lt;span class="nv">tty_reset&lt;/span>&lt;span class="si">}&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nb">echo&lt;/span> &lt;span class="s2">&amp;#34;- &lt;/span>&lt;span class="si">${&lt;/span>&lt;span class="nv">tty_bold&lt;/span>&lt;span class="si">}&lt;/span>&lt;span class="s2">Press Control-C&lt;/span>&lt;span class="si">${&lt;/span>&lt;span class="nv">tty_reset&lt;/span>&lt;span class="si">}&lt;/span>&lt;span class="s2"> to cancel installation&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">fi&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">if&lt;/span> have_sudo_access&lt;span class="p">;&lt;/span> &lt;span class="k">then&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nv">HOMEBREW_PREFIX&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="nv">$HOMEBREW_PREFIX_DEFAULT&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">else&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nv">HOMEBREW_PREFIX&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="nv">$HOME&lt;/span>&lt;span class="s2">/.linuxbrew&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">fi&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nb">trap&lt;/span> - SIGINT
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">fi&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nv">HOMEBREW_REPOSITORY&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="si">${&lt;/span>&lt;span class="nv">HOMEBREW_PREFIX&lt;/span>&lt;span class="si">}&lt;/span>&lt;span class="s2">/Homebrew&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="k">fi&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="k">if&lt;/span> &lt;span class="o">[[&lt;/span> &lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="nv">$UID&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span> &lt;span class="o">==&lt;/span> &lt;span class="s2">&amp;#34;0&amp;#34;&lt;/span> &lt;span class="o">]]&lt;/span>&lt;span class="p">;&lt;/span> &lt;span class="k">then&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> abort &lt;span class="s2">&amp;#34;Don&amp;#39;t run this as root!&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="k">elif&lt;/span> &lt;span class="o">[[&lt;/span> -d &lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="nv">$HOMEBREW_PREFIX&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span> &lt;span class="o">&amp;amp;&amp;amp;&lt;/span> ! -x &lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="nv">$HOMEBREW_PREFIX&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span> &lt;span class="o">]]&lt;/span>&lt;span class="p">;&lt;/span> &lt;span class="k">then&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> abort &lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="k">$(&lt;/span>cat &lt;span class="s">&amp;lt;&amp;lt;EOABORT
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="s">The Homebrew prefix, ${HOMEBREW_PREFIX}, exists but is not searchable. If this is
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="s">not intentional, please restore the default permissions and try running the
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="s">installer again:
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="s"> sudo chmod 775 ${HOMEBREW_PREFIX}
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="s">EOABORT&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="k">)&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="k">fi&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="k">if&lt;/span> &lt;span class="o">[[&lt;/span> -z &lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="si">${&lt;/span>&lt;span class="nv">HOMEBREW_ON_LINUX&lt;/span>&lt;span class="p">-&lt;/span>&lt;span class="si">}&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span> &lt;span class="o">]]&lt;/span>&lt;span class="p">;&lt;/span> &lt;span class="k">then&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">if&lt;/span> version_lt &lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="nv">$macos_version&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span> &lt;span class="s2">&amp;#34;10.7&amp;#34;&lt;/span>&lt;span class="p">;&lt;/span> &lt;span class="k">then&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> abort &lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="k">$(&lt;/span>cat &lt;span class="s">&amp;lt;&amp;lt;EOABORT
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="s">Your Mac OS X version is too old. See:
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="s"> ${tty_underline}https://github.com/mistydemeo/tigerbrew${tty_reset}
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="s">EOABORT&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="k">)&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">elif&lt;/span> version_lt &lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="nv">$macos_version&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span> &lt;span class="s2">&amp;#34;10.9&amp;#34;&lt;/span>&lt;span class="p">;&lt;/span> &lt;span class="k">then&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> abort &lt;span class="s2">&amp;#34;Your OS X version is too old&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">elif&lt;/span> ! &lt;span class="o">[[&lt;/span> &lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="k">$(&lt;/span>dsmemberutil checkmembership -U &lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="nv">$USER&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span> -G &lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="nv">$GROUP&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="k">)&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span> &lt;span class="o">=&lt;/span> *&lt;span class="s2">&amp;#34;user is a member&amp;#34;&lt;/span>* &lt;span class="o">]]&lt;/span>&lt;span class="p">;&lt;/span> &lt;span class="k">then&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> abort &lt;span class="s2">&amp;#34;This script requires the user &lt;/span>&lt;span class="nv">$USER&lt;/span>&lt;span class="s2"> to be an Administrator.&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">elif&lt;/span> version_gt &lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="nv">$macos_version&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span> &lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="nv">$MACOS_LATEST_SUPPORTED&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span> &lt;span class="o">||&lt;/span> &lt;span class="se">\
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="se">&lt;/span> version_lt &lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="nv">$macos_version&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span> &lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="nv">$MACOS_OLDEST_SUPPORTED&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="p">;&lt;/span> &lt;span class="k">then&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nv">who&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="s2">&amp;#34;We&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nv">what&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="s2">&amp;#34;&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">if&lt;/span> version_gt &lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="nv">$macos_version&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span> &lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="nv">$MACOS_LATEST_SUPPORTED&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="p">;&lt;/span> &lt;span class="k">then&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nv">what&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="s2">&amp;#34;pre-release version&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">else&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nv">who&lt;/span>&lt;span class="o">+=&lt;/span>&lt;span class="s2">&amp;#34; (and Apple)&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nv">what&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="s2">&amp;#34;old version&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">fi&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> ohai &lt;span class="s2">&amp;#34;You are using macOS &lt;/span>&lt;span class="si">${&lt;/span>&lt;span class="nv">macos_version&lt;/span>&lt;span class="si">}&lt;/span>&lt;span class="s2">.&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> ohai &lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="si">${&lt;/span>&lt;span class="nv">who&lt;/span>&lt;span class="si">}&lt;/span>&lt;span class="s2"> do not provide support for this &lt;/span>&lt;span class="si">${&lt;/span>&lt;span class="nv">what&lt;/span>&lt;span class="si">}&lt;/span>&lt;span class="s2">.&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nb">echo&lt;/span> &lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="k">$(&lt;/span>cat &lt;span class="s">&amp;lt;&amp;lt;EOS
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="s">This installation may not succeed.
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="s">After installation, you will encounter build failures with some formulae.
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="s">Please create pull requests instead of asking for help on Homebrew\&amp;#39;s GitHub,
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="s">Discourse, Twitter or IRC. You are responsible for resolving any issues you
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="s">experience while you are running this ${what}.
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="s">EOS&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="k">)&lt;/span>&lt;span class="s2">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="s2">&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">fi&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="k">fi&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">ohai &lt;span class="s2">&amp;#34;This script will install:&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nb">echo&lt;/span> &lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="si">${&lt;/span>&lt;span class="nv">HOMEBREW_PREFIX&lt;/span>&lt;span class="si">}&lt;/span>&lt;span class="s2">/bin/brew&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nb">echo&lt;/span> &lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="si">${&lt;/span>&lt;span class="nv">HOMEBREW_PREFIX&lt;/span>&lt;span class="si">}&lt;/span>&lt;span class="s2">/share/doc/homebrew&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nb">echo&lt;/span> &lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="si">${&lt;/span>&lt;span class="nv">HOMEBREW_PREFIX&lt;/span>&lt;span class="si">}&lt;/span>&lt;span class="s2">/share/man/man1/brew.1&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nb">echo&lt;/span> &lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="si">${&lt;/span>&lt;span class="nv">HOMEBREW_PREFIX&lt;/span>&lt;span class="si">}&lt;/span>&lt;span class="s2">/share/zsh/site-functions/_brew&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nb">echo&lt;/span> &lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="si">${&lt;/span>&lt;span class="nv">HOMEBREW_PREFIX&lt;/span>&lt;span class="si">}&lt;/span>&lt;span class="s2">/etc/bash_completion.d/brew&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nb">echo&lt;/span> &lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="si">${&lt;/span>&lt;span class="nv">HOMEBREW_REPOSITORY&lt;/span>&lt;span class="si">}&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1"># Keep relatively in sync with&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1"># https://github.com/Homebrew/brew/blob/master/Library/Homebrew/keg.rb&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nv">directories&lt;/span>&lt;span class="o">=(&lt;/span>bin etc include lib sbin share opt var
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> Frameworks
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> etc/bash_completion.d lib/pkgconfig
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> share/aclocal share/doc share/info share/locale share/man
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> share/man/man1 share/man/man2 share/man/man3 share/man/man4
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> share/man/man5 share/man/man6 share/man/man7 share/man/man8
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> var/log var/homebrew var/homebrew/linked
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> bin/brew&lt;span class="o">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nv">group_chmods&lt;/span>&lt;span class="o">=()&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="k">for&lt;/span> dir in &lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="si">${&lt;/span>&lt;span class="nv">directories&lt;/span>&lt;span class="p">[@]&lt;/span>&lt;span class="si">}&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="p">;&lt;/span> &lt;span class="k">do&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">if&lt;/span> exists_but_not_writable &lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="si">${&lt;/span>&lt;span class="nv">HOMEBREW_PREFIX&lt;/span>&lt;span class="si">}&lt;/span>&lt;span class="s2">/&lt;/span>&lt;span class="si">${&lt;/span>&lt;span class="nv">dir&lt;/span>&lt;span class="si">}&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="p">;&lt;/span> &lt;span class="k">then&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nv">group_chmods&lt;/span>&lt;span class="o">+=(&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="si">${&lt;/span>&lt;span class="nv">HOMEBREW_PREFIX&lt;/span>&lt;span class="si">}&lt;/span>&lt;span class="s2">/&lt;/span>&lt;span class="si">${&lt;/span>&lt;span class="nv">dir&lt;/span>&lt;span class="si">}&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="o">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">fi&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="k">done&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1"># zsh refuses to read from these directories if group writable&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nv">directories&lt;/span>&lt;span class="o">=(&lt;/span>share/zsh share/zsh/site-functions&lt;span class="o">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nv">zsh_dirs&lt;/span>&lt;span class="o">=()&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="k">for&lt;/span> dir in &lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="si">${&lt;/span>&lt;span class="nv">directories&lt;/span>&lt;span class="p">[@]&lt;/span>&lt;span class="si">}&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="p">;&lt;/span> &lt;span class="k">do&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nv">zsh_dirs&lt;/span>&lt;span class="o">+=(&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="si">${&lt;/span>&lt;span class="nv">HOMEBREW_PREFIX&lt;/span>&lt;span class="si">}&lt;/span>&lt;span class="s2">/&lt;/span>&lt;span class="si">${&lt;/span>&lt;span class="nv">dir&lt;/span>&lt;span class="si">}&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="o">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="k">done&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nv">directories&lt;/span>&lt;span class="o">=(&lt;/span>bin etc include lib sbin share var opt
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> share/zsh share/zsh/site-functions
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> var/homebrew var/homebrew/linked
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> Cellar Caskroom Homebrew Frameworks&lt;span class="o">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nv">mkdirs&lt;/span>&lt;span class="o">=()&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="k">for&lt;/span> dir in &lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="si">${&lt;/span>&lt;span class="nv">directories&lt;/span>&lt;span class="p">[@]&lt;/span>&lt;span class="si">}&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="p">;&lt;/span> &lt;span class="k">do&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">if&lt;/span> ! &lt;span class="o">[[&lt;/span> -d &lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="si">${&lt;/span>&lt;span class="nv">HOMEBREW_PREFIX&lt;/span>&lt;span class="si">}&lt;/span>&lt;span class="s2">/&lt;/span>&lt;span class="si">${&lt;/span>&lt;span class="nv">dir&lt;/span>&lt;span class="si">}&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span> &lt;span class="o">]]&lt;/span>&lt;span class="p">;&lt;/span> &lt;span class="k">then&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nv">mkdirs&lt;/span>&lt;span class="o">+=(&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="si">${&lt;/span>&lt;span class="nv">HOMEBREW_PREFIX&lt;/span>&lt;span class="si">}&lt;/span>&lt;span class="s2">/&lt;/span>&lt;span class="si">${&lt;/span>&lt;span class="nv">dir&lt;/span>&lt;span class="si">}&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="o">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">fi&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="k">done&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nv">user_chmods&lt;/span>&lt;span class="o">=()&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="k">if&lt;/span> &lt;span class="o">[[&lt;/span> &lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="si">${#&lt;/span>&lt;span class="nv">zsh_dirs&lt;/span>&lt;span class="p">[@]&lt;/span>&lt;span class="si">}&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span> -gt &lt;span class="m">0&lt;/span> &lt;span class="o">]]&lt;/span>&lt;span class="p">;&lt;/span> &lt;span class="k">then&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">for&lt;/span> dir in &lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="si">${&lt;/span>&lt;span class="nv">zsh_dirs&lt;/span>&lt;span class="p">[@]&lt;/span>&lt;span class="si">}&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="p">;&lt;/span> &lt;span class="k">do&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">if&lt;/span> user_only_chmod &lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="si">${&lt;/span>&lt;span class="nv">dir&lt;/span>&lt;span class="si">}&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="p">;&lt;/span> &lt;span class="k">then&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nv">user_chmods&lt;/span>&lt;span class="o">+=(&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="si">${&lt;/span>&lt;span class="nv">dir&lt;/span>&lt;span class="si">}&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="o">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">fi&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">done&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="k">fi&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nv">chmods&lt;/span>&lt;span class="o">=()&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="k">if&lt;/span> &lt;span class="o">[[&lt;/span> &lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="si">${#&lt;/span>&lt;span class="nv">group_chmods&lt;/span>&lt;span class="p">[@]&lt;/span>&lt;span class="si">}&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span> -gt &lt;span class="m">0&lt;/span> &lt;span class="o">]]&lt;/span>&lt;span class="p">;&lt;/span> &lt;span class="k">then&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nv">chmods&lt;/span>&lt;span class="o">+=(&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="si">${&lt;/span>&lt;span class="nv">group_chmods&lt;/span>&lt;span class="p">[@]&lt;/span>&lt;span class="si">}&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="o">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="k">fi&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="k">if&lt;/span> &lt;span class="o">[[&lt;/span> &lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="si">${#&lt;/span>&lt;span class="nv">user_chmods&lt;/span>&lt;span class="p">[@]&lt;/span>&lt;span class="si">}&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span> -gt &lt;span class="m">0&lt;/span> &lt;span class="o">]]&lt;/span>&lt;span class="p">;&lt;/span> &lt;span class="k">then&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nv">chmods&lt;/span>&lt;span class="o">+=(&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="si">${&lt;/span>&lt;span class="nv">user_chmods&lt;/span>&lt;span class="p">[@]&lt;/span>&lt;span class="si">}&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="o">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="k">fi&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nv">chowns&lt;/span>&lt;span class="o">=()&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nv">chgrps&lt;/span>&lt;span class="o">=()&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="k">if&lt;/span> &lt;span class="o">[[&lt;/span> &lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="si">${#&lt;/span>&lt;span class="nv">chmods&lt;/span>&lt;span class="p">[@]&lt;/span>&lt;span class="si">}&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span> -gt &lt;span class="m">0&lt;/span> &lt;span class="o">]]&lt;/span>&lt;span class="p">;&lt;/span> &lt;span class="k">then&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">for&lt;/span> dir in &lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="si">${&lt;/span>&lt;span class="nv">chmods&lt;/span>&lt;span class="p">[@]&lt;/span>&lt;span class="si">}&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="p">;&lt;/span> &lt;span class="k">do&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">if&lt;/span> file_not_owned &lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="si">${&lt;/span>&lt;span class="nv">dir&lt;/span>&lt;span class="si">}&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="p">;&lt;/span> &lt;span class="k">then&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nv">chowns&lt;/span>&lt;span class="o">+=(&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="si">${&lt;/span>&lt;span class="nv">dir&lt;/span>&lt;span class="si">}&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="o">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">fi&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">if&lt;/span> file_not_grpowned &lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="si">${&lt;/span>&lt;span class="nv">dir&lt;/span>&lt;span class="si">}&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="p">;&lt;/span> &lt;span class="k">then&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nv">chgrps&lt;/span>&lt;span class="o">+=(&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="si">${&lt;/span>&lt;span class="nv">dir&lt;/span>&lt;span class="si">}&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="o">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">fi&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">done&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="k">fi&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="k">if&lt;/span> &lt;span class="o">[[&lt;/span> &lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="si">${#&lt;/span>&lt;span class="nv">group_chmods&lt;/span>&lt;span class="p">[@]&lt;/span>&lt;span class="si">}&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span> -gt &lt;span class="m">0&lt;/span> &lt;span class="o">]]&lt;/span>&lt;span class="p">;&lt;/span> &lt;span class="k">then&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> ohai &lt;span class="s2">&amp;#34;The following existing directories will be made group writable:&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nb">printf&lt;/span> &lt;span class="s2">&amp;#34;%s\n&amp;#34;&lt;/span> &lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="si">${&lt;/span>&lt;span class="nv">group_chmods&lt;/span>&lt;span class="p">[@]&lt;/span>&lt;span class="si">}&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="k">fi&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="k">if&lt;/span> &lt;span class="o">[[&lt;/span> &lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="si">${#&lt;/span>&lt;span class="nv">user_chmods&lt;/span>&lt;span class="p">[@]&lt;/span>&lt;span class="si">}&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span> -gt &lt;span class="m">0&lt;/span> &lt;span class="o">]]&lt;/span>&lt;span class="p">;&lt;/span> &lt;span class="k">then&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> ohai &lt;span class="s2">&amp;#34;The following existing directories will be made writable by user only:&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nb">printf&lt;/span> &lt;span class="s2">&amp;#34;%s\n&amp;#34;&lt;/span> &lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="si">${&lt;/span>&lt;span class="nv">user_chmods&lt;/span>&lt;span class="p">[@]&lt;/span>&lt;span class="si">}&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="k">fi&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="k">if&lt;/span> &lt;span class="o">[[&lt;/span> &lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="si">${#&lt;/span>&lt;span class="nv">chowns&lt;/span>&lt;span class="p">[@]&lt;/span>&lt;span class="si">}&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span> -gt &lt;span class="m">0&lt;/span> &lt;span class="o">]]&lt;/span>&lt;span class="p">;&lt;/span> &lt;span class="k">then&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> ohai &lt;span class="s2">&amp;#34;The following existing directories will have their owner set to &lt;/span>&lt;span class="si">${&lt;/span>&lt;span class="nv">tty_underline&lt;/span>&lt;span class="si">}${&lt;/span>&lt;span class="nv">USER&lt;/span>&lt;span class="si">}${&lt;/span>&lt;span class="nv">tty_reset&lt;/span>&lt;span class="si">}&lt;/span>&lt;span class="s2">:&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nb">printf&lt;/span> &lt;span class="s2">&amp;#34;%s\n&amp;#34;&lt;/span> &lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="si">${&lt;/span>&lt;span class="nv">chowns&lt;/span>&lt;span class="p">[@]&lt;/span>&lt;span class="si">}&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="k">fi&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="k">if&lt;/span> &lt;span class="o">[[&lt;/span> &lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="si">${#&lt;/span>&lt;span class="nv">chgrps&lt;/span>&lt;span class="p">[@]&lt;/span>&lt;span class="si">}&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span> -gt &lt;span class="m">0&lt;/span> &lt;span class="o">]]&lt;/span>&lt;span class="p">;&lt;/span> &lt;span class="k">then&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> ohai &lt;span class="s2">&amp;#34;The following existing directories will have their group set to &lt;/span>&lt;span class="si">${&lt;/span>&lt;span class="nv">tty_underline&lt;/span>&lt;span class="si">}${&lt;/span>&lt;span class="nv">GROUP&lt;/span>&lt;span class="si">}${&lt;/span>&lt;span class="nv">tty_reset&lt;/span>&lt;span class="si">}&lt;/span>&lt;span class="s2">:&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nb">printf&lt;/span> &lt;span class="s2">&amp;#34;%s\n&amp;#34;&lt;/span> &lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="si">${&lt;/span>&lt;span class="nv">chgrps&lt;/span>&lt;span class="p">[@]&lt;/span>&lt;span class="si">}&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="k">fi&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="k">if&lt;/span> &lt;span class="o">[[&lt;/span> &lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="si">${#&lt;/span>&lt;span class="nv">mkdirs&lt;/span>&lt;span class="p">[@]&lt;/span>&lt;span class="si">}&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span> -gt &lt;span class="m">0&lt;/span> &lt;span class="o">]]&lt;/span>&lt;span class="p">;&lt;/span> &lt;span class="k">then&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> ohai &lt;span class="s2">&amp;#34;The following new directories will be created:&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nb">printf&lt;/span> &lt;span class="s2">&amp;#34;%s\n&amp;#34;&lt;/span> &lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="si">${&lt;/span>&lt;span class="nv">mkdirs&lt;/span>&lt;span class="p">[@]&lt;/span>&lt;span class="si">}&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="k">fi&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="k">if&lt;/span> should_install_command_line_tools&lt;span class="p">;&lt;/span> &lt;span class="k">then&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> ohai &lt;span class="s2">&amp;#34;The Xcode Command Line Tools will be installed.&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="k">fi&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="k">if&lt;/span> &lt;span class="o">[[&lt;/span> -t &lt;span class="m">0&lt;/span> &lt;span class="o">&amp;amp;&amp;amp;&lt;/span> -z &lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="si">${&lt;/span>&lt;span class="nv">CI&lt;/span>&lt;span class="p">-&lt;/span>&lt;span class="si">}&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span> &lt;span class="o">]]&lt;/span>&lt;span class="p">;&lt;/span> &lt;span class="k">then&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> wait_for_user
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="k">fi&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="k">if&lt;/span> &lt;span class="o">[[&lt;/span> -d &lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="si">${&lt;/span>&lt;span class="nv">HOMEBREW_PREFIX&lt;/span>&lt;span class="si">}&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span> &lt;span class="o">]]&lt;/span>&lt;span class="p">;&lt;/span> &lt;span class="k">then&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">if&lt;/span> &lt;span class="o">[[&lt;/span> &lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="si">${#&lt;/span>&lt;span class="nv">chmods&lt;/span>&lt;span class="p">[@]&lt;/span>&lt;span class="si">}&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span> -gt &lt;span class="m">0&lt;/span> &lt;span class="o">]]&lt;/span>&lt;span class="p">;&lt;/span> &lt;span class="k">then&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> execute_sudo &lt;span class="s2">&amp;#34;/bin/chmod&amp;#34;&lt;/span> &lt;span class="s2">&amp;#34;u+rwx&amp;#34;&lt;/span> &lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="si">${&lt;/span>&lt;span class="nv">chmods&lt;/span>&lt;span class="p">[@]&lt;/span>&lt;span class="si">}&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">fi&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">if&lt;/span> &lt;span class="o">[[&lt;/span> &lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="si">${#&lt;/span>&lt;span class="nv">group_chmods&lt;/span>&lt;span class="p">[@]&lt;/span>&lt;span class="si">}&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span> -gt &lt;span class="m">0&lt;/span> &lt;span class="o">]]&lt;/span>&lt;span class="p">;&lt;/span> &lt;span class="k">then&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> execute_sudo &lt;span class="s2">&amp;#34;/bin/chmod&amp;#34;&lt;/span> &lt;span class="s2">&amp;#34;g+rwx&amp;#34;&lt;/span> &lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="si">${&lt;/span>&lt;span class="nv">group_chmods&lt;/span>&lt;span class="p">[@]&lt;/span>&lt;span class="si">}&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">fi&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">if&lt;/span> &lt;span class="o">[[&lt;/span> &lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="si">${#&lt;/span>&lt;span class="nv">user_chmods&lt;/span>&lt;span class="p">[@]&lt;/span>&lt;span class="si">}&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span> -gt &lt;span class="m">0&lt;/span> &lt;span class="o">]]&lt;/span>&lt;span class="p">;&lt;/span> &lt;span class="k">then&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> execute_sudo &lt;span class="s2">&amp;#34;/bin/chmod&amp;#34;&lt;/span> &lt;span class="s2">&amp;#34;755&amp;#34;&lt;/span> &lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="si">${&lt;/span>&lt;span class="nv">user_chmods&lt;/span>&lt;span class="p">[@]&lt;/span>&lt;span class="si">}&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">fi&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">if&lt;/span> &lt;span class="o">[[&lt;/span> &lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="si">${#&lt;/span>&lt;span class="nv">chowns&lt;/span>&lt;span class="p">[@]&lt;/span>&lt;span class="si">}&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span> -gt &lt;span class="m">0&lt;/span> &lt;span class="o">]]&lt;/span>&lt;span class="p">;&lt;/span> &lt;span class="k">then&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> execute_sudo &lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="nv">$CHOWN&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span> &lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="nv">$USER&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span> &lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="si">${&lt;/span>&lt;span class="nv">chowns&lt;/span>&lt;span class="p">[@]&lt;/span>&lt;span class="si">}&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">fi&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">if&lt;/span> &lt;span class="o">[[&lt;/span> &lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="si">${#&lt;/span>&lt;span class="nv">chgrps&lt;/span>&lt;span class="p">[@]&lt;/span>&lt;span class="si">}&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span> -gt &lt;span class="m">0&lt;/span> &lt;span class="o">]]&lt;/span>&lt;span class="p">;&lt;/span> &lt;span class="k">then&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> execute_sudo &lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="nv">$CHGRP&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span> &lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="nv">$GROUP&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span> &lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="si">${&lt;/span>&lt;span class="nv">chgrps&lt;/span>&lt;span class="p">[@]&lt;/span>&lt;span class="si">}&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">fi&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="k">else&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> execute_sudo &lt;span class="s2">&amp;#34;/bin/mkdir&amp;#34;&lt;/span> &lt;span class="s2">&amp;#34;-p&amp;#34;&lt;/span> &lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="si">${&lt;/span>&lt;span class="nv">HOMEBREW_PREFIX&lt;/span>&lt;span class="si">}&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">if&lt;/span> &lt;span class="o">[[&lt;/span> -z &lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="si">${&lt;/span>&lt;span class="nv">HOMEBREW_ON_LINUX&lt;/span>&lt;span class="p">-&lt;/span>&lt;span class="si">}&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span> &lt;span class="o">]]&lt;/span>&lt;span class="p">;&lt;/span> &lt;span class="k">then&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> execute_sudo &lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="nv">$CHOWN&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span> &lt;span class="s2">&amp;#34;root:wheel&amp;#34;&lt;/span> &lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="si">${&lt;/span>&lt;span class="nv">HOMEBREW_PREFIX&lt;/span>&lt;span class="si">}&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">else&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> execute_sudo &lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="nv">$CHOWN&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span> &lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="nv">$USER&lt;/span>&lt;span class="s2">:&lt;/span>&lt;span class="nv">$GROUP&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span> &lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="si">${&lt;/span>&lt;span class="nv">HOMEBREW_PREFIX&lt;/span>&lt;span class="si">}&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">fi&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="k">fi&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="k">if&lt;/span> &lt;span class="o">[[&lt;/span> &lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="si">${#&lt;/span>&lt;span class="nv">mkdirs&lt;/span>&lt;span class="p">[@]&lt;/span>&lt;span class="si">}&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span> -gt &lt;span class="m">0&lt;/span> &lt;span class="o">]]&lt;/span>&lt;span class="p">;&lt;/span> &lt;span class="k">then&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> execute_sudo &lt;span class="s2">&amp;#34;/bin/mkdir&amp;#34;&lt;/span> &lt;span class="s2">&amp;#34;-p&amp;#34;&lt;/span> &lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="si">${&lt;/span>&lt;span class="nv">mkdirs&lt;/span>&lt;span class="p">[@]&lt;/span>&lt;span class="si">}&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> execute_sudo &lt;span class="s2">&amp;#34;/bin/chmod&amp;#34;&lt;/span> &lt;span class="s2">&amp;#34;g+rwx&amp;#34;&lt;/span> &lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="si">${&lt;/span>&lt;span class="nv">mkdirs&lt;/span>&lt;span class="p">[@]&lt;/span>&lt;span class="si">}&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> execute_sudo &lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="nv">$CHOWN&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span> &lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="nv">$USER&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span> &lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="si">${&lt;/span>&lt;span class="nv">mkdirs&lt;/span>&lt;span class="p">[@]&lt;/span>&lt;span class="si">}&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> execute_sudo &lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="nv">$CHGRP&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span> &lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="nv">$GROUP&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span> &lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="si">${&lt;/span>&lt;span class="nv">mkdirs&lt;/span>&lt;span class="p">[@]&lt;/span>&lt;span class="si">}&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="k">fi&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="k">if&lt;/span> ! &lt;span class="o">[[&lt;/span> -d &lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="si">${&lt;/span>&lt;span class="nv">HOMEBREW_CACHE&lt;/span>&lt;span class="si">}&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span> &lt;span class="o">]]&lt;/span>&lt;span class="p">;&lt;/span> &lt;span class="k">then&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">if&lt;/span> &lt;span class="o">[[&lt;/span> -z &lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="si">${&lt;/span>&lt;span class="nv">HOMEBREW_ON_LINUX&lt;/span>&lt;span class="p">-&lt;/span>&lt;span class="si">}&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span> &lt;span class="o">]]&lt;/span>&lt;span class="p">;&lt;/span> &lt;span class="k">then&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> execute_sudo &lt;span class="s2">&amp;#34;/bin/mkdir&amp;#34;&lt;/span> &lt;span class="s2">&amp;#34;-p&amp;#34;&lt;/span> &lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="si">${&lt;/span>&lt;span class="nv">HOMEBREW_CACHE&lt;/span>&lt;span class="si">}&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">else&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> execute &lt;span class="s2">&amp;#34;/bin/mkdir&amp;#34;&lt;/span> &lt;span class="s2">&amp;#34;-p&amp;#34;&lt;/span> &lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="si">${&lt;/span>&lt;span class="nv">HOMEBREW_CACHE&lt;/span>&lt;span class="si">}&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">fi&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="k">fi&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="k">if&lt;/span> exists_but_not_writable &lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="si">${&lt;/span>&lt;span class="nv">HOMEBREW_CACHE&lt;/span>&lt;span class="si">}&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="p">;&lt;/span> &lt;span class="k">then&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> execute_sudo &lt;span class="s2">&amp;#34;/bin/chmod&amp;#34;&lt;/span> &lt;span class="s2">&amp;#34;g+rwx&amp;#34;&lt;/span> &lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="si">${&lt;/span>&lt;span class="nv">HOMEBREW_CACHE&lt;/span>&lt;span class="si">}&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="k">fi&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="k">if&lt;/span> file_not_owned &lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="si">${&lt;/span>&lt;span class="nv">HOMEBREW_CACHE&lt;/span>&lt;span class="si">}&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="p">;&lt;/span> &lt;span class="k">then&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> execute_sudo &lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="nv">$CHOWN&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span> &lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="nv">$USER&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span> &lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="si">${&lt;/span>&lt;span class="nv">HOMEBREW_CACHE&lt;/span>&lt;span class="si">}&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="k">fi&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="k">if&lt;/span> file_not_grpowned &lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="si">${&lt;/span>&lt;span class="nv">HOMEBREW_CACHE&lt;/span>&lt;span class="si">}&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="p">;&lt;/span> &lt;span class="k">then&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> execute_sudo &lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="nv">$CHGRP&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span> &lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="nv">$GROUP&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span> &lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="si">${&lt;/span>&lt;span class="nv">HOMEBREW_CACHE&lt;/span>&lt;span class="si">}&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="k">fi&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="k">if&lt;/span> &lt;span class="o">[[&lt;/span> -d &lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="si">${&lt;/span>&lt;span class="nv">HOMEBREW_CACHE&lt;/span>&lt;span class="si">}&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span> &lt;span class="o">]]&lt;/span>&lt;span class="p">;&lt;/span> &lt;span class="k">then&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> execute &lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="nv">$TOUCH&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span> &lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="si">${&lt;/span>&lt;span class="nv">HOMEBREW_CACHE&lt;/span>&lt;span class="si">}&lt;/span>&lt;span class="s2">/.cleaned&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="k">fi&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="k">if&lt;/span> should_install_command_line_tools &lt;span class="o">&amp;amp;&amp;amp;&lt;/span> version_ge &lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="nv">$macos_version&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span> &lt;span class="s2">&amp;#34;10.13&amp;#34;&lt;/span>&lt;span class="p">;&lt;/span> &lt;span class="k">then&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> ohai &lt;span class="s2">&amp;#34;Searching online for the Command Line Tools&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="c1"># This temporary file prompts the &amp;#39;softwareupdate&amp;#39; utility to list the Command Line Tools&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nv">clt_placeholder&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="s2">&amp;#34;/tmp/.com.apple.dt.CommandLineTools.installondemand.in-progress&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> execute_sudo &lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="nv">$TOUCH&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span> &lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="nv">$clt_placeholder&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nv">clt_label_command&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="s2">&amp;#34;/usr/sbin/softwareupdate -l |
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="s2"> grep -B 1 -E &amp;#39;Command Line Tools&amp;#39; |
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="s2"> awk -F&amp;#39;*&amp;#39; &amp;#39;/^ *\\*/ {print \$2}&amp;#39; |
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="s2"> sed -e &amp;#39;s/^ *Label: //&amp;#39; -e &amp;#39;s/^ *//&amp;#39; |
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="s2"> sort -V |
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="s2"> tail -n1&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nv">clt_label&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="k">$(&lt;/span>chomp &lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="k">$(&lt;/span>/bin/bash -c &lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="nv">$clt_label_command&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="k">)&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="k">)&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">if&lt;/span> &lt;span class="o">[[&lt;/span> -n &lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="nv">$clt_label&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span> &lt;span class="o">]]&lt;/span>&lt;span class="p">;&lt;/span> &lt;span class="k">then&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> ohai &lt;span class="s2">&amp;#34;Installing &lt;/span>&lt;span class="nv">$clt_label&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> execute_sudo &lt;span class="s2">&amp;#34;/usr/sbin/softwareupdate&amp;#34;&lt;/span> &lt;span class="s2">&amp;#34;-i&amp;#34;&lt;/span> &lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="nv">$clt_label&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> execute_sudo &lt;span class="s2">&amp;#34;/bin/rm&amp;#34;&lt;/span> &lt;span class="s2">&amp;#34;-f&amp;#34;&lt;/span> &lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="nv">$clt_placeholder&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> execute_sudo &lt;span class="s2">&amp;#34;/usr/bin/xcode-select&amp;#34;&lt;/span> &lt;span class="s2">&amp;#34;--switch&amp;#34;&lt;/span> &lt;span class="s2">&amp;#34;/Library/Developer/CommandLineTools&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">fi&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="k">fi&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1"># Headless install may have failed, so fallback to original &amp;#39;xcode-select&amp;#39; method&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="k">if&lt;/span> should_install_command_line_tools &lt;span class="o">&amp;amp;&amp;amp;&lt;/span> &lt;span class="nb">test&lt;/span> -t 0&lt;span class="p">;&lt;/span> &lt;span class="k">then&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> ohai &lt;span class="s2">&amp;#34;Installing the Command Line Tools (expect a GUI popup):&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> execute_sudo &lt;span class="s2">&amp;#34;/usr/bin/xcode-select&amp;#34;&lt;/span> &lt;span class="s2">&amp;#34;--install&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nb">echo&lt;/span> &lt;span class="s2">&amp;#34;Press any key when the installation has completed.&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> getc
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> execute_sudo &lt;span class="s2">&amp;#34;/usr/bin/xcode-select&amp;#34;&lt;/span> &lt;span class="s2">&amp;#34;--switch&amp;#34;&lt;/span> &lt;span class="s2">&amp;#34;/Library/Developer/CommandLineTools&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="k">fi&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="k">if&lt;/span> &lt;span class="o">[[&lt;/span> -z &lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="si">${&lt;/span>&lt;span class="nv">HOMEBREW_ON_LINUX&lt;/span>&lt;span class="p">-&lt;/span>&lt;span class="si">}&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span> &lt;span class="o">]]&lt;/span> &lt;span class="o">&amp;amp;&amp;amp;&lt;/span> ! &lt;span class="nv">output&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="k">$(&lt;/span>/usr/bin/xcrun clang 2&amp;gt;&lt;span class="p">&amp;amp;&lt;/span>1&lt;span class="k">)&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span> &lt;span class="o">&amp;amp;&amp;amp;&lt;/span> &lt;span class="o">[[&lt;/span> &lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="nv">$output&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span> &lt;span class="o">==&lt;/span> *&lt;span class="s2">&amp;#34;license&amp;#34;&lt;/span>* &lt;span class="o">]]&lt;/span>&lt;span class="p">;&lt;/span> &lt;span class="k">then&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> abort &lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="k">$(&lt;/span>cat &lt;span class="s">&amp;lt;&amp;lt;EOABORT
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="s">You have not agreed to the Xcode license.
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="s">Before running the installer again please agree to the license by opening
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="s">Xcode.app or running:
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="s"> sudo xcodebuild -license
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="s">EOABORT&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="k">)&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="k">fi&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">ohai &lt;span class="s2">&amp;#34;Downloading and installing Homebrew...&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="o">(&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nb">cd&lt;/span> &lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="si">${&lt;/span>&lt;span class="nv">HOMEBREW_REPOSITORY&lt;/span>&lt;span class="si">}&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span> &amp;gt;/dev/null &lt;span class="o">||&lt;/span> &lt;span class="k">return&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="c1"># we do it in four steps to avoid merge errors when reinstalling&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> execute &lt;span class="s2">&amp;#34;git&amp;#34;&lt;/span> &lt;span class="s2">&amp;#34;init&amp;#34;&lt;/span> &lt;span class="s2">&amp;#34;-q&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="c1"># &amp;#34;git remote add&amp;#34; will fail if the remote is defined in the global config&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> execute &lt;span class="s2">&amp;#34;git&amp;#34;&lt;/span> &lt;span class="s2">&amp;#34;config&amp;#34;&lt;/span> &lt;span class="s2">&amp;#34;remote.origin.url&amp;#34;&lt;/span> &lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="si">${&lt;/span>&lt;span class="nv">BREW_REPO&lt;/span>&lt;span class="si">}&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> execute &lt;span class="s2">&amp;#34;git&amp;#34;&lt;/span> &lt;span class="s2">&amp;#34;config&amp;#34;&lt;/span> &lt;span class="s2">&amp;#34;remote.origin.fetch&amp;#34;&lt;/span> &lt;span class="s2">&amp;#34;+refs/heads/*:refs/remotes/origin/*&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="c1"># ensure we don&amp;#39;t munge line endings on checkout&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> execute &lt;span class="s2">&amp;#34;git&amp;#34;&lt;/span> &lt;span class="s2">&amp;#34;config&amp;#34;&lt;/span> &lt;span class="s2">&amp;#34;core.autocrlf&amp;#34;&lt;/span> &lt;span class="s2">&amp;#34;false&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> execute &lt;span class="s2">&amp;#34;git&amp;#34;&lt;/span> &lt;span class="s2">&amp;#34;fetch&amp;#34;&lt;/span> &lt;span class="s2">&amp;#34;origin&amp;#34;&lt;/span> &lt;span class="s2">&amp;#34;--force&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> execute &lt;span class="s2">&amp;#34;git&amp;#34;&lt;/span> &lt;span class="s2">&amp;#34;fetch&amp;#34;&lt;/span> &lt;span class="s2">&amp;#34;origin&amp;#34;&lt;/span> &lt;span class="s2">&amp;#34;--tags&amp;#34;&lt;/span> &lt;span class="s2">&amp;#34;--force&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> execute &lt;span class="s2">&amp;#34;git&amp;#34;&lt;/span> &lt;span class="s2">&amp;#34;reset&amp;#34;&lt;/span> &lt;span class="s2">&amp;#34;--hard&amp;#34;&lt;/span> &lt;span class="s2">&amp;#34;origin/master&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> execute &lt;span class="s2">&amp;#34;ln&amp;#34;&lt;/span> &lt;span class="s2">&amp;#34;-sf&amp;#34;&lt;/span> &lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="si">${&lt;/span>&lt;span class="nv">HOMEBREW_REPOSITORY&lt;/span>&lt;span class="si">}&lt;/span>&lt;span class="s2">/bin/brew&amp;#34;&lt;/span> &lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="si">${&lt;/span>&lt;span class="nv">HOMEBREW_PREFIX&lt;/span>&lt;span class="si">}&lt;/span>&lt;span class="s2">/bin/brew&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> execute &lt;span class="s2">&amp;#34;cd&amp;#34;&lt;/span> &lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="si">${&lt;/span>&lt;span class="nv">HOMEBREW_PREFIX&lt;/span>&lt;span class="si">}&lt;/span>&lt;span class="s2">/Homebrew/Library/Taps/homebrew&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> execute &lt;span class="s2">&amp;#34;git&amp;#34;&lt;/span> &lt;span class="s2">&amp;#34;clone&amp;#34;&lt;/span> &lt;span class="s2">&amp;#34;https://mirrors.ustc.edu.cn/homebrew-cask.git&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> execute &lt;span class="s2">&amp;#34;git&amp;#34;&lt;/span> &lt;span class="s2">&amp;#34;clone&amp;#34;&lt;/span> &lt;span class="s2">&amp;#34;https://mirrors.ustc.edu.cn/homebrew-core.git&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> execute &lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="si">${&lt;/span>&lt;span class="nv">HOMEBREW_PREFIX&lt;/span>&lt;span class="si">}&lt;/span>&lt;span class="s2">/bin/brew&amp;#34;&lt;/span> &lt;span class="s2">&amp;#34;update&amp;#34;&lt;/span> &lt;span class="s2">&amp;#34;--force&amp;#34;&lt;/span> &lt;span class="s2">&amp;#34;-v&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> execute &lt;span class="s2">&amp;#34;echo&amp;#34;&lt;/span> &lt;span class="s2">&amp;#34;export&amp;#34;&lt;/span> &lt;span class="s2">&amp;#34;HOMEBREW_BOTTLE_DOMAIN=https://mirrors.ustc.edu.cn/homebrew-bottles&amp;#34;&lt;/span> &lt;span class="s2">&amp;#34;&amp;gt;&amp;gt;&amp;#34;&lt;/span> &lt;span class="s2">&amp;#34;~/.zshrc&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> execute &lt;span class="s2">&amp;#34;source&amp;#34;&lt;/span> &lt;span class="s2">&amp;#34;~/.zshrc&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="o">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="k">if&lt;/span> &lt;span class="o">[[&lt;/span> &lt;span class="s2">&amp;#34;:&lt;/span>&lt;span class="si">${&lt;/span>&lt;span class="nv">PATH&lt;/span>&lt;span class="si">}&lt;/span>&lt;span class="s2">:&amp;#34;&lt;/span> !&lt;span class="o">=&lt;/span> *&lt;span class="s2">&amp;#34;:&lt;/span>&lt;span class="si">${&lt;/span>&lt;span class="nv">HOMEBREW_PREFIX&lt;/span>&lt;span class="si">}&lt;/span>&lt;span class="s2">/bin:&amp;#34;&lt;/span>* &lt;span class="o">]]&lt;/span>&lt;span class="p">;&lt;/span> &lt;span class="k">then&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> warn &lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="si">${&lt;/span>&lt;span class="nv">HOMEBREW_PREFIX&lt;/span>&lt;span class="si">}&lt;/span>&lt;span class="s2">/bin is not in your PATH.&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="k">fi&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">ohai &lt;span class="s2">&amp;#34;Installation successful!&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nb">echo&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1"># Use the shell&amp;#39;s audible bell.&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="k">if&lt;/span> &lt;span class="o">[[&lt;/span> -t &lt;span class="m">1&lt;/span> &lt;span class="o">]]&lt;/span>&lt;span class="p">;&lt;/span> &lt;span class="k">then&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nb">printf&lt;/span> &lt;span class="s2">&amp;#34;\a&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="k">fi&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1"># Use an extra newline and bold to avoid this being missed.&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">ohai &lt;span class="s2">&amp;#34;Homebrew has enabled anonymous aggregate formulae and cask analytics.&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nb">echo&lt;/span> &lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="k">$(&lt;/span>cat &lt;span class="s">&amp;lt;&amp;lt;EOS
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="s">${tty_bold}Read the analytics documentation (and how to opt-out) here:
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="s"> ${tty_underline}https://docs.brew.sh/Analytics${tty_reset}
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="s">No analytics data has been sent yet (or will be during this \`install\` run).
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="s">EOS&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="k">)&lt;/span>&lt;span class="s2">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="s2">&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">ohai &lt;span class="s2">&amp;#34;Homebrew is run entirely by unpaid volunteers. Please consider donating:&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nb">echo&lt;/span> &lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="k">$(&lt;/span>cat &lt;span class="s">&amp;lt;&amp;lt;EOS
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="s"> ${tty_underline}https://github.com/Homebrew/brew#donations${tty_reset}
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="s">EOS&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="k">)&lt;/span>&lt;span class="s2">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="s2">&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="o">(&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nb">cd&lt;/span> &lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="si">${&lt;/span>&lt;span class="nv">HOMEBREW_REPOSITORY&lt;/span>&lt;span class="si">}&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span> &amp;gt;/dev/null &lt;span class="o">||&lt;/span> &lt;span class="k">return&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> execute &lt;span class="s2">&amp;#34;git&amp;#34;&lt;/span> &lt;span class="s2">&amp;#34;config&amp;#34;&lt;/span> &lt;span class="s2">&amp;#34;--replace-all&amp;#34;&lt;/span> &lt;span class="s2">&amp;#34;homebrew.analyticsmessage&amp;#34;&lt;/span> &lt;span class="s2">&amp;#34;true&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> execute &lt;span class="s2">&amp;#34;git&amp;#34;&lt;/span> &lt;span class="s2">&amp;#34;config&amp;#34;&lt;/span> &lt;span class="s2">&amp;#34;--replace-all&amp;#34;&lt;/span> &lt;span class="s2">&amp;#34;homebrew.caskanalyticsmessage&amp;#34;&lt;/span> &lt;span class="s2">&amp;#34;true&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="o">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">ohai &lt;span class="s2">&amp;#34;Next steps:&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nb">echo&lt;/span> &lt;span class="s2">&amp;#34;- Run \`brew help\` to get started&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nb">echo&lt;/span> &lt;span class="s2">&amp;#34;- Further documentation: &amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nb">echo&lt;/span> &lt;span class="s2">&amp;#34; &lt;/span>&lt;span class="si">${&lt;/span>&lt;span class="nv">tty_underline&lt;/span>&lt;span class="si">}&lt;/span>&lt;span class="s2">https://docs.brew.sh&lt;/span>&lt;span class="si">${&lt;/span>&lt;span class="nv">tty_reset&lt;/span>&lt;span class="si">}&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="k">if&lt;/span> &lt;span class="o">[[&lt;/span> -n &lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="si">${&lt;/span>&lt;span class="nv">HOMEBREW_ON_LINUX&lt;/span>&lt;span class="p">-&lt;/span>&lt;span class="si">}&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span> &lt;span class="o">]]&lt;/span>&lt;span class="p">;&lt;/span> &lt;span class="k">then&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">case&lt;/span> &lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="nv">$SHELL&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span> in
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> */bash*&lt;span class="o">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">if&lt;/span> &lt;span class="o">[[&lt;/span> -r &lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="nv">$HOME&lt;/span>&lt;span class="s2">/.bash_profile&amp;#34;&lt;/span> &lt;span class="o">]]&lt;/span>&lt;span class="p">;&lt;/span> &lt;span class="k">then&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nv">shell_profile&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="nv">$HOME&lt;/span>&lt;span class="s2">/.bash_profile&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">else&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nv">shell_profile&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="nv">$HOME&lt;/span>&lt;span class="s2">/.profile&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">fi&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="p">;;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> */zsh*&lt;span class="o">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nv">shell_profile&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="nv">$HOME&lt;/span>&lt;span class="s2">/.zprofile&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="p">;;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> *&lt;span class="o">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nv">shell_profile&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="nv">$HOME&lt;/span>&lt;span class="s2">/.profile&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="p">;;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">esac&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> cat &lt;span class="s">&amp;lt;&amp;lt;EOS
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="s">- Install the Homebrew dependencies if you have sudo access:
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="s"> ${tty_bold}Debian, Ubuntu, etc.${tty_reset}
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="s"> sudo apt-get install build-essential
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="s"> ${tty_bold}Fedora, Red Hat, CentOS, etc.${tty_reset}
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="s"> sudo yum groupinstall &amp;#39;Development Tools&amp;#39;
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="s"> See ${tty_underline}https://docs.brew.sh/linux${tty_reset} for more information.
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="s">- Configure Homebrew in your ${tty_underline}${shell_profile}${tty_reset} by running
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="s"> echo &amp;#39;eval \$(${HOMEBREW_PREFIX}/bin/brew shellenv)&amp;#39; &amp;gt;&amp;gt; ${shell_profile}
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="s">- Add Homebrew to your ${tty_bold}PATH${tty_reset}
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="s"> eval \$(${HOMEBREW_PREFIX}/bin/brew shellenv)
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="s">- We recommend that you install GCC by running:
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="s"> brew install gcc
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="s">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="s">EOS&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="k">fi&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div></description></item><item><title>使用Homebrew管理macOS上的服务</title><link>https://techinsight.pages.dev/p/%E4%BD%BF%E7%94%A8homebrew%E7%AE%A1%E7%90%86macos%E4%B8%8A%E7%9A%84%E6%9C%8D%E5%8A%A1/</link><pubDate>Sun, 29 Mar 2020 10:53:04 +0800</pubDate><guid>https://techinsight.pages.dev/p/%E4%BD%BF%E7%94%A8homebrew%E7%AE%A1%E7%90%86macos%E4%B8%8A%E7%9A%84%E6%9C%8D%E5%8A%A1/</guid><description>&lt;p>用了5年macOS也一直没有用过苹果原生的服务管理、AppleSript等等，总感觉不够直观，好在还有Homebrew这个神器，帮我解决了很多问题。&lt;/p>
+&lt;p>对于通过homebrew安装的服务，可以通过其提供的&lt;code>brew services&lt;/code>或者服务自带的命令进行管理。这里只记录了两种，其他需要查看启动方法的可以通过&lt;code>brew info&lt;/code>命令查看。&lt;/p>
+&lt;h2 id="mysql">&lt;a href="#mysql" class="header-anchor">&lt;/a>MySQL
+&lt;/h2>&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
+&lt;/span>&lt;span class="lnt">2
+&lt;/span>&lt;span class="lnt">3
+&lt;/span>&lt;span class="lnt">4
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-fallback" data-lang="fallback">&lt;span class="line">&lt;span class="cl">brew install mysql
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">mysql.server start
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">mysql.server stop
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;h2 id="zookeeper">&lt;a href="#zookeeper" class="header-anchor">&lt;/a>ZooKeeper
+&lt;/h2>&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
+&lt;/span>&lt;span class="lnt">2
+&lt;/span>&lt;span class="lnt">3
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-fallback" data-lang="fallback">&lt;span class="line">&lt;span class="cl">brew install zookeeper
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">brew services start zookeeper # 后台启动
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">zkServer start # 前台启动
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div></description></item></channel></rss>
