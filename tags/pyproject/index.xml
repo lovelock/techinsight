@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Pyproject on Tech In Sight</title><link>https://techinsight.pages.dev/tags/pyproject/</link><description>Recent content in Pyproject on Tech In Sight</description><generator>Hugo -- gohugo.io</generator><language>zh-cn</language><lastBuildDate>Mon, 08 Jul 2024 14:23:21 +0800</lastBuildDate><atom:link href="https://techinsight.pages.dev/tags/pyproject/index.xml" rel="self" type="application/rss+xml"/><item><title>Pyproject简明介绍</title><link>https://techinsight.pages.dev/p/pyproject%E7%AE%80%E6%98%8E%E4%BB%8B%E7%BB%8D/</link><pubDate>Mon, 08 Jul 2024 14:23:21 +0800</pubDate><guid>https://techinsight.pages.dev/p/pyproject%E7%AE%80%E6%98%8E%E4%BB%8B%E7%BB%8D/</guid><description>&lt;img src="https://techinsight.pages.dev/images/covers/python-pyproject.png" alt="Featured image of post Pyproject简明介绍" />&lt;p>&lt;code>pyproject.toml&lt;/code> 文件是 Python 项目的新标准配置文件，它遵循 PEP 517 和 PEP 518 的规范。这个文件的主要目的是定义项目构建系统的要求，从而使得项目的构建过程更加标准化和独立于具体的构建工具。&lt;/p>
+&lt;h3 id="pyprojecttoml-的主要功能">&lt;a href="#pyprojecttoml-%e7%9a%84%e4%b8%bb%e8%a6%81%e5%8a%9f%e8%83%bd" class="header-anchor">&lt;/a>&lt;code>pyproject.toml&lt;/code> 的主要功能
+&lt;/h3>&lt;ol>
+&lt;li>
+&lt;p>&lt;strong>定义构建系统要求&lt;/strong>：&lt;code>pyproject.toml&lt;/code> 文件中可以指定项目所需的构建工具及其版本。例如：&lt;/p>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
+&lt;/span>&lt;span class="lnt">2
+&lt;/span>&lt;span class="lnt">3
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-toml" data-lang="toml">&lt;span class="line">&lt;span class="cl">&lt;span class="p">[&lt;/span>&lt;span class="nx">build-system&lt;/span>&lt;span class="p">]&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nx">requires&lt;/span> &lt;span class="p">=&lt;/span> &lt;span class="p">[&lt;/span>&lt;span class="s2">&amp;#34;setuptools&amp;#34;&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="s2">&amp;#34;wheel&amp;#34;&lt;/span>&lt;span class="p">]&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nx">build-backend&lt;/span> &lt;span class="p">=&lt;/span> &lt;span class="s2">&amp;#34;setuptools.build_meta&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;p>这表示项目需要 &lt;code>setuptools&lt;/code> 和 &lt;code>wheel&lt;/code> 这两个工具来进行构建，并且使用 &lt;code>setuptools.build_meta&lt;/code> 作为构建后端。&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>&lt;strong>项目元数据&lt;/strong>：除了构建系统要求，&lt;code>pyproject.toml&lt;/code> 还可以包含项目的其他元数据，例如项目名称、版本、作者等信息。这些信息通常在 &lt;code>setup.py&lt;/code> 中通过 &lt;code>setup()&lt;/code> 函数来定义。&lt;/p>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
+&lt;/span>&lt;span class="lnt">2
+&lt;/span>&lt;span class="lnt">3
+&lt;/span>&lt;span class="lnt">4
+&lt;/span>&lt;span class="lnt">5
+&lt;/span>&lt;span class="lnt">6
+&lt;/span>&lt;span class="lnt">7
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-toml" data-lang="toml">&lt;span class="line">&lt;span class="cl">&lt;span class="p">[&lt;/span>&lt;span class="nx">project&lt;/span>&lt;span class="p">]&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nx">name&lt;/span> &lt;span class="p">=&lt;/span> &lt;span class="s2">&amp;#34;example&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nx">version&lt;/span> &lt;span class="p">=&lt;/span> &lt;span class="s2">&amp;#34;0.1.0&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nx">description&lt;/span> &lt;span class="p">=&lt;/span> &lt;span class="s2">&amp;#34;An example package&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nx">authors&lt;/span> &lt;span class="p">=&lt;/span> &lt;span class="p">[&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="p">{&lt;/span> &lt;span class="nx">name&lt;/span>&lt;span class="p">=&lt;/span>&lt;span class="s2">&amp;#34;John Doe&amp;#34;&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="nx">email&lt;/span>&lt;span class="p">=&lt;/span>&lt;span class="s2">&amp;#34;john.doe@example.com&amp;#34;&lt;/span> &lt;span class="p">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">]&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;/li>
+&lt;li>
+&lt;p>&lt;strong>其他配置&lt;/strong>：&lt;code>pyproject.toml&lt;/code> 还可以包含其他工具的配置，例如 &lt;code>pytest&lt;/code>、&lt;code>black&lt;/code> 等，使得项目的配置更加集中和统一。&lt;/p>
+&lt;/li>
+&lt;/ol>
+&lt;h3 id="与-setuppy-的比较">&lt;a href="#%e4%b8%8e-setuppy-%e7%9a%84%e6%af%94%e8%be%83" class="header-anchor">&lt;/a>与 &lt;code>setup.py&lt;/code> 的比较
+&lt;/h3>&lt;ul>
+&lt;li>&lt;strong>标准化&lt;/strong>：&lt;code>pyproject.toml&lt;/code> 提供了一种标准化的方式来定义构建系统要求，使得项目的构建过程更加一致和可预测。&lt;/li>
+&lt;li>&lt;strong>独立性&lt;/strong>：&lt;code>pyproject.toml&lt;/code> 使得项目的构建过程独立于具体的构建工具，用户不需要了解或修改 &lt;code>setup.py&lt;/code> 文件，只需要安装指定的构建工具即可。&lt;/li>
+&lt;li>&lt;strong>扩展性&lt;/strong>：&lt;code>pyproject.toml&lt;/code> 可以包含更多的配置信息，不仅限于构建系统要求，还可以包含项目的其他元数据和工具配置。&lt;/li>
+&lt;/ul>
+&lt;h3 id="之前的构建工具定义方式">&lt;a href="#%e4%b9%8b%e5%89%8d%e7%9a%84%e6%9e%84%e5%bb%ba%e5%b7%a5%e5%85%b7%e5%ae%9a%e4%b9%89%e6%96%b9%e5%bc%8f" class="header-anchor">&lt;/a>之前的构建工具定义方式
+&lt;/h3>&lt;p>在 &lt;code>pyproject.toml&lt;/code> 出现之前，项目的构建工具通常在 &lt;code>setup.py&lt;/code> 文件中定义。例如：&lt;/p>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt"> 1
+&lt;/span>&lt;span class="lnt"> 2
+&lt;/span>&lt;span class="lnt"> 3
+&lt;/span>&lt;span class="lnt"> 4
+&lt;/span>&lt;span class="lnt"> 5
+&lt;/span>&lt;span class="lnt"> 6
+&lt;/span>&lt;span class="lnt"> 7
+&lt;/span>&lt;span class="lnt"> 8
+&lt;/span>&lt;span class="lnt"> 9
+&lt;/span>&lt;span class="lnt">10
+&lt;/span>&lt;span class="lnt">11
+&lt;/span>&lt;span class="lnt">12
+&lt;/span>&lt;span class="lnt">13
+&lt;/span>&lt;span class="lnt">14
+&lt;/span>&lt;span class="lnt">15
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-python" data-lang="python">&lt;span class="line">&lt;span class="cl">&lt;span class="kn">from&lt;/span> &lt;span class="nn">setuptools&lt;/span> &lt;span class="kn">import&lt;/span> &lt;span class="n">setup&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="n">setup&lt;/span>&lt;span class="p">(&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">name&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="s1">&amp;#39;example&amp;#39;&lt;/span>&lt;span class="p">,&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">version&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="s1">&amp;#39;0.1.0&amp;#39;&lt;/span>&lt;span class="p">,&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">packages&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="p">[&lt;/span>&lt;span class="s1">&amp;#39;example&amp;#39;&lt;/span>&lt;span class="p">],&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">install_requires&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="p">[&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="s1">&amp;#39;some_dependency&amp;#39;&lt;/span>&lt;span class="p">,&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="p">],&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">entry_points&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="p">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="s1">&amp;#39;console_scripts&amp;#39;&lt;/span>&lt;span class="p">:&lt;/span> &lt;span class="p">[&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="s1">&amp;#39;example-cli=example.main:main&amp;#39;&lt;/span>&lt;span class="p">,&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="p">],&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="p">},&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">)&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;p>这种方式的缺点是：&lt;/p>
+&lt;ul>
+&lt;li>&lt;strong>依赖隐式&lt;/strong>：用户需要阅读 &lt;code>setup.py&lt;/code> 文件才能了解项目所需的构建工具和依赖。&lt;/li>
+&lt;li>&lt;strong>不标准化&lt;/strong>：不同的项目可能使用不同的方式来定义构建工具，导致构建过程不一致。&lt;/li>
+&lt;/ul>
+&lt;h3 id="总结">&lt;a href="#%e6%80%bb%e7%bb%93" class="header-anchor">&lt;/a>总结
+&lt;/h3>&lt;ul>
+&lt;li>&lt;strong>&lt;code>pyproject.toml&lt;/code>&lt;/strong>：提供了一种标准化的方式来定义构建系统要求，使得项目的构建过程更加一致和可预测。&lt;/li>
+&lt;li>&lt;strong>功能增强&lt;/strong>：&lt;code>pyproject.toml&lt;/code> 不仅限于构建系统要求，还可以包含项目的其他元数据和工具配置。&lt;/li>
+&lt;li>&lt;strong>之前的定义方式&lt;/strong>：通常在 &lt;code>setup.py&lt;/code> 文件中定义，依赖隐式且不标准化。&lt;/li>
+&lt;/ul>
+&lt;p>通过使用 &lt;code>pyproject.toml&lt;/code>，Python 项目的构建过程变得更加标准化和独立于具体的构建工具，提高了项目的可维护性和可移植性。&lt;/p></description></item></channel></rss>
