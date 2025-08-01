@@ -13,25 +13,25 @@ tags: ["clang"]
 
 ## 目录
 
-1. [项目创建与配置](#1-项目创建与配置)
-2. [Rust 代码编写规范](#2-rust-代码编写规范)
-3. [头文件生成与管理](#3-头文件生成与管理)
-4. [构建系统实现](#4-构建系统实现)
-5. [安装与分发](#5-安装与分发)
-6. [调用示例](#6-调用示例)
-7. [跨平台注意事项](#7-跨平台注意事项)
-8. [最佳实践](#8-最佳实践)
+[项目创建与配置](#1-项目创建与配置)
+[Rust 代码编写规范](#2-rust-代码编写规范)
+[头文件生成与管理](#3-头文件生成与管理)
+[构建系统实现](#4-构建系统实现)
+[安装与分发](#5-安装与分发)
+[调用示例](#6-调用示例)
+[跨平台注意事项](#7-跨平台注意事项)
+[最佳实践](#8-最佳实践)
 
-## 1. 项目创建与配置
+## 项目创建与配置
 
-### 1.1 初始化项目
+### 初始化项目
 
 ```bash
 cargo new --lib rust_so_lib
 cd rust_so_lib
 ```
 
-### 1.2 Cargo.toml 配置
+### Cargo.toml 配置
 
 ```toml
 [package]
@@ -49,9 +49,9 @@ libc = "0.2"# 用于C类型兼容
 
 > **重要提示**：确保不要同时使用 `[workspace]` 和 `[lib]` 配置，否则会导致编译错误。
 
-## 2. Rust 代码编写规范
+## Rust 代码编写规范
 
-### 2.1 基础示例 (src/lib.rs)
+### 基础示例 (src/lib.rs)
 
 ```rust
 use std::os::raw::{c_int, c_char};
@@ -81,7 +81,7 @@ pub extern "C" fn free_string(s: *mut c_char) {
 }
 ```
 
-### 2.2 关键编程要点
+### 关键编程要点
 
 1. **ABI 兼容性**：
 - 使用 `extern "C"` 确保C兼容调用约定
@@ -98,9 +98,9 @@ pub extern "C" fn free_string(s: *mut c_char) {
 - Rust分配的内存应由Rust释放
 - 提供明确的资源释放函数（如`free_string`）
 
-## 3. 头文件生成与管理
+## 头文件生成与管理
 
-### 3.1 手动创建头文件
+### 手动创建头文件
 
 ```c
 // rust_so_lib.h
@@ -123,7 +123,7 @@ void free_string(char* s);
 #endif // RUST_SO_LIB_H
 ```
 
-### 3.2 使用 cbindgen 自动生成
+### 使用 cbindgen 自动生成
 
 1. 安装工具：
    
@@ -145,9 +145,9 @@ void free_string(char* s);
    cbindgen --config cbindgen.toml --crate rust_so_lib --output rust_so_lib.h
    ```
 
-## 4. 构建系统实现
+## 构建系统实现
 
-### 4.1 完整 Makefile
+### 完整 Makefile
 
 ```makefile
 # 项目配置
@@ -190,7 +190,7 @@ $(CC) test.c -o test_$(TARGET) -l$(TARGET) -Ltarget/$(RUST_TARGET) -I.
 LD_LIBRARY_PATH=target/$(RUST_TARGET) ./test_$(TARGET)
 ```
 
-### 4.2 Makefile 功能说明
+### Makefile 功能说明
 
 | 命令             | 功能描述                |
 | ---------------- | ----------------------- |
@@ -200,22 +200,22 @@ LD_LIBRARY_PATH=target/$(RUST_TARGET) ./test_$(TARGET)
 | `make clean`     | 清理所有生成文件        |
 | `make test`      | 编译并运行测试程序      |
 
-## 5. 安装与分发
+## 安装与分发
 
-### 5.1 标准安装流程
+### 标准安装流程
 
 ```bash
 cargo build --release
 sudo make install
 ```
 
-### 5.2 自定义安装路径
+### 自定义安装路径
 
 ```bash
 make install PREFIX=/custom/install/path
 ```
 
-### 5.3 分发包内容
+### 分发包内容
 
 建议包含以下文件结构：
 
@@ -229,9 +229,9 @@ dist/
 └── test.c
 ```
 
-## 6. 调用示例
+## 调用示例
 
-### 6.1 C 语言示例 (test.c)
+### C 语言示例 (test.c)
 
 ```c
 #include <stdio.h>
@@ -252,7 +252,7 @@ int main() {
 }
 ```
 
-### 6.2 编译与运行
+### 编译与运行
 
 ```bash
 # 动态链接方式
@@ -263,9 +263,9 @@ LD_LIBRARY_PATH=target/release ./test
 gcc test.c -o test target/release/librust_so_lib.so
 ```
 
-## 7. 跨平台注意事项
+## 跨平台注意事项
 
-### 7.1 平台差异处理
+### 平台差异处理
 
 ```makefile
 # 在Makefile中添加平台检测
@@ -282,7 +282,7 @@ LDLIBS := -Wl,-rpath=\$$ORIGIN
 endif
 ```
 
-### 7.2 Windows 特殊处理
+### Windows 特殊处理
 
 1. 修改 Cargo.toml：
    
@@ -300,9 +300,9 @@ extern "C" {
 }
 ```
 
-## 8. 最佳实践
+## 最佳实践
 
-### 8.1 接口设计原则
+### 接口设计原则
 
 1. **保持接口稳定**：
 - 使用版本号控制ABI兼容性
@@ -326,7 +326,7 @@ pub extern "C" fn free_buffer(ptr: *mut u8, size: usize) {
 }
 
 ```
-### 8.2 错误处理模式
+### 错误处理模式
 ```rust
 #[repr(C)]
 pub enum ErrorCode {
@@ -345,7 +345,7 @@ ErrorCode::Success
 }
 ```
 
-### 8.3 性能优化建议
+### 性能优化建议
 
 1. **批量数据处理**：
 
