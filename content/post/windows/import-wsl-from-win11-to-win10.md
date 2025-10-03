@@ -1,0 +1,49 @@
+---
+title: "把在Win11中生成的WSL导入到新安装的Win10中"
+description: 
+date: 2025-10-03T12:59:02+08:00
+image: 
+math: true
+license: 
+hidden: false
+comments: true
+categories: ["Windows"]
+tags: ["WSL"]
+---
+
+最近实在是受不了Windows 11 的卡顿和延迟，先在台式机上安装了Windows 10验证了一番，确实是指哪打哪、干脆利落，于是就把笔记本上预装的Win11给抹掉安装Win10了，安装之后也遇到了一些问题，最主要的是WSL。
+
+因为之前在Win11上部署的一个Debian WSL里面安装了非常多的开发工具，已经50多G了，如果重新配置就太麻烦了，所以肯定还是要想办法保留，重装完之后我有一个ext4.vhdx文件等待导入。
+
+说起来Windows这系统开发得也真是草率，遇到的各种问题都不能简单明了地解释清楚，到处都是“未知问题”、“发现了一个错误”这种，看了也不知道怎么解决。
+
+首先就是要打开Hyper-V虚拟机的选项和Windows Subsystem Linux的功能，但谁能知道打开这功能之后还有一大堆问题等着呢。
+
+## 报有一个进程正在使用
+
+执行`wsl --import Debian D:\WSL\Debian D:\WSL\Deiban\ext4.vhdx`，立即就会报一个有其他进程正在使用文件还是什么的类似的报错，查了很多解决方案，有的说把这个文件复制到别处啥的，都没用。最后才发现是因为用了两个相同的目录，可能本质是因为要写入的目标文件也是ext4.vhdx，而这个文件正在被读取进程使用，但这个报错信息真的是没有任何价值。
+
+## 换了一个命令之后变成了未知错误
+
+```
+wsl --import Debian D:\WSL\Debian13 D:\WSL\Deiban\ext4.vhdx
+```
+
+这样终于不再报上面那个错了，但仍然不行，报未知错误，比上面那个还离谱，而且是执行几分钟之后才报出来。都让我一度想放弃了。后来发现还可以执行一下`wsl --update`，执行了之后再执行上面这个命令，终于来了不一样的报错了。
+
+## 接近成功
+
+
+```
+wsl --import Debian D:\WSL\Debian13 D:\WSL\Deiban\ext4.vhdx
+```
+
+这时候报的是vhdx文件需要用``--vhd`选项执行，因为默认要导入的是tar包。这时候我就理解了，因为正常的备份方式是先导出tar包，再导入，我这里使用的是vhdx，所以要指定不用tar包，所以在上面的命令上加上`--vhd`就可以了。
+
+```
+wsl --import Debian D:\WSL\Debian13 D:\WSL\Deiban\ext4.vhdx --vhd
+```
+
+前面可能遗漏了一个重要的点，因为我在此之前已经执行了`wsl --set-default-version 2`，让WSL默认使用WSL2了，而Windows 10 默认用的应该是版本1，所以在导入过程中没有遇到这个WSL版本的问题。
+
+这时候就出现了可爱的进度条，这时候我的眼泪都要下来了，太难了。狗日的Windows这报错信息比我自己写的还要烂，完全不能体现出具体是什么问题，没有任何价值。
