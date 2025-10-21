@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Springboot on Tech In Sight</title><link>https://techinsight.pages.dev/categories/springboot/</link><description>Recent content in Springboot on Tech In Sight</description><generator>Hugo -- gohugo.io</generator><language>zh-cn</language><lastBuildDate>Thu, 21 May 2020 10:41:26 +0800</lastBuildDate><atom:link href="https://techinsight.pages.dev/categories/springboot/index.xml" rel="self" type="application/rss+xml"/><item><title>避免Springboot应用启动前5秒的等待</title><link>https://techinsight.pages.dev/p/%E9%81%BF%E5%85%8Dspringboot%E5%BA%94%E7%94%A8%E5%90%AF%E5%8A%A8%E5%89%8D5%E7%A7%92%E7%9A%84%E7%AD%89%E5%BE%85/</link><pubDate>Thu, 21 May 2020 10:41:26 +0800</pubDate><guid>https://techinsight.pages.dev/p/%E9%81%BF%E5%85%8Dspringboot%E5%BA%94%E7%94%A8%E5%90%AF%E5%8A%A8%E5%89%8D5%E7%A7%92%E7%9A%84%E7%AD%89%E5%BE%85/</guid><description>&lt;p&gt;在macOS上开发Springboot应用时发现应用启动前总是等待5秒钟，体现在应用启动的很慢。&lt;/p&gt;
+&lt;p&gt;具体的提示信息因为改完之后找不到了，就是一句提示，说使用了5000 milliseconds，建议macOS用户修改/etc/hosts。但具体改什么就没有提到。&lt;/p&gt;
+&lt;p&gt;其实是因为应用启动时会查询域名&lt;code&gt;${hostname}&lt;/code&gt;，而macOS上默认是没有配置这个域名的，所以就要等到超时（5秒）才能继续了。知道了问题的原因也就清楚如何解决了，在&lt;code&gt;/etc/hosts&lt;/code&gt;中添加以下两行&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;div class="chroma"&gt;
+&lt;table class="lntable"&gt;&lt;tr&gt;&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code&gt;&lt;span class="lnt"&gt;1
+&lt;/span&gt;&lt;span class="lnt"&gt;2
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code class="language-fallback" data-lang="fallback"&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;127.0.0.1 ${hostname}
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;::1 ${hostname}
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;其中&lt;code&gt;${hostname}&lt;/code&gt;要替换成你机器的hostname，要得到它只需要执行&lt;code&gt;hostname&lt;/code&gt;命令即可，一般是一个以&lt;code&gt;.local&lt;/code&gt;结尾的字符串。&lt;/p&gt;</description></item></channel></rss>

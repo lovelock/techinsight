@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Windows on Tech In Sight</title><link>https://techinsight.pages.dev/tags/windows/</link><description>Recent content in Windows on Tech In Sight</description><generator>Hugo -- gohugo.io</generator><language>zh-cn</language><lastBuildDate>Wed, 14 Aug 2024 18:13:23 +0800</lastBuildDate><atom:link href="https://techinsight.pages.dev/tags/windows/index.xml" rel="self" type="application/rss+xml"/><item><title>Windows11 怎么可以这么烂？？？</title><link>https://techinsight.pages.dev/p/windows11-%E6%80%8E%E4%B9%88%E5%8F%AF%E4%BB%A5%E8%BF%99%E4%B9%88%E7%83%82/</link><pubDate>Wed, 14 Aug 2024 18:13:23 +0800</pubDate><guid>https://techinsight.pages.dev/p/windows11-%E6%80%8E%E4%B9%88%E5%8F%AF%E4%BB%A5%E8%BF%99%E4%B9%88%E7%83%82/</guid><description>&lt;p&gt;打脸时刻到来，我还是太年轻了。&lt;/p&gt;
+&lt;p&gt;对于macOS和Windows的对比，我只能说，得先问能不能用，再问好不好用。&lt;/p&gt;
+&lt;p&gt;前几天买了一台机械革命15X，R7 8845HS，32G内存。而且还算是运气比较好，屏幕是京东方的，SSD是长存的PC411。系统是Windows11 23H2。&lt;/p&gt;
+&lt;p&gt;按说这个配置已经不低了，应该原地起飞才对，但实际上不是这样。&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;休眠无法唤醒。这是遇到的第一个问题，也是网上反映最多的问题之一，能确定不只是机械革命，各个品牌都有，比如ROG、联想各系列。好在北京有售后，去给升级了芯片组驱动，问题解决了。定位为驱动的问题。&lt;/li&gt;
+&lt;li&gt;还是休眠的问题，合盖装在包里莫名会发热，我理解这还是Windows的问题，网上也有很多讨论什么S0级休眠，回头我再研究下怎么解决。&lt;/li&gt;
+&lt;li&gt;还是休眠的问题，到手时SSD通电次数20次，但只有通电时间只有几分钟，姑且认为是全新的吧，但用了两周之后我又看了下，通电次数8800多次，通电时间24小时，这个通电时间我是认可的，但次数？这是在不停地自动唤醒？所以才有了上面2的问题？&lt;/li&gt;
+&lt;li&gt;默认状态下广告满天飞啊。。。系统级的广告，搜索栏、资讯窗口啥的，不优化的话真是没法用，干扰信息太多了，微软真是不当人啊。。。&lt;/li&gt;
+&lt;li&gt;都2024年的Windows11了，广告都已经加了这么多了，居然还没有解决分辨率适配的问题。我这个是15.3寸的2560x1600，默认给的缩放比例是200%，那就是变成了10年前的1280x800的比例了，窗口组件超级大，显示效率（密度）极低。当然我可以调整缩放比例，但这时候字就变得特别小，看起来是同样的调整缩放比例，文本比窗口组件更早地变小了。然后还可以调文本缩放比例。最终把屏幕缩放比例调到150%，文本拉到120%，整体看起来还凑活了，但万恶的小而美居然直接忽视文本缩放配置，打开之后文本变成了3毫米左右，而且Windows还存在字体发虚的问题，我的眼睛都要看瞎了，而且小而美居然还不提供单独的文本缩放功能（和macOS上的钉钉有异曲同工之妙）。。。这到底是在干什么啊。不得不说这个是最影响体验的了&lt;/li&gt;
+&lt;li&gt;键盘布局，没了CMD键真是不习惯啊，用了autohotkey还是没有找到一个特别舒服的键盘布局，不过这只是习惯的问题，但我不想习惯它，我需要让它习惯我，准备用autohotkey改成和macOS一样的常用布局。还有一个小问题，是这个笔记本带数字区，虽然我明白它已经把数字区做得很窄了（一定是考虑了使用频率，这非常好），但实际使用时由于手放置的位置（基于F/J）是整体偏左的，导致看屏幕的时候就需要斜着脑袋，所以这也有点别扭。我理解了为什么Mac系列的笔记本不做数字区了。&lt;/li&gt;
+&lt;li&gt;输入法是真烂啊，我以前还想着macOS上的输入法体验没有那么好，结果Windows上的更烂，由于我在macOS上一直用的是squirrel，所以直接在Windows上装了个weasel，把配置文件直接甩过去，直接带来相同的体验。可问题还是来了，VSCode+vim扩展，用weasel打字时候选框像地震一样一直震，震得眼睛都花了，搜了一圈都说是vim扩展的问题，但我也不能不用啊。。。然后想着是不是换成搜狗就好了，好嘛，搜狗确实没这个问题，但它居然不会跟随光标，试用了一个晚上居然好几个app里不跟着光标走，我在浏览器的地址栏里打字，输入法的候选框在左下角停着。。。这时我已经麻了&lt;/li&gt;
+&lt;li&gt;edge包括Chrome浏览器也是废柴，也不知道为啥打开好多网站都提示网络无法连接，貌似是证书的问题，但用Firefox就没这个问题。但Firefox有自己的问题，看b站时播放结束就啪一下浏览器黑屏，然后过一会儿自动恢复了，所有打开的b站的标签页都变成了空白。。。这么抽象的吗？不过edge可以称作是最强PDF阅读编辑器了，技能树点偏了吧&lt;/li&gt;
+&lt;li&gt;好在office系列表现抢眼，比macOS上的体验好很多，但我不理解为什么打开会这么慢？难道是因为开启了solver加载项？&lt;/li&gt;
+&lt;li&gt;还有一个powertoys，真不知道这玩意儿的定位，我怎么感觉这些功能应该是系统内置的呢？为啥会是一个需要单独安装的软件呢？&lt;br /&gt;
+环境变量真是折腾人，winget包括它的第三方前端uniget都是了色，半成品，安装了个julia，要把带版本号的路径放在Path里，那以后升级了不就不能用了吗？都已经有Homebrew这么优秀的先行者了，怎么还是搞不明白要怎么做呢？&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;————————————&lt;/p&gt;
+&lt;p&gt;记得早年知乎有个定律：先问是不是，再问为什么。&lt;br /&gt;
+macOS并不稳定，尤其是高强度使用的用户。&lt;br /&gt;
+我以下的总结是基于身边多位同事和我自己的使用经验。&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;几天不重启时有几率无法从睡眠中唤醒，键盘有反应，但屏幕不亮
+变得非常卡，延迟十几秒几十秒那种，重启后恢复
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;所以大家都会隔几天重启一次，也不纠结了。&lt;br /&gt;
+我遇到最严重的bug是升级macOS 13.1（还等到发了修复版本之后才升级的）接外接显示器频繁（10分钟一次）WindowServer崩溃，效果就是突然卡住1秒然后退出到登录界面，输入密码登录之后所有工作都没有保存，这个bug非常严重，可能和外接4K显示器有关，最后找到了一些偏方，删除了显示器色彩相关的一些配置文件之后有好转（频率降低），后续连续更新了几次系统之后就没再发生了&lt;/p&gt;
+&lt;p&gt;另外，电池鼓包这种问题已经是所有人公认的通病了，到了时间必发生。&lt;br /&gt;
+Windows好多年没用过了，不好评价，以我有限的认知来看，换了固态硬盘的Windows还是非常流畅的。&lt;/p&gt;
+&lt;p&gt;macOS让我难受的一点是有时候要关闭窗口，红绿灯按钮太小了（我知道可以CMD+Q，也知道F11是回到桌面），而Windows上想关闭窗口只需要无脑把鼠标向右向上滑动，一定会到达关闭按钮。&lt;/p&gt;</description></item></channel></rss>
