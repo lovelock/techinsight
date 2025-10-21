@@ -1,6 +1,8 @@
 # Markdown renderer configuration
 [goldmark.renderer]
-unsafe = true
+hardWraps = true
+unsafe = true 
+xhtml = true
 
 [goldmark.extensions.passthrough]
 enable = true
@@ -9,7 +11,61 @@ enable = true
 # https://gohugo.io/content-management/mathematics/
 [goldmark.extensions.passthrough.delimiters]
 block = [['\[', '\]'], ['$$', '$$']]
-inline = [['\(', '\)']]
+inline = [['\(', '\)'], ['$', '$']]
+
+[goldmark]
+    duplicateResourceFiles = false
+[goldmark.extensions]
+    definitionList = true
+    linkify = true
+    linkifyProtocol = 'https'
+    strikethrough = true
+    table = true
+    taskList = true
+[goldmark.extensions.cjk]
+    eastAsianLineBreaks = true
+    eastAsianLineBreaksStyle = 'simple'
+    enable = true
+    escapedSpace = false
+[goldmark.extensions.extras]
+[goldmark.extensions.extras.delete]
+        enable = true
+[goldmark.extensions.extras.insert]
+        enable = true
+[goldmark.extensions.extras.mark]
+        enable = true
+[goldmark.extensions.extras.subscript]
+        enable = true
+[goldmark.extensions.extras.superscript]
+        enable = true
+[goldmark.extensions.typographer]
+    apostrophe = '&rsquo;'
+    disable = false
+    ellipsis = '&hellip;'
+    emDash = '&mdash;'
+    enDash = '&ndash;'
+    leftAngleQuote = '&laquo;'
+    leftDoubleQuote = '&ldquo;'
+    leftSingleQuote = '&lsquo;'
+    rightAngleQuote = '&raquo;'
+    rightDoubleQuote = '&rdquo;'
+    rightSingleQuote = '&rsquo;'
+[goldmark.parser]
+    autoDefinitionTermID = false
+    autoHeadingID = true
+    autoIDType = 'github'
+    wrapStandAloneImageWithinParagraph = true
+[goldmark.parser.attribute]
+    block = true
+    title = true
+[goldmark.renderHooks]
+    [goldmark.renderHooks.image]
+        useEmbedded = 'auto'
+    [goldmark.renderHooks.link]
+        useEmbedded = 'auto'
+
+
+
 
 [tableOfContents]
 endLevel = 4
