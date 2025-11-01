@@ -28,7 +28,7 @@ Rust 标准库（`std::fs`）的文本读取 API（如`read_to_string`）默认�
 
 
 
-```
+```rust
 use std::fs;
 
 fn main() {
@@ -60,18 +60,14 @@ Rust 标准库未提供多编码解析能力，需依赖第三方库（如`encod
 
 
 
-```
+```toml
 [dependencies]
 encoding_rs = "0.8"
 ```
 
-
-
 1. 实现 GBK 编码解析：
 
-
-
-```
+```rust
 use std::fs;
 use encoding_rs::GBK;
 
@@ -83,18 +79,14 @@ fn read_gbk_file(path: &str) -> Result<String, Box<dyn std::error::Error>> {
 	let (content, _, had_errors) = GBK.decode(&bytes);
 
 	// 3. 处理编码错误（可选：根据业务需求决定是否终止程序）
-
 	if had_errors {
 		eprintln!("警告：文件存在无效 GBK 编码字符，已忽略");
 	}
 
-
 	Ok(content.into_owned())
-
 }
 
 fn main() {
-
 	match read_gbk_file("gbk_text.txt") {
 		Ok(content) => println!("GBK 文本内容：{}", content),
 		Err(e) => eprintln!("读取错误：{}", e),
@@ -118,9 +110,7 @@ fn main() {
 
 Rust 的`std::fs::File`类型实现了`Read` trait，其`read`方法会尝试读取指定大小的字节到缓冲区，但无法保证读取的字节恰好构成完整字符。例如：
 
-
-
-```
+```rust
 use std::fs::File;
 use std::io::Read;
 
@@ -130,7 +120,6 @@ fn main() {
 	let mut content = String::new();
 
 	// 部分读取可能导致字符截断
-
 	loop {
 		match file.read(&mut buf) {
 			Ok(0) => break, // 读取结束
@@ -169,7 +158,7 @@ Rust 标准库与第三方库提供了多种 “字符感知” 的文本读取 
 
 
 
-```
+```rust
 use std::fs::File;
 use std::io::{BufRead, BufReader};
 fn read_large_text_file(path: &str) -> Result<(), Box<dyn std::error::Error>> {
@@ -178,22 +167,14 @@ fn read_large_text_file(path: &str) -> Result<(), Box<dyn std::error::Error>> {
 	let reader = BufReader::new(file); // 包装为带缓冲区的读取器（默认缓冲区大小 8KB，可自定义）
 
 	// 按行读取，自动处理换行符与字符完整性
-
 	for (line_num, line_result) in reader.lines().enumerate() {
-
 		let line = line_result?; // 处理可能的 IO 错误（如文件中途损坏）
-
 		println!("第 {} 行：{}", line_num + 1, line);
-
 	}
-
-
 	Ok(())
-
 }
 
 fn main() {
-
 	if let Err(e) = read_large_text_file("large_log.txt") {
 		eprintln!("读取错误：{}", e);
 	}
@@ -220,7 +201,7 @@ fn main() {
 
 
 
-```
+```rust
 use std::path::Path;
 use std::fs;
 fn main() {
@@ -255,9 +236,7 @@ fn main() {
 
 Rust 编译器会自动对结构体成员进行内存对齐（如`i32`成员通常对齐到 4 字节边界），以提升访问性能，但二进制文件中的数据可能按 “紧凑格式” 存储（无对齐填充字节），此时直接映射结构体将读取到无效的填充字节。例如：
 
-
-
-```
+```rust
 // Rust 中的结构体（存在对齐填充）
 #[derive(Debug)]
 struct FileHeader {
@@ -284,7 +263,7 @@ struct FileHeader {
 
 
 
-```
+```rust
 use std::fs::File;
 use std::io::Read;
 use std::mem;
@@ -302,7 +281,6 @@ struct FileHeader {
 fn read_file_header(path: &str) -> Result<FileHeader, Box<dyn std::error::Error>> {
 
 	let mut file = File::open(path)?;
-
 	let mut buf = [0u8; mem::size_of::<FileHeader>()]; // 缓冲区大小 = 结构体大小（14 字节）
 
 	// 读取恰好足够的字节（若文件长度不足，会返回错误）
@@ -312,7 +290,6 @@ fn read_file_header(path: &str) -> Result<FileHeader, Box<dyn std::error::Error>
 	let header = unsafe { mem::transmute::<[u8; mem::size_of::<FileHeader>()], FileHeader>(buf) };
 
 	Ok(header)
-
 }
 
 fn main() {
@@ -343,7 +320,7 @@ fn main() {
 
 1. 在`Cargo.toml`中添加依赖：
 
-```
+```toml
 [dependencies]
 byteorder = "1.5"
 ```
@@ -352,9 +329,7 @@ byteorder = "1.5"
 
 1. 实践案例：读取大端序的二进制数据
 
-
-
-```
+```rust
 use std::fs::File;
 use std::io::{Read, Seek, SeekFrom};
 use byteorder::{BigEndian, ReadBytesExt};
@@ -371,4 +346,3 @@ fn read_sensor_data(path: &str) -> Result<Vec<SensorData>, Box<dyn std::error::E
 	let file_size = file.seek(SeekFrom::End(0))?;
 }
 ```
-
