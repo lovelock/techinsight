@@ -7,9 +7,8 @@ math: true
 license: 
 hidden: false
 comments: true
-draft: true
-categories: []
-tags: []
+categories: ["Rust"]
+tags: ["file"]
 ---
 
 
