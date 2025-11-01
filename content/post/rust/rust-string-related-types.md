@@ -120,9 +120,8 @@ Rust 彻底抛弃了 “依赖 '\0' 标记字符串结束” 的设计，通过 
 
 
 
-```
+```rust
 // 字符串内部包含'\0'，但Rust能正确识别长度
-
 let s = "a\0b";
 
 println!("长度: {}", s.len()); // 输出3（'a'占1字节，'\0'占1字节，'b'占1字节）
@@ -148,16 +147,14 @@ println!("是否包含'b'? {}", s.contains('b')); // 输出true
 
 
 
-```
+```rust
 use std::ffi::CString;
 
 // 创建C风格字符串，自动添加'\0'，且内部无其他'\0'
+let c_str = CString::new("hello").unwrap();
 
-let c\_str = CString::new("hello").unwrap();
-
-// 传递给C函数（获取\*const c\_char指针）
-
-let c\_ptr = c\_str.as\_ptr();
+// 传递给C函数（获取*const c_char指针）
+let c_ptr = c_str.as_ptr();
 ```
 
 

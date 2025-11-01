@@ -42,9 +42,8 @@ Array 的特性与其 “静态大小” 的设计强绑定，主要体现在不
 
 
 
-```
-let arr1 = \[1, 2, 3];
-
+```rust
+let arr1 = [1, 2, 3];
 let arr2 = arr1; // 复制 arr1 的所有元素到 arr2，arr1 仍可使用（因 i32 实现 Copy 特性）
 ```
 
@@ -158,15 +157,12 @@ Slice 的 “无所有权” 特性意味着：
 
 
 
-```
-let slice: &\[i32];
+```rust
+let slice: &[i32];
 
 {
-
-&#x20;   let arr = \[1, 2, 3];
-
-&#x20;   slice = \&arr; // 错误：arr 的生命周期在块结束后结束，slice 会成为悬垂引用
-
+    let arr = [1, 2, 3];
+    slice = &arr; // 错误：arr 的生命周期在块结束后结束，slice 会成为悬垂引用
 }
 ```
 
@@ -182,12 +178,10 @@ Slice 的特性完全围绕 “视图” 角色展开，是 Rust 实现 “泛�
 
 
 
-```
-let mut vec = vec!\[1, 2, 3];
-
-let slice1 = \&vec\[..]; // 不可变切片
-
-// let slice2 = \&mut vec\[..]; // 错误：不可变切片与可变切片不能共存
+```rust
+let mut vec = vec![1, 2, 3];
+let slice1 = &vec[..]; // 不可变切片
+// let slice2 = &mut vec[..]; // 错误：不可变切片与可变切片不能共存
 ```
 
 
@@ -202,22 +196,17 @@ let slice1 = \&vec\[..]; // 不可变切片
 
 
 
-```
+```rust
 // 计算切片中所有元素的和（泛型函数，支持 Array 和 Vector 的切片）
-
-fn sum\_slice\<T: std::ops::Add\<Output = T> + Default>(slice: &\[T]) -> T {
-
-&#x20;   slice.iter().fold(T::default(), |acc, \&x| acc + x)
-
+fn sum_slice<T: std::ops::Add<Output = T> + Default>(slice: &[T]) -> T {
+    slice.iter().fold(T::default(), |acc, &x| acc + x)
 }
 
-let arr = \[1, 2, 3];
+let arr = [1, 2, 3];
+let vec = vec![4, 5, 6];
 
-let vec = vec!\[4, 5, 6];
-
-println!("Array sum: {}", sum\_slice(\&arr)); // 输出 6
-
-println!("Vector sum: {}", sum\_slice(\&vec)); // 输出 15
+println!("Array sum: {}", sum_slice(&arr)); // 输出 6
+println!("Vector sum: {}", sum_slice(&vec)); // 输出 15
 ```
 
 ### 3. 适用场景：泛化连续数据操作与安全访问
