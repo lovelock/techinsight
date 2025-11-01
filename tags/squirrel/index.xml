@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Squirrel on Tech In Sight</title><link>https://techinsight.pages.dev/tags/squirrel/</link><description>Recent content in Squirrel on Tech In Sight</description><generator>Hugo -- gohugo.io</generator><language>zh-cn</language><lastBuildDate>Sun, 26 Jan 2025 10:15:30 +0800</lastBuildDate><atom:link href="https://techinsight.pages.dev/tags/squirrel/index.xml" rel="self" type="application/rss+xml"/><item><title>修复GitHub上的上游改动引起的不兼容问题</title><link>https://techinsight.pages.dev/p/%E4%BF%AE%E5%A4%8Dgithub%E4%B8%8A%E7%9A%84%E4%B8%8A%E6%B8%B8%E6%94%B9%E5%8A%A8%E5%BC%95%E8%B5%B7%E7%9A%84%E4%B8%8D%E5%85%BC%E5%AE%B9%E9%97%AE%E9%A2%98/</link><pubDate>Sun, 26 Jan 2025 10:15:30 +0800</pubDate><guid>https://techinsight.pages.dev/p/%E4%BF%AE%E5%A4%8Dgithub%E4%B8%8A%E7%9A%84%E4%B8%8A%E6%B8%B8%E6%94%B9%E5%8A%A8%E5%BC%95%E8%B5%B7%E7%9A%84%E4%B8%8D%E5%85%BC%E5%AE%B9%E9%97%AE%E9%A2%98/</guid><description>&lt;p&gt;这几年入坑输入法，自己根据一堆开源项目拼凑出了&lt;strong&gt;基于小鹤双拼，使用小鹤音形作为辅助码&lt;/strong&gt;的方案，使用了也快2年了，效率非常高。项目是基于&lt;a class="link" href="https://github.com/iDvel/rime-ice" target="_blank" rel="noopener"
+&gt;雾凇拼音&lt;/a&gt;二次开发的，我自己的fork在&lt;a class="link" href="https://github.com/lovelock/rime-ice" target="_blank" rel="noopener"
+&gt;小鹤流&lt;/a&gt;，最近同步了上游的更新之后发现我的方案无法使用了，因为几个月才同步一次，中间上游的提交非常多，所以比较难以定位是什么原因。本文记录一下排查的过程以及面对这种问题的处理方式。&lt;/p&gt;
+&lt;h2 id="为什么要同步"&gt;&lt;a href="#%e4%b8%ba%e4%bb%80%e4%b9%88%e8%a6%81%e5%90%8c%e6%ad%a5" class="header-anchor"&gt;&lt;/a&gt;为什么要同步？
+&lt;/h2&gt;&lt;p&gt;从我用输入法多年的经验来看，一个大词库是必要的。也曾经尝试过小鹤音形方案，这是一个可以支持二码上屏的方案，也就是打有些字是不需要按空格的，这样有的需要按空格而有的不需要就会很大程度上打乱打字的节奏，所以尝试了一段时间就放弃了，但学到了这个音形方案之后我在想为什么不能把它作为辅助码呢？如果有一个大词库，那么90%的情况下是不需要使用辅助码的，和直接用双拼是一样的感受，但当真的需要快速定目标字词时可以直接输入形码定字，省去了翻页的烦恼。&lt;/p&gt;
+&lt;p&gt;所以我拼凑出来的方案就是这个思路，而雾凇拼音最厉害的就是它的庞大的、优质的、定期维护的词库，所以就需要定期同步，前段时间比较忙，就没有怎么同步，已经5个月了。等最近同步了之后就发现已经无法使用了。&lt;/p&gt;
+&lt;h2 id="git-bisect"&gt;&lt;a href="#git-bisect" class="header-anchor"&gt;&lt;/a&gt;git bisect
+&lt;/h2&gt;&lt;p&gt;&lt;code&gt;git bisect&lt;/code&gt;这个命令还真是没用过，可以简单理解是用二分查找的方式来快速定位有问题的提交。&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;git bisect good sha1&lt;/code&gt;用来指定功能正常的提交，&lt;code&gt;git bisect bad sha2&lt;/code&gt;来指定功能不正常的提交，举例来说如果中间有128次提交，那么最多7次就能定位到有问题的那次提交了，但是这个方案并不适用于我这个情况。&lt;/p&gt;
+&lt;p&gt;看一下我的项目的提交情况。&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://techinsight.pages.dev/images/git/overview-of-rime-ice-project.png"
+loading="lazy"
+alt="项目整体的同步情况"
+&gt;&lt;/p&gt;
+&lt;p&gt;这是用github上的Sync Fork功能实现的。那么使用git bisect会有什么问题呢？&lt;/p&gt;
+&lt;p&gt;它会在good到bad之间的所有commit之间跳跃，但是一旦跳到了上游作者提交的commit上，就会不包含我的改动，我也就没办法测试自己的功能了。所以为了定位到具体的原因，我就先切到了最近一次合并之前的合并，然后逐个merge在那之后的上游更新（当然也是使用二分法），终于找到了引发错误的提交。&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://techinsight.pages.dev/images/git/the-evil-commit.png"
+loading="lazy"
+alt="引起错误的上游提交"
+&gt;&lt;/p&gt;
+&lt;p&gt;来看下原因&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://techinsight.pages.dev/images/git/the-evil-diff.png"
+loading="lazy"
+alt="引起错误的原因"
+&gt;&lt;/p&gt;
+&lt;p&gt;可以看到，作者把原来放在&lt;code&gt;rime.lua&lt;/code&gt;里的内容给拆了，拆到了&lt;code&gt;lua/*.lua&lt;/code&gt;里，拆成了很多个文件，我没有细研究这个做法，但带来的问题就是原来在&lt;code&gt;xxx.scheme.yaml&lt;/code&gt;里的类似&lt;code&gt;lua_translator@xxx&lt;/code&gt;或&lt;code&gt;lua_filter@xxx&lt;/code&gt;的写法都要改成&lt;code&gt;lua_translator@*xxx&lt;/code&gt;和&lt;code&gt;lua_filter@*xxx&lt;/code&gt;，也许&lt;code&gt;*&lt;/code&gt;是个通配符，是为了解决这一层多出来的目录，而我自己的方案是没有同步这个改动的，事实证明确实是这个问题，我把&lt;code&gt;*&lt;/code&gt;加上去之后就解决了。&lt;/p&gt;
+&lt;h2 id="git-merge-和-git-rebase的区别"&gt;&lt;a href="#git-merge-%e5%92%8c-git-rebase%e7%9a%84%e5%8c%ba%e5%88%ab" class="header-anchor"&gt;&lt;/a&gt;git merge 和 git rebase的区别
+&lt;/h2&gt;&lt;p&gt;从这个例子中就可以深刻理解git merge和git rebase的区别了。git merge是把你的提交attache到上游的提交上，然后生成一个新的commit，只有在这个commit内才有你自己的提交，就像这样&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://techinsight.pages.dev/images/git/git-merge-demo.png"
+loading="lazy"
+alt="git-merge-demo"
+&gt;&lt;/p&gt;
+&lt;p&gt;只有我框出来的这部分是包含了我自己的提交的，所以用&lt;code&gt;git bisect&lt;/code&gt;跳转到其他任意的commit都无法测试我自己的改动。但这样的好处就是非常清晰（或许吧），至少可以明确看到每次合并的动作。但如果用&lt;code&gt;git rebase&lt;/code&gt;，来看下效果&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://techinsight.pages.dev/images/git/git-rebase-demo.png"
+loading="lazy"
+alt="git-rebase-demo"
+&gt;&lt;/p&gt;
+&lt;p&gt;可以看到，提交记录是一条直线，但这是有非常大的代价的，要一直解决冲突，因为这里有一个最重要的问题：到底是谁要同步谁的更新？&lt;/p&gt;
+&lt;p&gt;git merge做的是，把对方的更新同步到我这里，由于项目基本上都是对方的改动，而我改的东西并不影响上游，所以合并是不会有冲突的，同一个文件我这上次也是他改的，现在合并的新提交也是他改的。&lt;/p&gt;
+&lt;p&gt;但git rebase不同，是要先把我的base切换到他的主干，然后把我的改动merge到上游的顶部，原则上不会产生一次commit，但问题在于，上游的文件是在更新，而我的分支里比如是他4月份的提交，我git rebase就是要把他去年4月份提交的文件合并到他今年1月份提交的新文件上，这是什么道理呢？所以就需要一直解决冲突，一直选择&lt;code&gt;git checkout --theirs .&lt;/code&gt; &lt;code&gt;git add .&lt;/code&gt; &lt;code&gt;git commit -m 'use theirs'&lt;/code&gt;类似这种，然后&lt;code&gt;git rebase --continue&lt;/code&gt;。&lt;/p&gt;
+&lt;h2 id="总结"&gt;&lt;a href="#%e6%80%bb%e7%bb%93" class="header-anchor"&gt;&lt;/a&gt;总结
+&lt;/h2&gt;&lt;p&gt;回到这个问题，git merge 和 git rebase并没有谁比谁更好，起码在这个场景，虽然花了我更多的时间去debug，但我还是认为用merge是好于rebase的。而rebase适合什么场景呢？适合的是多人协作的情况下，每个人都有自己的开发分支，但有一条主线分支，每个人提交代码时都是&lt;code&gt;git rebase origin/main&lt;/code&gt;这样，因为每个人的分支都可以认为是比&lt;code&gt;origin/master&lt;/code&gt;分支要更新的，所以除非两个人同时修改了同一个文件的情况，否则是不需要处理冲突的。&lt;/p&gt;</description></item></channel></rss>
