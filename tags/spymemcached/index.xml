@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Spymemcached on Tech In Sight</title><link>https://techinsight.pages.dev/tags/spymemcached/</link><description>Recent content in Spymemcached on Tech In Sight</description><generator>Hugo -- gohugo.io</generator><language>zh-cn</language><lastBuildDate>Sat, 21 Nov 2020 14:14:29 +0800</lastBuildDate><atom:link href="https://techinsight.pages.dev/tags/spymemcached/index.xml" rel="self" type="application/rss+xml"/><item><title>配置Spymemcached的日志级别</title><link>https://techinsight.pages.dev/p/%E9%85%8D%E7%BD%AEspymemcached%E7%9A%84%E6%97%A5%E5%BF%97%E7%BA%A7%E5%88%AB/</link><pubDate>Sat, 21 Nov 2020 14:14:29 +0800</pubDate><guid>https://techinsight.pages.dev/p/%E9%85%8D%E7%BD%AEspymemcached%E7%9A%84%E6%97%A5%E5%BF%97%E7%BA%A7%E5%88%AB/</guid><description>&lt;p&gt;用这个&lt;code&gt;net.spy.memcached&lt;/code&gt;最恶心的事情就是它的日志了，不管三七二十一先打印一组红色的INFO级别日志。&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://techinsight.pages.dev/images/2020-11-21-14-17-17.png"
+loading="lazy"
+alt="红色的INFO级别日志"
+&gt;&lt;/p&gt;
+&lt;p&gt;之前也没有研究这个原因，最近在总结日志相关的坑，就把这里详细看了一下。&lt;/p&gt;
+&lt;h2 id="观察现象"&gt;&lt;a href="#%e8%a7%82%e5%af%9f%e7%8e%b0%e8%b1%a1" class="header-anchor"&gt;&lt;/a&gt;观察现象
+&lt;/h2&gt;&lt;p&gt;首先是这个日志是红色的，INFO级别，而且在log4j.properties中添加&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;div class="chroma"&gt;
+&lt;table class="lntable"&gt;&lt;tr&gt;&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code&gt;&lt;span class="lnt"&gt;1
+&lt;/span&gt;&lt;span class="lnt"&gt;2
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code class="language-properties" data-lang="properties"&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="na"&gt;log4j.logger.net.spy.memcached&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;ERROR, console&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="na"&gt;log4j.logger.addivitity.*&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;false&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;是不起作用的。&lt;/p&gt;
+&lt;h2 id="分析原因"&gt;&lt;a href="#%e5%88%86%e6%9e%90%e5%8e%9f%e5%9b%a0" class="header-anchor"&gt;&lt;/a&gt;分析原因
+&lt;/h2&gt;&lt;p&gt;由于之前对log4j的配置文件也不太熟悉，所以一直想着是自己的配置文件没有写对导致的，而忽略了其他原因。昨天弄明白了如果要改变某个指定的包的日志配置就是这样做，所以就确定了配置文件没有问题。那么原因就只可能是这个包记录日志根本就没有用log4j。那它用的是啥呢？不想翻文档就只能debug了。&lt;/p&gt;
+&lt;p&gt;首先找到记日志的地方，打个断点，执行程序，一步一步往下跟，找到这里&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://techinsight.pages.dev/images/2020-11-21-14-23-53.png"
+loading="lazy"
+&gt;&lt;/p&gt;
+&lt;p&gt;很明显具体拿到的Logger类就是在这里决定的了，这段简单来说就是如果系统没有设置&lt;code&gt;net.spy.log.LoggerImpl&lt;/code&gt;属性，就用默认的&lt;code&gt;DefaultLogger&lt;/code&gt;，实际上跟到这里确实也发现就是没有设置这个属性，从而&lt;code&gt;className&lt;/code&gt;拿到的是个空，所以也就没有log4j什么事儿了。&lt;/p&gt;
+&lt;h2 id="改造方案"&gt;&lt;a href="#%e6%94%b9%e9%80%a0%e6%96%b9%e6%a1%88" class="header-anchor"&gt;&lt;/a&gt;改造方案
+&lt;/h2&gt;&lt;p&gt;既然知道了问题的根源，那么我们就设置一下这个属性就行了，它是从&lt;code&gt;System.getProperty()&lt;/code&gt;方法获取的，那么我们就从&lt;code&gt;System.setProperty()&lt;/code&gt;方法设置它。那么要设置成什么呢？打开这个&lt;code&gt;net.spy.log&lt;/code&gt;目录，就会发现它提供了几个默认的实现&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://techinsight.pages.dev/images/2020-11-21-14-28-20.png"
+loading="lazy"
+&gt;&lt;/p&gt;
+&lt;p&gt;很明显我们要找的就是&lt;code&gt;net.spy.memcached.compat.log.Log4jLogger&lt;/code&gt;，所以只需要在程序入口加上这行&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;div class="chroma"&gt;
+&lt;table class="lntable"&gt;&lt;tr&gt;&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code&gt;&lt;span class="lnt"&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code class="language-java" data-lang="java"&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="n"&gt;System&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="na"&gt;setProperty&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;&amp;#34;net.spy.log.LoggerImpl&amp;#34;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s"&gt;&amp;#34;net.spy.memcached.compat.log.Log4JLogger&amp;#34;&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;blockquote&gt;
+&lt;p&gt;这个很可能是slf4j这种日志门面出现之前的一种自己实现的方案，而slf4j-api/log4j-api就是解决这个问题的了。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;即可。加上之后再运行程序就会发现颜色已经和其他的日志一样了。&lt;/p&gt;
+&lt;h2 id="总结"&gt;&lt;a href="#%e6%80%bb%e7%bb%93" class="header-anchor"&gt;&lt;/a&gt;总结
+&lt;/h2&gt;&lt;p&gt;只要把问题回归到我们会的问题上，后面的问题就很容易解决了，前面已经配置了log4j.properties，所以当然也就可以方便的控制它的日志级别了。&lt;/p&gt;</description></item></channel></rss>

@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Memory-Leak on Tech In Sight</title><link>https://techinsight.pages.dev/tags/memory-leak/</link><description>Recent content in Memory-Leak on Tech In Sight</description><generator>Hugo -- gohugo.io</generator><language>zh-cn</language><lastBuildDate>Sun, 05 Apr 2020 23:11:28 +0800</lastBuildDate><atom:link href="https://techinsight.pages.dev/tags/memory-leak/index.xml" rel="self" type="application/rss+xml"/><item><title>Java内存泄漏排查记录</title><link>https://techinsight.pages.dev/p/java%E5%86%85%E5%AD%98%E6%B3%84%E6%BC%8F%E6%8E%92%E6%9F%A5%E8%AE%B0%E5%BD%95/</link><pubDate>Sun, 05 Apr 2020 23:11:28 +0800</pubDate><guid>https://techinsight.pages.dev/p/java%E5%86%85%E5%AD%98%E6%B3%84%E6%BC%8F%E6%8E%92%E6%9F%A5%E8%AE%B0%E5%BD%95/</guid><description>&lt;p&gt;我们用Java是为了让它自动管理内存，然后我的第一个Java项目上线就面临排查线程数过多导致无法创建新线程、内存泄漏导致机器重启各种个样的问题。这和我原本想象的可不一样。&lt;/p&gt;
+&lt;p&gt;最近几天比较忙，排查的过程没有有效的记录下来，但其实也不影响最终的结果，因为并不是代码的问题导致的内存泄漏，而是docker的版本问题。&lt;/p&gt;
+&lt;h2 id="现象描述"&gt;&lt;a href="#%e7%8e%b0%e8%b1%a1%e6%8f%8f%e8%bf%b0" class="header-anchor"&gt;&lt;/a&gt;现象描述
+&lt;/h2&gt;&lt;p&gt;我理解的内存泄漏应该是内存的缓慢增长，但实际上从监控曲线看，它总是每隔几分钟就突增一次，每次增加的量大概是物理机内存总量的15%，所以能在30分钟左右就耗尽物理机的内存，最终docker进程挂掉，内存释放。&lt;/p&gt;
+&lt;p&gt;注意，这里的现象是docker服务挂掉，而不是运行tomcat的容器挂掉。这是一个很重要的信号，也是在最早期被忽略的线索。&lt;/p&gt;
+&lt;p&gt;同时还发现，当内存占用量不停升高时，重启运行tomcat的容器并不能释放内存。这一点很反常规，因为按我们的理解，tomcat是一个jvm进程，当jvm进程重启时，它对应的内存泄漏应该也被释放才对。这时候我们又被绕进了另外一个误区，去排查native memory了，这里按下不表。&lt;/p&gt;
+&lt;p&gt;其实从上面的描述看，最可能的问题是在docker上。使用的docker版本是非常老的1.6.2，java版本是adoptopenjdk 1.8.242，按照官方的说法，在jdk 1.8.131之后，jvm已经可以识别cgroup，即可以感知到自己是在容器中运行，因而不会将物理机的总内存认为是jvm可用的总内存。但还是无法解释我们遇到但问题。一筹莫展之际，我尝试了在宿主机上执行运行tomcat，持续运行了几个小时，内存占用率一直在15%左右，非常稳定，内存泄漏的问题不见了。&lt;/p&gt;
+&lt;p&gt;那么基本上就锁定是docker的问题了。升级docker版本到1.13.1，问题解决。&lt;/p&gt;
+&lt;h2 id="排查用到的工具"&gt;&lt;a href="#%e6%8e%92%e6%9f%a5%e7%94%a8%e5%88%b0%e7%9a%84%e5%b7%a5%e5%85%b7" class="header-anchor"&gt;&lt;/a&gt;排查用到的工具
+&lt;/h2&gt;&lt;p&gt;虽然排查的过程走了不少弯路，但基本上能用到的排查工具也都用到了。这里只记录一下大概，用到的时候还是要查对应的文档。&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;code&gt;jps&lt;/code&gt;&lt;br /&gt;
+首先是最基础的&lt;code&gt;jps -lvVm&lt;/code&gt;，可以看到整个jvm进程的启动参数，也可以用于验证指定的各种命令行参数是否生效了。&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;code&gt;visualvm&lt;/code&gt;&lt;br /&gt;
+这个就是比较高端的分析工具了，最重要的是它能连接远程jvm进程，实时查看堆内存和gc的情况，甚至还有很多插件用于查看更多信息。但对于我们的这个情况来说，只能看到堆内存的占用一直维持在一个正常水平，ygc也很正常，整个内存的使用情况呈锯齿状，能说明堆内存没有泄漏。&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;code&gt;perf&lt;/code&gt;&lt;br /&gt;
+这是linux内核支持的工具，可以监听指定进程在一段时间内的所有系统调用。&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;code&gt;mat&lt;/code&gt;&lt;br /&gt;
+全称Memory Analyzer Tool, 可以用于分析生成的hprof文件，这个hprof文件可以是系统崩溃时自动生成的堆内存快照，也可以是由&lt;code&gt;jmap&lt;/code&gt;生成。&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;code&gt;jmap&lt;/code&gt;&lt;br /&gt;
+生成可供&lt;code&gt;mat&lt;/code&gt;分析的内存快照。&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;blockquote&gt;
+&lt;p&gt;需要注意的是&lt;code&gt;.hprof&lt;/code&gt;文件可能会非常大，最好监控起来，一方面是因为除去人为通过jmap生成的情况之外，都是系统崩溃了才会生成，另一方面是文件太大，很可能会快速占满磁盘空间。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;基本上常用的内存检查工具就这些了，关于这些工具的详细使用方法，最好还是参照官方文档，后面如果再遇到需要查内存泄漏的例子，将会在这里补充一些具体的案例。&lt;/p&gt;</description></item></channel></rss>

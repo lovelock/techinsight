@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>剪贴板 on Tech In Sight</title><link>https://techinsight.pages.dev/tags/%E5%89%AA%E8%B4%B4%E6%9D%BF/</link><description>Recent content in 剪贴板 on Tech In Sight</description><generator>Hugo -- gohugo.io</generator><language>zh-cn</language><lastBuildDate>Sat, 08 Mar 2025 10:38:14 +0800</lastBuildDate><atom:link href="https://techinsight.pages.dev/tags/%E5%89%AA%E8%B4%B4%E6%9D%BF/index.xml" rel="self" type="application/rss+xml"/><item><title>Linux下模拟macOS键位绑定</title><link>https://techinsight.pages.dev/p/linux%E4%B8%8B%E6%A8%A1%E6%8B%9Fmacos%E9%94%AE%E4%BD%8D%E7%BB%91%E5%AE%9A/</link><pubDate>Sat, 08 Mar 2025 10:38:14 +0800</pubDate><guid>https://techinsight.pages.dev/p/linux%E4%B8%8B%E6%A8%A1%E6%8B%9Fmacos%E9%94%AE%E4%BD%8D%E7%BB%91%E5%AE%9A/</guid><description>&lt;h2 id="引言"&gt;&lt;a href="#%e5%bc%95%e8%a8%80" class="header-anchor"&gt;&lt;/a&gt;引言
+&lt;/h2&gt;&lt;p&gt;作为一个多年macOS用户，最近切换到Linux后，最不习惯的就是键位绑定。macOS的快捷键设计非常符合我的操作习惯，而Linux的默认键位让我感到非常不适应。为了解决这个问题，我开始了寻找键位绑定解决方案的旅程。经过一番折腾，最终找到了一个相对完美的解决方案——&lt;strong&gt;Toshy&lt;/strong&gt;。在这篇博客中，我将记录下我的解决过程，希望能帮助到有同样需求的朋友。&lt;/p&gt;
+&lt;h2 id="寻找解决方案"&gt;&lt;a href="#%e5%af%bb%e6%89%be%e8%a7%a3%e5%86%b3%e6%96%b9%e6%a1%88" class="header-anchor"&gt;&lt;/a&gt;寻找解决方案
+&lt;/h2&gt;&lt;p&gt;在Linux下模拟macOS键位绑定，我首先想到的是通过修改系统键位映射来实现。经过一番搜索，我发现了以下几种常见的方案：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;xmodmap&lt;/strong&gt;：这是一个经典的X11工具，可以通过修改键位映射来实现自定义键位。不过，它的功能相对基础，无法实现复杂的键位绑定逻辑。&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;Toshy&lt;/strong&gt;：这是一个专门为Linux设计的键位映射工具，旨在将macOS的键位绑定移植到Linux上。它支持Gnome、KDE等多种桌面环境，并且配置相对简单。最终，我决定尝试Toshy。&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h2 id="安装与配置toshy"&gt;&lt;a href="#%e5%ae%89%e8%a3%85%e4%b8%8e%e9%85%8d%e7%bd%aetoshy" class="header-anchor"&gt;&lt;/a&gt;安装与配置Toshy
+&lt;/h2&gt;&lt;p&gt;按照Toshy的官方文档，我首先通过以下命令安装了Toshy：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;div class="chroma"&gt;
+&lt;table class="lntable"&gt;&lt;tr&gt;&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code&gt;&lt;span class="lnt"&gt;1
+&lt;/span&gt;&lt;span class="lnt"&gt;2
+&lt;/span&gt;&lt;span class="lnt"&gt;3
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code class="language-bash" data-lang="bash"&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;git clone https://github.com/RedBearAK/toshy.git
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="nb"&gt;cd&lt;/span&gt; toshy
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;./setup_toshy.py install
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;安装完成后，我启动了Toshy服务，但发现键位绑定并没有生效。于是，我查看了服务日志，发现还需要安装一个名为&lt;code&gt;xremap&lt;/code&gt;的Gnome扩展。安装完成后，Toshy终于可以正常工作了。&lt;/p&gt;
+&lt;h4 id="3-解决vs-code中的快捷键冲突"&gt;&lt;a href="#3-%e8%a7%a3%e5%86%b3vs-code%e4%b8%ad%e7%9a%84%e5%bf%ab%e6%8d%b7%e9%94%ae%e5%86%b2%e7%aa%81" class="header-anchor"&gt;&lt;/a&gt;3. 解决VS Code中的快捷键冲突
+&lt;/h4&gt;&lt;p&gt;虽然Toshy在大多数情况下工作良好，但在VS Code中，我发现了一些问题。例如，&lt;code&gt;Ctrl+E&lt;/code&gt;本来是希望光标跳转到行末，但在终端中却执行了“查找文件”的操作。经过排查，我发现在VS Code的键位绑定中，可以通过调整&lt;code&gt;when&lt;/code&gt;条件来避免这种冲突。&lt;/p&gt;
+&lt;p&gt;具体来说，我在VS Code的&lt;code&gt;keybindings.json&lt;/code&gt;文件中，将&lt;code&gt;Ctrl+E&lt;/code&gt;的绑定条件改为&lt;code&gt;editorTextFocused&lt;/code&gt;，这样它就不会在终端中生效了。类似的，其他快捷键也可以通过调整&lt;code&gt;when&lt;/code&gt;条件来避免冲突。&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;div class="chroma"&gt;
+&lt;table class="lntable"&gt;&lt;tr&gt;&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code&gt;&lt;span class="lnt"&gt; 1
+&lt;/span&gt;&lt;span class="lnt"&gt; 2
+&lt;/span&gt;&lt;span class="lnt"&gt; 3
+&lt;/span&gt;&lt;span class="lnt"&gt; 4
+&lt;/span&gt;&lt;span class="lnt"&gt; 5
+&lt;/span&gt;&lt;span class="lnt"&gt; 6
+&lt;/span&gt;&lt;span class="lnt"&gt; 7
+&lt;/span&gt;&lt;span class="lnt"&gt; 8
+&lt;/span&gt;&lt;span class="lnt"&gt; 9
+&lt;/span&gt;&lt;span class="lnt"&gt;10
+&lt;/span&gt;&lt;span class="lnt"&gt;11
+&lt;/span&gt;&lt;span class="lnt"&gt;12
+&lt;/span&gt;&lt;span class="lnt"&gt;13
+&lt;/span&gt;&lt;span class="lnt"&gt;14
+&lt;/span&gt;&lt;span class="lnt"&gt;15
+&lt;/span&gt;&lt;span class="lnt"&gt;16
+&lt;/span&gt;&lt;span class="lnt"&gt;17
+&lt;/span&gt;&lt;span class="lnt"&gt;18
+&lt;/span&gt;&lt;span class="lnt"&gt;19
+&lt;/span&gt;&lt;span class="lnt"&gt;20
+&lt;/span&gt;&lt;span class="lnt"&gt;21
+&lt;/span&gt;&lt;span class="lnt"&gt;22
+&lt;/span&gt;&lt;span class="lnt"&gt;23
+&lt;/span&gt;&lt;span class="lnt"&gt;24
+&lt;/span&gt;&lt;span class="lnt"&gt;25
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code class="language-json" data-lang="json"&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="p"&gt;[&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="p"&gt;{&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="nt"&gt;&amp;#34;key&amp;#34;&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="s2"&gt;&amp;#34;ctrl+e&amp;#34;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="nt"&gt;&amp;#34;command&amp;#34;&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="s2"&gt;&amp;#34;workbench.action.quickOpen&amp;#34;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="nt"&gt;&amp;#34;when&amp;#34;&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="s2"&gt;&amp;#34;editorTextFocus&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="p"&gt;},&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="p"&gt;{&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="nt"&gt;&amp;#34;key&amp;#34;&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="s2"&gt;&amp;#34;ctrl+e&amp;#34;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="nt"&gt;&amp;#34;command&amp;#34;&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="s2"&gt;&amp;#34;-workbench.action.quickOpen&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="p"&gt;},&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="p"&gt;{&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="nt"&gt;&amp;#34;key&amp;#34;&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="s2"&gt;&amp;#34;ctrl+p&amp;#34;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="nt"&gt;&amp;#34;command&amp;#34;&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="s2"&gt;&amp;#34;workbench.action.quickOpen&amp;#34;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="nt"&gt;&amp;#34;when&amp;#34;&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="s2"&gt;&amp;#34;editorTextFocus&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="p"&gt;},&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="p"&gt;{&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="nt"&gt;&amp;#34;key&amp;#34;&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="s2"&gt;&amp;#34;ctrl+p&amp;#34;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="nt"&gt;&amp;#34;command&amp;#34;&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="s2"&gt;&amp;#34;-workbench.action.quickOpen&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="p"&gt;},&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="p"&gt;{&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="nt"&gt;&amp;#34;key&amp;#34;&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="s2"&gt;&amp;#34;ctrl+f&amp;#34;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="nt"&gt;&amp;#34;command&amp;#34;&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="s2"&gt;&amp;#34;-workbench.action.terminal.focusFind&amp;#34;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="nt"&gt;&amp;#34;when&amp;#34;&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="s2"&gt;&amp;#34;terminalFindFocused &amp;amp;&amp;amp; terminalHasBeenCreated || terminalFindFocused &amp;amp;&amp;amp; terminalProcessSupported || terminalFocusInAny &amp;amp;&amp;amp; terminalHasBeenCreated || terminalFocusInAny &amp;amp;&amp;amp; terminalProcessSupported&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="p"&gt;}&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="p"&gt;]&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;加上以上配置，就基本上能在终端里保持在独立终端中的体验了。&lt;/p&gt;
+&lt;p&gt;如果还不行，可能还要在user Settings里加上这行&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;div class="chroma"&gt;
+&lt;table class="lntable"&gt;&lt;tr&gt;&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code&gt;&lt;span class="lnt"&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code class="language-json" data-lang="json"&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="s2"&gt;&amp;#34;terminal.integrated.allowChords&amp;#34;&lt;/span&gt;&lt;span class="err"&gt;:&lt;/span&gt; &lt;span class="kc"&gt;false&lt;/span&gt;&lt;span class="err"&gt;,&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;这个就是避免在终端中触发全局快捷键，比如Ctrl-K作为前缀开始的一些组合操作。这些组合操作我是完全没有用过的，所以关了能解决一些问题。&lt;/p&gt;
+&lt;h4 id="4-解决vim模式下的剪贴板问题"&gt;&lt;a href="#4-%e8%a7%a3%e5%86%b3vim%e6%a8%a1%e5%bc%8f%e4%b8%8b%e7%9a%84%e5%89%aa%e8%b4%b4%e6%9d%bf%e9%97%ae%e9%a2%98" class="header-anchor"&gt;&lt;/a&gt;4. 解决Vim模式下的剪贴板问题
+&lt;/h4&gt;&lt;p&gt;在VS Code中使用Vim模式时，我发现&lt;code&gt;Ctrl+C&lt;/code&gt;和&lt;code&gt;Ctrl+V&lt;/code&gt;无法正常工作，需要加上&lt;code&gt;Shift&lt;/code&gt;才行，但我现在也没有仔细研究toshy的实现机制，所以也没办法改配置。为了解决这个问题，我希望在Vim模式下使用系统剪贴板进行复制粘贴。&lt;/p&gt;
+&lt;p&gt;具体做法是，在Vim扩展配置中，勾选使用系统剪贴板。&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://techinsight.pages.dev/static/images/vscode-vim-clipboard.png"
+loading="lazy"
+&gt;&lt;/p&gt;
+&lt;p&gt;其他app如果想使用系统剪贴板可以自行搜索，一般都很简单。&lt;/p&gt;
+&lt;h4 id="5-总结"&gt;&lt;a href="#5-%e6%80%bb%e7%bb%93" class="header-anchor"&gt;&lt;/a&gt;5. 总结
+&lt;/h4&gt;&lt;p&gt;通过Toshy，我成功地在Linux下模拟了macOS的键位绑定，解决了大部分操作习惯上的不适。虽然在VS Code和Vim模式下遇到了一些问题，但通过调整键位绑定和Vim配置，最终也找到了解决方案。&lt;/p&gt;
+&lt;p&gt;如果你也是一个从macOS切换到Linux的用户，希望这篇博客能帮助你更快地适应新的操作环境。如果你有更好的解决方案或建议，欢迎在评论区分享！&lt;/p&gt;
+&lt;h4 id="参考链接"&gt;&lt;a href="#%e5%8f%82%e8%80%83%e9%93%be%e6%8e%a5" class="header-anchor"&gt;&lt;/a&gt;参考链接
+&lt;/h4&gt;&lt;ul&gt;
+&lt;li&gt;&lt;a class="link" href="https://github.com/RedBearAK/toshy" target="_blank" rel="noopener"
+&gt;Toshy GitHub仓库&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a class="link" href="https://code.visualstudio.com/docs/getstarted/keybindings" target="_blank" rel="noopener"
+&gt;VS Code键位绑定文档&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a class="link" href="https://vim.fandom.com/wiki/Accessing_the_system_clipboard" target="_blank" rel="noopener"
+&gt;Vim剪贴板配置&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;</description></item></channel></rss>

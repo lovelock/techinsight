@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Ryzentosh on Tech In Sight</title><link>https://techinsight.pages.dev/categories/ryzentosh/</link><description>Recent content in Ryzentosh on Tech In Sight</description><generator>Hugo -- gohugo.io</generator><language>zh-cn</language><lastBuildDate>Sun, 29 Mar 2020 10:49:38 +0800</lastBuildDate><atom:link href="https://techinsight.pages.dev/categories/ryzentosh/index.xml" rel="self" type="application/rss+xml"/><item><title>AMD黑苹果的装机经验</title><link>https://techinsight.pages.dev/p/amd%E9%BB%91%E8%8B%B9%E6%9E%9C%E7%9A%84%E8%A3%85%E6%9C%BA%E7%BB%8F%E9%AA%8C/</link><pubDate>Sun, 29 Mar 2020 10:49:38 +0800</pubDate><guid>https://techinsight.pages.dev/p/amd%E9%BB%91%E8%8B%B9%E6%9E%9C%E7%9A%84%E8%A3%85%E6%9C%BA%E7%BB%8F%E9%AA%8C/</guid><description>&lt;p&gt;实在是受不了MBP13孱弱的性能和糟糕的发热，终于下定决心组装一台台式机。最终还是真香。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;本文操作过程基于白苹果，Windows环境的小伙伴可参考其他教程&lt;/strong&gt;&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;本次操作的大部分流程都基于&lt;a class="link" href="https://khronokernel-2.gitbook.io/opencore-vanilla-desktop-guide/" target="_blank" rel="noopener"
+&gt;opencore-vanilla-desktop-guide&lt;/a&gt;，感谢国内外友人对黑苹果作出的卓越贡献。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;用过两个MacBookPro，最大的感觉就是用起来很方便（我是一个软件开发者），但性能实在是太弱鸡了，严重影响了效率。以至于黑苹果安装完成之后我发现原来的过渡动画竟然不见了。。。对，就是这么明显。&lt;/p&gt;
+&lt;h2 id="准备阶段"&gt;&lt;a href="#%e5%87%86%e5%a4%87%e9%98%b6%e6%ae%b5" class="header-anchor"&gt;&lt;/a&gt;准备阶段
+&lt;/h2&gt;&lt;p&gt;为了这个黑苹果，我全新配置了一台台式机，配置也是改了又改，最终性能需求战胜了便携性，选择了一台MATX机箱。&lt;/p&gt;
+&lt;p&gt;选择配置考虑的问题如下：&lt;/p&gt;
+&lt;h3 id="1-cpu"&gt;&lt;a href="#1-cpu" class="header-anchor"&gt;&lt;/a&gt;1. CPU
+&lt;/h3&gt;&lt;p&gt;我就是需要一个性能强劲的CPU和足够的内存。本来想着上i7 9700KF，但如果上了这个CPU，就还需要配一块Z390主板，成本太高了就失去了黑苹果的意义了。&lt;/p&gt;
+&lt;p&gt;当然AMD YES!!!&lt;/p&gt;
+&lt;p&gt;我知道AMD的黑苹果可能遇到更多的问题，本着遇到问题解决问题的态度，还是硬着头皮上了。&lt;/p&gt;
+&lt;h3 id="2-主板"&gt;&lt;a href="#2-%e4%b8%bb%e6%9d%bf" class="header-anchor"&gt;&lt;/a&gt;2. 主板
+&lt;/h3&gt;&lt;p&gt;主板也是在华硕的Tuf B450 Pro Gaming和微星的迫击炮MAX之间纠结了很久，最终还是随大流选择了迫击炮。这里提个醒，3600原装的CPU散热器和内存插槽会有冲突，如果不让它和内存插槽有冲突，它就会和朝后的IO接口散热片有冲突。我只在A2和B2两个位置插了内存，所以还好。如果你用塔式散热器可能也不存在这个问题，但我不确定会不会出现其他的问题。&lt;/p&gt;
+&lt;h3 id="3-显卡"&gt;&lt;a href="#3-%e6%98%be%e5%8d%a1" class="header-anchor"&gt;&lt;/a&gt;3. 显卡
+&lt;/h3&gt;&lt;p&gt;推荐的最多的就是RX 580 2304SP，但现在几乎已经买不到全新的满血版本了，一天在京东看到了盈通的RX 580 游戏高手，惊喜的发现竟然是满血版本，而且还是三风扇设计。由于我对显卡的性能要求不高，所以一般也不会满载，功耗什么的应该也没有太大的区别。虽然1119不是什么好价格（毕竟听说之前有蓝宝石999的RX 590 OC），但对比价格高了300块但性能差不多的RX 5500XT还是更合适一点。&lt;/p&gt;
+&lt;h3 id="4-内存"&gt;&lt;a href="#4-%e5%86%85%e5%ad%98" class="header-anchor"&gt;&lt;/a&gt;4. 内存
+&lt;/h3&gt;&lt;p&gt;16G应该足够了，尤其是现在内存涨价那么厉害的时候，芝奇Snipper X 3200 8Gx2，迷彩马甲，看起来还可以。&lt;/p&gt;
+&lt;h3 id="5-其他"&gt;&lt;a href="#5-%e5%85%b6%e4%bb%96" class="header-anchor"&gt;&lt;/a&gt;5. 其他
+&lt;/h3&gt;&lt;p&gt;机箱和硬盘就没啥说的了，硬盘只要不选择三星PM981就行了。而且我这次也没有买硬盘。&lt;/p&gt;
+&lt;h3 id="6-机箱风扇"&gt;&lt;a href="#6-%e6%9c%ba%e7%ae%b1%e9%a3%8e%e6%89%87" class="header-anchor"&gt;&lt;/a&gt;6. 机箱风扇
+&lt;/h3&gt;&lt;p&gt;本来以为机箱风扇并不是必须用品，而且我也不玩游戏，想必机器的负载不会很高，但实际使用中发现玻璃侧板还是有点温热的。想来也是，因为CPU的风扇把热风吹到玻璃侧板上，GPU的风扇往下吹，不管怎么样都没有让热空气往外走的路径。于是在机箱背部和上部各安装了一把12厘米的风扇，效果立竿见影，玻璃侧板一直冷冰冰了。&lt;/p&gt;
+&lt;h2 id="配置单"&gt;&lt;a href="#%e9%85%8d%e7%bd%ae%e5%8d%95" class="header-anchor"&gt;&lt;/a&gt;配置单
+&lt;/h2&gt;&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;配件&lt;/th&gt;
+&lt;th&gt;型号&lt;/th&gt;
+&lt;th&gt;价格&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;CPU+主板&lt;/td&gt;
+&lt;td&gt;AMD 3600 + MSI Motar MAX&lt;/td&gt;
+&lt;td&gt;1919&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;显卡&lt;/td&gt;
+&lt;td&gt;盈通RX580游戏高手&lt;/td&gt;
+&lt;td&gt;1119&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;内存&lt;/td&gt;
+&lt;td&gt;芝奇 Snipper X 3200 8GB x 2&lt;/td&gt;
+&lt;td&gt;598&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;机箱&lt;/td&gt;
+&lt;td&gt;先马平头哥M1&lt;/td&gt;
+&lt;td&gt;159&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;硬盘&lt;/td&gt;
+&lt;td&gt;浦科特M6M（2014年的存货）+一块HGST的500G机械盘&lt;/td&gt;
+&lt;td&gt;0&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;优盘&lt;/td&gt;
+&lt;td&gt;闪迪Cruzer Glide 3.0 32GB&lt;/td&gt;
+&lt;td&gt;29.9&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;机箱风扇&lt;/td&gt;
+&lt;td&gt;追风者工包RGB 2把，型号未知&lt;/td&gt;
+&lt;td&gt;39.8&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;h2 id="安装过程"&gt;&lt;a href="#%e5%ae%89%e8%a3%85%e8%bf%87%e7%a8%8b" class="header-anchor"&gt;&lt;/a&gt;安装过程
+&lt;/h2&gt;&lt;h3 id="1-制作安装盘"&gt;&lt;a href="#1-%e5%88%b6%e4%bd%9c%e5%ae%89%e8%a3%85%e7%9b%98" class="header-anchor"&gt;&lt;/a&gt;1. 制作安装盘
+&lt;/h3&gt;&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;格式化优盘&lt;/p&gt;
+&lt;p&gt;虽然这个看起来是最简单的，但我偏偏是在这里出了问题。&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://techinsight.pages.dev/images/image-20200321185555867.png"
+loading="lazy"
+alt="image-20200321185555867"
+&gt;&lt;/p&gt;
+&lt;p&gt;注意这两个选项，如果你默认选中的是第一个，则在抹掉优盘的时候就找不到分区表的方式，如下图所示&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://techinsight.pages.dev/images/image-20200321185714075.png"
+loading="lazy"
+alt="image-20200321185714075"
+&gt;&lt;/p&gt;
+&lt;p&gt;如果选择了Show All Devices，就如下图所示&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://techinsight.pages.dev/images/image-20200321185814231.png"
+loading="lazy"
+alt="image-20200321185814231"
+&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h3 id="2-下载必备软件包"&gt;&lt;a href="#2-%e4%b8%8b%e8%bd%bd%e5%bf%85%e5%a4%87%e8%bd%af%e4%bb%b6%e5%8c%85" class="header-anchor"&gt;&lt;/a&gt;2. 下载必备软件包
+&lt;/h3&gt;&lt;h4 id="1-下载操作系统"&gt;&lt;a href="#1-%e4%b8%8b%e8%bd%bd%e6%93%8d%e4%bd%9c%e7%b3%bb%e7%bb%9f" class="header-anchor"&gt;&lt;/a&gt;1. 下载操作系统
+&lt;/h4&gt;&lt;p&gt;从Mac AppStore下载最新的macOS Catalina 10.15.3，然后执行&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;div class="chroma"&gt;
+&lt;table class="lntable"&gt;&lt;tr&gt;&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code&gt;&lt;span class="lnt"&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code class="language-fallback" data-lang="fallback"&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;sudo /Applications/Install\ macOS\ Catalina.app/Contents/Resources/createinstallmedia --volume /Volumes/MyVolume
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;h4 id="2-下载mountefi"&gt;&lt;a href="#2-%e4%b8%8b%e8%bd%bdmountefi" class="header-anchor"&gt;&lt;/a&gt;2. 下载&lt;code&gt;MountEFI&lt;/code&gt;
+&lt;/h4&gt;&lt;p&gt;执行&lt;code&gt;./MountEFI.command&lt;/code&gt;，会弹出&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://techinsight.pages.dev/image-20200321191930513.png"
+loading="lazy"
+alt="image-20200321191930513"
+&gt;&lt;/p&gt;
+&lt;p&gt;正常制作完USB启动盘之后会有一个上图标红的挂载点，选它就行了。然后输入密码，这时在Finder里会看到有一个EFI挂载点，正常是空的。后面配置完OpenCore之后把EFI目录放在里面就行了。&lt;/p&gt;
+&lt;h3 id="3-配置configplist"&gt;&lt;a href="#3-%e9%85%8d%e7%bd%aeconfigplist" class="header-anchor"&gt;&lt;/a&gt;3. 配置&lt;code&gt;config.plist&lt;/code&gt;
+&lt;/h3&gt;&lt;p&gt;这是整个过程最复杂的一步了，但只要按照我在文章开头附上的链接一步步操作，肯定不会有问题。不得不说，那个教程真是严谨。甚至还有一个配置检查器，如果有问题可以提前发现，避免直接上机执行反复重启浪费时间。&lt;/p&gt;
+&lt;p&gt;不过这里我就不详细描述了，只把最终我配置好的EFI目录放在这里，供大家直接使用。&lt;/p&gt;
+&lt;h2 id="使用优盘启动"&gt;&lt;a href="#%e4%bd%bf%e7%94%a8%e4%bc%98%e7%9b%98%e5%90%af%e5%8a%a8" class="header-anchor"&gt;&lt;/a&gt;使用优盘启动
+&lt;/h2&gt;&lt;p&gt;优盘插到台式机的USB上，启动时按F11选择启动项，选择那个很明显是优盘的选项。然后就开始跑代码了，之后就一步一步的进行安装过程。&lt;/p&gt;
+&lt;p&gt;进入系统之后先不要做任何配置，因为你可能还没有安装成功。这时候系统还只能从优盘启动，如果拔了优盘，就看不到黑苹果的启动项了。&lt;/p&gt;
+&lt;h2 id="免优盘启动"&gt;&lt;a href="#%e5%85%8d%e4%bc%98%e7%9b%98%e5%90%af%e5%8a%a8" class="header-anchor"&gt;&lt;/a&gt;免优盘启动
+&lt;/h2&gt;&lt;p&gt;其实仔细想下就知道是因为你安装了黑苹果的磁盘没有优盘里面的那个EFI目录（当然不只是目录）。所以问题也就迎刃而解了。&lt;/p&gt;
+&lt;p&gt;在新安装的黑苹果执行&lt;code&gt;MountEFI&lt;/code&gt;，选择优盘，把优盘里的EFI目录整个复制到桌面上。然后把优盘卸载掉，再挂载你安装了黑苹果的系统盘。这时就看到了系统盘里面的EFI挂载点，然后把刚才放在桌面上的EFI目录放在系统盘的EFI挂载点里。&lt;/p&gt;
+&lt;p&gt;这时你的系统就可以不用优盘启动了。&lt;/p&gt;
+&lt;p&gt;你可能会问，为什么不能同时挂载两个，直接拖过去呢？放在桌面上这一步看起来很多余。其实上述的文档里专门提到了这一点，因为如果系统同时有两个EFI被挂载了，它可能就懵逼了，为了避免不必要的麻烦，还是事先麻烦一点好。&lt;/p&gt;
+&lt;p&gt;不过这时候启动还是会跑代码，我觉得无所谓，就还没有花时间研究。&lt;/p&gt;
+&lt;h2 id="总结"&gt;&lt;a href="#%e6%80%bb%e7%bb%93" class="header-anchor"&gt;&lt;/a&gt;总结
+&lt;/h2&gt;&lt;p&gt;现在基本上能正常使用了，几个不太重要的问题还没有解决。&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;iService不能用，因为没有找到合适的Serial Number，也就是序列号。教程中的序列号生成器生成的序列号，去苹果官网上总是验证不通过，验证不通过也不影响使用AppleID，只是无法使用iMessage等我不用的服务，所以无所谓了。&lt;/li&gt;
+&lt;li&gt;启动时跑代码，这个应该就是一个&lt;del&gt;Debug&lt;/del&gt;Verbose模式，我还没有仔细研究，无关紧要了。实际上只要在&lt;code&gt;config.plist&lt;/code&gt;中找到&lt;code&gt;boot-args&lt;/code&gt;，把后面的值里面的&lt;code&gt;-v&lt;/code&gt;删掉就可以了。&lt;/li&gt;
+&lt;li&gt;我用的是有线网络，所以蓝牙、无线还未配置，也没有计划研究了。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h2 id="补充"&gt;&lt;a href="#%e8%a1%a5%e5%85%85" class="header-anchor"&gt;&lt;/a&gt;补充
+&lt;/h2&gt;&lt;p&gt;后来发现一些比较头疼的问题&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;无法睡眠、休眠：点击睡眠后总是黑屏1秒后重新唤醒，不知道是不是什么驱动没有装好的问题，而且我也不知道台式机睡眠会是什么样子。。。&lt;/li&gt;
+&lt;li&gt;机箱前面板的USB2.0接口无法使用：根本不通电，检查了线缆应该是插错，由于没有Windows系统，也就无法验证。不过好在我也用不到这两个插口，所以无所谓了。&lt;/li&gt;
+&lt;/ol&gt;</description></item></channel></rss>

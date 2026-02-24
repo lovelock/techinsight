@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Key-Repeat on Tech In Sight</title><link>https://techinsight.pages.dev/tags/key-repeat/</link><description>Recent content in Key-Repeat on Tech In Sight</description><generator>Hugo -- gohugo.io</generator><language>zh-cn</language><lastBuildDate>Sat, 21 Nov 2020 22:48:25 +0800</lastBuildDate><atom:link href="https://techinsight.pages.dev/tags/key-repeat/index.xml" rel="self" type="application/rss+xml"/><item><title>macOS设置Key Repeat和Delay Until Repeat</title><link>https://techinsight.pages.dev/p/macos%E8%AE%BE%E7%BD%AEkey-repeat%E5%92%8Cdelay-until-repeat/</link><pubDate>Sat, 21 Nov 2020 22:48:25 +0800</pubDate><guid>https://techinsight.pages.dev/p/macos%E8%AE%BE%E7%BD%AEkey-repeat%E5%92%8Cdelay-until-repeat/</guid><description>&lt;p&gt;macOS上用Vim觉得很卡顿，不流畅，终于找到原因了。&lt;/p&gt;
+&lt;p&gt;有两个相关设置&lt;br /&gt;
+&lt;img src="https://techinsight.pages.dev/images/2020-11-21-22-50-28.png"
+loading="lazy"
+&gt;&lt;/p&gt;
+&lt;p&gt;这两个把&lt;code&gt;Key Repeat&lt;/code&gt;设置到最快，把&lt;code&gt;Delay Until Repeat&lt;/code&gt;设置到最短，但实际上这么设置之后还是不够，再小就不能通过配置页面设置了，只能通过命令行设置了。我觉得合适的配置是这样的&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;div class="chroma"&gt;
+&lt;table class="lntable"&gt;&lt;tr&gt;&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code&gt;&lt;span class="lnt"&gt;1
+&lt;/span&gt;&lt;span class="lnt"&gt;2
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code class="language-fallback" data-lang="fallback"&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;defaults write -g InitialKeyRepeat -int 10
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;defaults write -g KeyRepeat -int 1
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;这样之后再操作就明显流畅多了。&lt;/p&gt;</description></item></channel></rss>

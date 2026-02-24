@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Iterm on Tech In Sight</title><link>https://techinsight.pages.dev/tags/iterm/</link><description>Recent content in Iterm on Tech In Sight</description><generator>Hugo -- gohugo.io</generator><language>zh-cn</language><lastBuildDate>Wed, 15 Jan 2025 10:49:20 +0800</lastBuildDate><atom:link href="https://techinsight.pages.dev/tags/iterm/index.xml" rel="self" type="application/rss+xml"/><item><title>关掉iTerm一个非常恼人的功能</title><link>https://techinsight.pages.dev/p/%E5%85%B3%E6%8E%89iterm%E4%B8%80%E4%B8%AA%E9%9D%9E%E5%B8%B8%E6%81%BC%E4%BA%BA%E7%9A%84%E5%8A%9F%E8%83%BD/</link><pubDate>Wed, 15 Jan 2025 10:49:20 +0800</pubDate><guid>https://techinsight.pages.dev/p/%E5%85%B3%E6%8E%89iterm%E4%B8%80%E4%B8%AA%E9%9D%9E%E5%B8%B8%E6%81%BC%E4%BA%BA%E7%9A%84%E5%8A%9F%E8%83%BD/</guid><description>&lt;p&gt;近期不知道是怎么回事，&lt;br /&gt;
+iTerm鼠标点一下就会出现一个外框，再点一下就消失了，非常讨厌，猜测了多种可能的原因：ohmyzsh、power10k，换到最基础的bash配置还是存在，基本上就确定是iTerm的问题了，但找不到是哪里配置的这个，索性就用appcleaner卸载，把所有配置文件也都删了，然后用homebrew重新安装，结果一打开就发现了问题所在。&lt;/p&gt;
+&lt;p&gt;不点击时这样&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://techinsight.pages.dev/p/%E5%85%B3%E6%8E%89iterm%E4%B8%80%E4%B8%AA%E9%9D%9E%E5%B8%B8%E6%81%BC%E4%BA%BA%E7%9A%84%E5%8A%9F%E8%83%BD/no-click.png"
+width="1170"
+height="916"
+srcset="https://techinsight.pages.dev/p/%E5%85%B3%E6%8E%89iterm%E4%B8%80%E4%B8%AA%E9%9D%9E%E5%B8%B8%E6%81%BC%E4%BA%BA%E7%9A%84%E5%8A%9F%E8%83%BD/no-click_hu_f62275e6b12bd1b5.png 480w, https://techinsight.pages.dev/p/%E5%85%B3%E6%8E%89iterm%E4%B8%80%E4%B8%AA%E9%9D%9E%E5%B8%B8%E6%81%BC%E4%BA%BA%E7%9A%84%E5%8A%9F%E8%83%BD/no-click_hu_83d0bc7c12a260bc.png 1024w"
+loading="lazy"
+class="gallery-image"
+data-flex-grow="127"
+data-flex-basis="306px"
+&gt;&lt;/p&gt;
+&lt;p&gt;点击一下就变成这样&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://techinsight.pages.dev/p/%E5%85%B3%E6%8E%89iterm%E4%B8%80%E4%B8%AA%E9%9D%9E%E5%B8%B8%E6%81%BC%E4%BA%BA%E7%9A%84%E5%8A%9F%E8%83%BD/on-click.png"
+width="1170"
+height="916"
+srcset="https://techinsight.pages.dev/p/%E5%85%B3%E6%8E%89iterm%E4%B8%80%E4%B8%AA%E9%9D%9E%E5%B8%B8%E6%81%BC%E4%BA%BA%E7%9A%84%E5%8A%9F%E8%83%BD/on-click_hu_d549bbb847cb6459.png 480w, https://techinsight.pages.dev/p/%E5%85%B3%E6%8E%89iterm%E4%B8%80%E4%B8%AA%E9%9D%9E%E5%B8%B8%E6%81%BC%E4%BA%BA%E7%9A%84%E5%8A%9F%E8%83%BD/on-click_hu_3a7043899954a60c.png 1024w"
+loading="lazy"
+class="gallery-image"
+data-flex-grow="127"
+data-flex-basis="306px"
+&gt;&lt;/p&gt;
+&lt;p&gt;当然这不是我平时使用的状态，只是说明一下这个难受的状态。&lt;/p&gt;
+&lt;p&gt;在复现这个问题的过程中又发现了一个新问题，因为开始我是用appcleaner卸载的，打开后第一时间iTerm就提示了那个让我难受的功能，还提示要不要关掉，然后我去看了下，但当我要复现这个过程，使用homebrew把它卸载了之后却没有这个弹窗了，充分说明用homebrew是卸载不干净的。&lt;/p&gt;
+&lt;p&gt;用appcleaner卸载，又重新安装之后终于复现了&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://techinsight.pages.dev/p/%E5%85%B3%E6%8E%89iterm%E4%B8%80%E4%B8%AA%E9%9D%9E%E5%B8%B8%E6%81%BC%E4%BA%BA%E7%9A%84%E5%8A%9F%E8%83%BD/shit.png"
+width="1170"
+height="916"
+srcset="https://techinsight.pages.dev/p/%E5%85%B3%E6%8E%89iterm%E4%B8%80%E4%B8%AA%E9%9D%9E%E5%B8%B8%E6%81%BC%E4%BA%BA%E7%9A%84%E5%8A%9F%E8%83%BD/shit_hu_9253fbe777132f08.png 480w, https://techinsight.pages.dev/p/%E5%85%B3%E6%8E%89iterm%E4%B8%80%E4%B8%AA%E9%9D%9E%E5%B8%B8%E6%81%BC%E4%BA%BA%E7%9A%84%E5%8A%9F%E8%83%BD/shit_hu_ea8f85bfdb94a7ca.png 1024w"
+loading="lazy"
+class="gallery-image"
+data-flex-grow="127"
+data-flex-basis="306px"
+&gt;&lt;/p&gt;
+&lt;p&gt;点击那个链接就跳到这个配置页&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://techinsight.pages.dev/p/%E5%85%B3%E6%8E%89iterm%E4%B8%80%E4%B8%AA%E9%9D%9E%E5%B8%B8%E6%81%BC%E4%BA%BA%E7%9A%84%E5%8A%9F%E8%83%BD/the-root-of-the-shit.png"
+width="1570"
+height="752"
+srcset="https://techinsight.pages.dev/p/%E5%85%B3%E6%8E%89iterm%E4%B8%80%E4%B8%AA%E9%9D%9E%E5%B8%B8%E6%81%BC%E4%BA%BA%E7%9A%84%E5%8A%9F%E8%83%BD/the-root-of-the-shit_hu_336db593d7a34c6d.png 480w, https://techinsight.pages.dev/p/%E5%85%B3%E6%8E%89iterm%E4%B8%80%E4%B8%AA%E9%9D%9E%E5%B8%B8%E6%81%BC%E4%BA%BA%E7%9A%84%E5%8A%9F%E8%83%BD/the-root-of-the-shit_hu_403fcb509b020358.png 1024w"
+loading="lazy"
+class="gallery-image"
+data-flex-grow="208"
+data-flex-basis="501px"
+&gt;&lt;/p&gt;
+&lt;p&gt;仔细看这个功能是为了让搜索高亮字符串的时候限制在选定的区域，看起来是个非常有用的功能，但这个展示方式真是太annoying了。&lt;/p&gt;</description></item></channel></rss>

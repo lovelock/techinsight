@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Revert on Tech In Sight</title><link>https://techinsight.pages.dev/tags/revert/</link><description>Recent content in Revert on Tech In Sight</description><generator>Hugo -- gohugo.io</generator><language>zh-cn</language><lastBuildDate>Wed, 11 Sep 2024 15:22:30 +0800</lastBuildDate><atom:link href="https://techinsight.pages.dev/tags/revert/index.xml" rel="self" type="application/rss+xml"/><item><title>git revert的几种情况及解决方法</title><link>https://techinsight.pages.dev/p/git-revert%E7%9A%84%E5%87%A0%E7%A7%8D%E6%83%85%E5%86%B5%E5%8F%8A%E8%A7%A3%E5%86%B3%E6%96%B9%E6%B3%95/</link><pubDate>Wed, 11 Sep 2024 15:22:30 +0800</pubDate><guid>https://techinsight.pages.dev/p/git-revert%E7%9A%84%E5%87%A0%E7%A7%8D%E6%83%85%E5%86%B5%E5%8F%8A%E8%A7%A3%E5%86%B3%E6%96%B9%E6%B3%95/</guid><description>&lt;h1 id="git-revert-的各种情况及解决方法"&gt;&lt;a href="#git-revert-%e7%9a%84%e5%90%84%e7%a7%8d%e6%83%85%e5%86%b5%e5%8f%8a%e8%a7%a3%e5%86%b3%e6%96%b9%e6%b3%95" class="header-anchor"&gt;&lt;/a&gt;Git Revert 的各种情况及解决方法
+&lt;/h1&gt;&lt;p&gt;在使用 Git 进行版本控制时，偶尔会遇到需要撤销某个提交的情况。&lt;code&gt;git revert&lt;/code&gt; 是一个非常实用的命令，它允许你创建一个新的提交来撤销之前的更改。本文将介绍 &lt;code&gt;git revert&lt;/code&gt; 的用法，特别是在处理合并提交时的特殊情况。&lt;/p&gt;
+&lt;h2 id="1-使用-git-revert-撤销普通提交"&gt;&lt;a href="#1-%e4%bd%bf%e7%94%a8-git-revert-%e6%92%a4%e9%94%80%e6%99%ae%e9%80%9a%e6%8f%90%e4%ba%a4" class="header-anchor"&gt;&lt;/a&gt;1. 使用 &lt;code&gt;git revert&lt;/code&gt; 撤销普通提交
+&lt;/h2&gt;&lt;p&gt;如果你需要撤销一个普通的提交，可以直接使用 &lt;code&gt;git revert&lt;/code&gt; 命令。该命令会生成一个新的提交，反转指定提交的更改。例如：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;div class="chroma"&gt;
+&lt;table class="lntable"&gt;&lt;tr&gt;&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code&gt;&lt;span class="lnt"&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code class="language-bash" data-lang="bash"&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;git revert &amp;lt;commit-hash&amp;gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;执行此命令后，Git 会提示你编辑提交信息，默认情况下会提供有关被撤销提交的信息。保存并退出后，将会创建一个新的提交，撤销指定的更改。&lt;/p&gt;
+&lt;h2 id="2-撤销合并提交"&gt;&lt;a href="#2-%e6%92%a4%e9%94%80%e5%90%88%e5%b9%b6%e6%8f%90%e4%ba%a4" class="header-anchor"&gt;&lt;/a&gt;2. 撤销合并提交
+&lt;/h2&gt;&lt;p&gt;合并提交是指将两个分支合并后的提交，这种提交有多个父提交。为了撤销某个合并提交，必须使用 &lt;code&gt;-m&lt;/code&gt; 选项来指定父提交。&lt;code&gt;-m&lt;/code&gt; 选项后面跟上父提交的编号（1 表示第一个父提交，2 表示第二个父提交）。&lt;/p&gt;
+&lt;h3 id="撤销合并提交的步骤如下"&gt;&lt;a href="#%e6%92%a4%e9%94%80%e5%90%88%e5%b9%b6%e6%8f%90%e4%ba%a4%e7%9a%84%e6%ad%a5%e9%aa%a4%e5%a6%82%e4%b8%8b" class="header-anchor"&gt;&lt;/a&gt;撤销合并提交的步骤如下：
+&lt;/h3&gt;&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;找到合并提交的哈希值&lt;/strong&gt;：&lt;br /&gt;
+使用 &lt;code&gt;git log&lt;/code&gt; 查找需要撤销的合并提交的哈希值。&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;div class="chroma"&gt;
+&lt;table class="lntable"&gt;&lt;tr&gt;&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code&gt;&lt;span class="lnt"&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code class="language-bash" data-lang="bash"&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;git log
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;执行撤销操作&lt;/strong&gt;：&lt;br /&gt;
+使用 &lt;code&gt;git revert&lt;/code&gt; 命令，添加 &lt;code&gt;-m&lt;/code&gt; 选项。&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;div class="chroma"&gt;
+&lt;table class="lntable"&gt;&lt;tr&gt;&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code&gt;&lt;span class="lnt"&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code class="language-bash" data-lang="bash"&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;git revert -m &lt;span class="m"&gt;1&lt;/span&gt; &amp;lt;merge-commit-hash&amp;gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;例如：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;div class="chroma"&gt;
+&lt;table class="lntable"&gt;&lt;tr&gt;&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code&gt;&lt;span class="lnt"&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code class="language-bash" data-lang="bash"&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;git revert -m &lt;span class="m"&gt;1&lt;/span&gt; abc1234
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;解决冲突（如果有）&lt;/strong&gt;：&lt;br /&gt;
+如果出现冲突，Git 会提示你解决它们。解决后，添加更改并提交。&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;div class="chroma"&gt;
+&lt;table class="lntable"&gt;&lt;tr&gt;&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code&gt;&lt;span class="lnt"&gt;1
+&lt;/span&gt;&lt;span class="lnt"&gt;2
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code class="language-bash" data-lang="bash"&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;git add .
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;git commit
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;提交更改&lt;/strong&gt;：&lt;br /&gt;
+Git 会创建一个新的提交来记录撤销操作。&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h2 id="3-使用-git-reset-完全回退"&gt;&lt;a href="#3-%e4%bd%bf%e7%94%a8-git-reset-%e5%ae%8c%e5%85%a8%e5%9b%9e%e9%80%80" class="header-anchor"&gt;&lt;/a&gt;3. 使用 &lt;code&gt;git reset&lt;/code&gt; 完全回退
+&lt;/h2&gt;&lt;p&gt;如果你想要完全回退到合并之前的状态，而不想指定父提交，可以通过 &lt;code&gt;git reset&lt;/code&gt; 命令实现。这种方法会改变提交历史。&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;div class="chroma"&gt;
+&lt;table class="lntable"&gt;&lt;tr&gt;&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code&gt;&lt;span class="lnt"&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code class="language-bash" data-lang="bash"&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;git reset --hard HEAD~1
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;使用这条命令将会将当前分支重置到上一个提交，丢失合并之后的所有更改。请在使用 &lt;code&gt;--hard&lt;/code&gt; 选项之前，确保保存好你的未提交工作。&lt;/p&gt;
+&lt;h3 id="使用-git-checkout-创建新分支"&gt;&lt;a href="#%e4%bd%bf%e7%94%a8-git-checkout-%e5%88%9b%e5%bb%ba%e6%96%b0%e5%88%86%e6%94%af" class="header-anchor"&gt;&lt;/a&gt;使用 &lt;code&gt;git checkout&lt;/code&gt; 创建新分支
+&lt;/h3&gt;&lt;p&gt;如果你不想丢失当前的历史，可以选择创建一个新分支，从合并之前的状态开始：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;div class="chroma"&gt;
+&lt;table class="lntable"&gt;&lt;tr&gt;&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code&gt;&lt;span class="lnt"&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code class="language-bash" data-lang="bash"&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;git checkout -b new-branch HEAD~1
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;这将创建一个新的分支 &lt;code&gt;new-branch&lt;/code&gt;，并将其指向合并之前的状态。&lt;/p&gt;
+&lt;h2 id="注意事项"&gt;&lt;a href="#%e6%b3%a8%e6%84%8f%e4%ba%8b%e9%a1%b9" class="header-anchor"&gt;&lt;/a&gt;注意事项
+&lt;/h2&gt;&lt;ul&gt;
+&lt;li&gt;使用 &lt;code&gt;git reset --hard&lt;/code&gt; 命令会丢失未提交的更改，请谨慎使用。&lt;/li&gt;
+&lt;li&gt;如果在共享的分支上进行了这些操作，其他开发者可能会受到影响，因此最好在进行这些操作之前通知他们。&lt;/li&gt;
+&lt;li&gt;如果已推送合并的提交到远程仓库，使用 &lt;code&gt;git reset&lt;/code&gt; 后需要强制推送（&lt;code&gt;git push --force&lt;/code&gt;），这可能会影响其他开发者的工作。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id="结论"&gt;&lt;a href="#%e7%bb%93%e8%ae%ba" class="header-anchor"&gt;&lt;/a&gt;结论
+&lt;/h2&gt;&lt;p&gt;&lt;code&gt;git revert&lt;/code&gt; 是一个功能强大的工具，可以帮助你安全地撤销错误的提交，尤其是合并提交。在使用时要特别注意合并提交的父提交选择，以及在公共分支上执行历史重写操作的风险。理解这些命令能够帮助你更有效地管理代码版本，确保你的项目保持在正确的轨道上。&lt;/p&gt;
+&lt;p&gt;希望本文能帮助你更好地理解和使用 Git 的撤销功能！如果你有任何问题或想分享你的经验，欢迎留言讨论！&lt;/p&gt;</description></item></channel></rss>

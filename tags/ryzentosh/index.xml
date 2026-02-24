@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Ryzentosh on Tech In Sight</title><link>https://techinsight.pages.dev/tags/ryzentosh/</link><description>Recent content in Ryzentosh on Tech In Sight</description><generator>Hugo -- gohugo.io</generator><language>zh-cn</language><lastBuildDate>Sun, 14 Jun 2020 15:49:21 +0800</lastBuildDate><atom:link href="https://techinsight.pages.dev/tags/ryzentosh/index.xml" rel="self" type="application/rss+xml"/><item><title>黑苹果bootmenu</title><link>https://techinsight.pages.dev/p/%E9%BB%91%E8%8B%B9%E6%9E%9Cbootmenu/</link><pubDate>Sun, 14 Jun 2020 15:49:21 +0800</pubDate><guid>https://techinsight.pages.dev/p/%E9%BB%91%E8%8B%B9%E6%9E%9Cbootmenu/</guid><description>&lt;p&gt;更新完黑苹果之后发现进BIOS的时候多了一个选项，看起来很奇怪。&lt;/p&gt;
+&lt;p&gt;其实是因为在安装Windows或者Windows进行系统更新时，会覆盖&lt;code&gt;/EFI/BOOT/BOOTx64.efi&lt;/code&gt;文件，这个配置就是为了保护这个文件不被修改的，具体的原因我没有研究，因为暂时还没有安装Windows。（其实是因为安装不上，在Mac上创建的WindowsInstaller总是无法启动，不是刚需也就没有再继续研究了）&lt;/p&gt;
+&lt;p&gt;多了个&lt;code&gt;OpenCore&lt;/code&gt;，经过在&lt;a class="link" href="https://www.reddit.com/r/hackintosh/comments/h8oiff/theres_a_new_bootdevice_in_bios_entry/" target="_blank" rel="noopener"
+&gt;Reddit&lt;/a&gt;上发帖求助，发现原因可能是更新到0.5.9的时候复制了一个配置来 &lt;code&gt;Misc -&amp;gt; Security -&amp;gt; BootProtect&lt;/code&gt;，&lt;del&gt;现在的配置是&lt;code&gt;Bootstrap&lt;/code&gt;，改成&lt;code&gt;none&lt;/code&gt;即可&lt;/del&gt;，但如果安装了Windows系统，每当windows系统更新时就会破坏OpenCore的启动顺序。&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://techinsight.pages.dev/images/2020-06-14-15-54-04.png"
+loading="lazy"
+&gt;&lt;/p&gt;
+&lt;p&gt;所以这其实是OpenCore的保护机制，也就不难理解它是一个【启动安全】选项的原因了。不过我暂时没有安装Windows，所以也用不到这个选项。不过明白了，也就不再纠结了，暂时就不改它了，免得将来装了Windows但忘了这个事儿，净是给自己挖坑。&lt;/p&gt;</description></item><item><title>黑苹果更新升级</title><link>https://techinsight.pages.dev/p/%E9%BB%91%E8%8B%B9%E6%9E%9C%E6%9B%B4%E6%96%B0%E5%8D%87%E7%BA%A7/</link><pubDate>Sun, 14 Jun 2020 10:12:22 +0800</pubDate><guid>https://techinsight.pages.dev/p/%E9%BB%91%E8%8B%B9%E6%9E%9C%E6%9B%B4%E6%96%B0%E5%8D%87%E7%BA%A7/</guid><description>&lt;p&gt;装黑苹果的时候是10.15.3，后来经历了两次官方的更新，但我又不太清楚需要的更新过程，现在更新成功之后记录一下。&lt;/p&gt;
+&lt;h2 id="1-更新efi"&gt;&lt;a href="#1-%e6%9b%b4%e6%96%b0efi" class="header-anchor"&gt;&lt;/a&gt;1. 更新EFI
+&lt;/h2&gt;&lt;p&gt;下载最新的OpenCorePkg，参考&lt;a class="link" href="https://dortania.github.io/OpenCore-Desktop-Guide/post-install/update.html" target="_blank" rel="noopener"
+&gt;这里&lt;/a&gt;把主要的几个文件更新一下，把EFI更新到系统硬盘之后重启看看能不能正常启动，能正常启动后再进行第二步。&lt;/p&gt;
+&lt;p&gt;我首次安装的时候是OpenCore0.5.6，更新到0.5.7的时候有一个不兼容的配置，如下图所示&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://techinsight.pages.dev/images/2020-06-14-10-16-50.png"
+loading="lazy"
+&gt;&lt;/p&gt;
+&lt;p&gt;而正好重命名的这个是必须项，所以就需要自己把&lt;code&gt;FwRuntimeServices.efi&lt;/code&gt;删除，把新的&lt;code&gt;OpenRuntime.efi&lt;/code&gt;放进来，打开ProperTree，重新加载&lt;code&gt;config.plist&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://techinsight.pages.dev/images/2020-06-14-10-18-42.png"
+loading="lazy"
+&gt;&lt;/p&gt;
+&lt;h2 id="2-更新macos"&gt;&lt;a href="#2-%e6%9b%b4%e6%96%b0macos" class="header-anchor"&gt;&lt;/a&gt;2. 更新macOS
+&lt;/h2&gt;&lt;p&gt;这就是上述&lt;a class="link" href="https://dortania.github.io/OpenCore-Desktop-Guide/post-install/update.html" target="_blank" rel="noopener"
+&gt;这里&lt;/a&gt;没有说清楚的地方，因为实在是没什么好说的。就按正常的系统更新流程直接点更新即可！&lt;/p&gt;
+&lt;h2 id="3-更新成功"&gt;&lt;a href="#3-%e6%9b%b4%e6%96%b0%e6%88%90%e5%8a%9f" class="header-anchor"&gt;&lt;/a&gt;3. 更新成功
+&lt;/h2&gt;&lt;p&gt;&lt;img src="https://techinsight.pages.dev/images/2020-06-14-10-20-52.png"
+loading="lazy"
+&gt;&lt;/p&gt;</description></item></channel></rss>
