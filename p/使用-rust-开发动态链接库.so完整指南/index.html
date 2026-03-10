@@ -1,0 +1,410 @@
+<!doctype html><html lang=zh-cn dir=ltr><head><meta charset=utf-8><meta name=viewport content='width=device-width,initial-scale=1'><meta name=description content='目录 项目创建与配置\nRust 代码编写规范\n头文件生成与管理\n构建系统实现\n安装与分发\n调用示例\n跨平台注意事项\n最佳实践\n项目创建与配置 初始化项目 1 2 cargo new --lib rust_so_lib cd rust_so_lib Cargo.toml 配置 1 2 3 4 5 6 7 8 9 10 11 [package] name = "rust_so_lib" version = "0.1.0" edition = "2021" [lib] name = "rust_so_lib" crate-type = ["cdylib"]# 关键配置：生成动态链接库 [dependencies] libc = "0.2"# 用于C类型兼容 重要提示：确保不要同时使用 [workspace] 和 [lib] 配置，否则会导致编译错误。\n'><title>使用 Rust 开发动态链接库（.so）完整指南</title><link rel=canonical href=https://techinsight.pages.dev/p/%E4%BD%BF%E7%94%A8-rust-%E5%BC%80%E5%8F%91%E5%8A%A8%E6%80%81%E9%93%BE%E6%8E%A5%E5%BA%93.so%E5%AE%8C%E6%95%B4%E6%8C%87%E5%8D%97/><link rel=stylesheet href=/scss/style.min.3c33722a11bfa97f07308377e860d658770fe60627a4c2b1b7d46497ac9c35c3.css><meta property='og:title' content="使用 Rust 开发动态链接库（.so）完整指南"><meta property='og:description' content='目录 项目创建与配置\nRust 代码编写规范\n头文件生成与管理\n构建系统实现\n安装与分发\n调用示例\n跨平台注意事项\n最佳实践\n项目创建与配置 初始化项目 1 2 cargo new --lib rust_so_lib cd rust_so_lib Cargo.toml 配置 1 2 3 4 5 6 7 8 9 10 11 [package] name = "rust_so_lib" version = "0.1.0" edition = "2021" [lib] name = "rust_so_lib" crate-type = ["cdylib"]# 关键配置：生成动态链接库 [dependencies] libc = "0.2"# 用于C类型兼容 重要提示：确保不要同时使用 [workspace] 和 [lib] 配置，否则会导致编译错误。\n'><meta property='og:url' content='https://techinsight.pages.dev/p/%E4%BD%BF%E7%94%A8-rust-%E5%BC%80%E5%8F%91%E5%8A%A8%E6%80%81%E9%93%BE%E6%8E%A5%E5%BA%93.so%E5%AE%8C%E6%95%B4%E6%8C%87%E5%8D%97/'><meta property='og:site_name' content='Tech In Sight'><meta property='og:type' content='article'><meta property='article:section' content='Post'><meta property='article:tag' content='clang'><meta property='article:published_time' content='2025-08-01T16:14:03+08:00'><meta property='article:modified_time' content='2025-08-01T16:14:03+08:00'><meta name=twitter:title content="使用 Rust 开发动态链接库（.so）完整指南"><meta name=twitter:description content='目录 项目创建与配置\nRust 代码编写规范\n头文件生成与管理\n构建系统实现\n安装与分发\n调用示例\n跨平台注意事项\n最佳实践\n项目创建与配置 初始化项目 1 2 cargo new --lib rust_so_lib cd rust_so_lib Cargo.toml 配置 1 2 3 4 5 6 7 8 9 10 11 [package] name = "rust_so_lib" version = "0.1.0" edition = "2021" [lib] name = "rust_so_lib" crate-type = ["cdylib"]# 关键配置：生成动态链接库 [dependencies] libc = "0.2"# 用于C类型兼容 重要提示：确保不要同时使用 [workspace] 和 [lib] 配置，否则会导致编译错误。\n'><link rel="shortcut icon" href=/favicon.ico></head><body class=article-page><script>(function(){const e="StackColorScheme";localStorage.getItem(e)||localStorage.setItem(e,"auto")})()</script><script>(function(){const t="StackColorScheme",e=localStorage.getItem(t),n=window.matchMedia("(prefers-color-scheme: dark)").matches===!0;e=="dark"||e==="auto"&&n?document.documentElement.dataset.scheme="dark":document.documentElement.dataset.scheme="light"})()</script><div class="container main-container flex on-phone--column extended"><aside class="sidebar left-sidebar sticky"><button class="hamburger hamburger--spin" type=button id=toggle-menu aria-label=切换菜单>
+<span class=hamburger-box><span class=hamburger-inner></span></span></button><header><figure class=site-avatar><a href=/><img src=/img/avatar_hu_31786b9867641d1c.png width=300 height=280 class=site-logo loading=lazy alt=Avatar></a></figure><div class=site-meta><h1 class=site-name><a href=/>Tech In Sight</a></h1><h2 class=site-description>聊聊技术，聊聊人生</h2></div></header><ol class=menu-social><li><a href=https://github.com/lovelock target=_blank title=GitHub rel=me><svg class="icon icon-tabler icon-tabler-brand-github" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M9 19c-4.3 1.4-4.3-2.5-6-3m12 5v-3.5c0-1 .1-1.4-.5-2 2.8-.3 5.5-1.4 5.5-6a4.6 4.6.0 00-1.3-3.2 4.2 4.2.0 00-.1-3.2s-1.1-.3-3.5 1.3a12.3 12.3.0 00-6.2.0C6.5 2.8 5.4 3.1 5.4 3.1a4.2 4.2.0 00-.1 3.2A4.6 4.6.0 004 9.5c0 4.6 2.7 5.7 5.5 6-.6.6-.6 1.2-.5 2V21"/></svg></a></li><li><a href=https://twitter.com target=_blank title=Twitter rel=me><svg class="icon icon-tabler icon-tabler-brand-twitter" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M22 4.01c-1 .49-1.98.689-3 .99-1.121-1.265-2.783-1.335-4.38-.737S11.977 6.323 12 8v1c-3.245.083-6.135-1.395-8-4 0 0-4.182 7.433 4 11-1.872 1.247-3.739 2.088-6 2 3.308 1.803 6.913 2.423 10.034 1.517 3.58-1.04 6.522-3.723 7.651-7.742a13.84 13.84.0 00.497-3.753C20.18 7.773 21.692 5.25 22 4.009z"/></svg></a></li></ol><ol class=menu id=main-menu><li><a href=/><svg class="icon icon-tabler icon-tabler-home" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><polyline points="5 12 3 12 12 3 21 12 19 12"/><path d="M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7"/><path d="M9 21v-6a2 2 0 012-2h2a2 2 0 012 2v6"/></svg>
+<span>Home</span></a></li><li><a href=/archives/><svg class="icon icon-tabler icon-tabler-archive" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><rect x="3" y="4" width="18" height="4" rx="2"/><path d="M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8"/><line x1="10" y1="12" x2="14" y2="12"/></svg>
+<span>Archives</span></a></li><li><a href=/search/><svg class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="10" cy="10" r="7"/><line x1="21" y1="21" x2="15" y2="15"/></svg>
+<span>Search</span></a></li><li><a href=/links/><svg class="icon icon-tabler icon-tabler-link" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><path d="M10 14a3.5 3.5.0 005 0l4-4a3.5 3.5.0 00-5-5l-.5.5"/><path d="M14 10a3.5 3.5.0 00-5 0l-4 4a3.5 3.5.0 005 5l.5-.5"/></svg>
+<span>Links</span></a></li><li class=menu-bottom-section><ol class=menu><li id=dark-mode-toggle><svg class="icon icon-tabler icon-tabler-toggle-left" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="8" cy="12" r="2"/><rect x="2" y="6" width="20" height="12" rx="6"/></svg>
+<svg class="icon icon-tabler icon-tabler-toggle-right" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="16" cy="12" r="2"/><rect x="2" y="6" width="20" height="12" rx="6"/></svg>
+<span>暗色模式</span></li></ol></li></ol></aside><aside class="sidebar right-sidebar sticky"><section class="widget archives"><div class=widget-icon><svg class="icon icon-tabler icon-tabler-hash" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><line x1="5" y1="9" x2="19" y2="9"/><line x1="5" y1="15" x2="19" y2="15"/><line x1="11" y1="4" x2="7" y2="20"/><line x1="17" y1="4" x2="13" y2="20"/></svg></div><h2 class="widget-title section-title">目录</h2><div class=widget--toc><nav id=TableOfContents><ol><li><a href=#目录>目录</a></li><li><a href=#项目创建与配置>项目创建与配置</a><ol><li><a href=#初始化项目>初始化项目</a></li><li><a href=#cargotoml-配置>Cargo.toml 配置</a></li></ol></li><li><a href=#rust-代码编写规范>Rust 代码编写规范</a><ol><li><a href=#基础示例-srclibrs>基础示例 (src/lib.rs)</a></li><li><a href=#关键编程要点>关键编程要点</a></li></ol></li><li><a href=#头文件生成与管理>头文件生成与管理</a><ol><li><a href=#手动创建头文件>手动创建头文件</a></li><li><a href=#使用-cbindgen-自动生成>使用 cbindgen 自动生成</a></li></ol></li><li><a href=#构建系统实现>构建系统实现</a><ol><li><a href=#完整-makefile>完整 Makefile</a></li><li><a href=#makefile-功能说明>Makefile 功能说明</a></li></ol></li><li><a href=#安装与分发>安装与分发</a><ol><li><a href=#标准安装流程>标准安装流程</a></li><li><a href=#自定义安装路径>自定义安装路径</a></li><li><a href=#分发包内容>分发包内容</a></li></ol></li><li><a href=#调用示例>调用示例</a><ol><li><a href=#c-语言示例-testc>C 语言示例 (test.c)</a></li><li><a href=#编译与运行>编译与运行</a></li></ol></li><li><a href=#跨平台注意事项>跨平台注意事项</a><ol><li><a href=#平台差异处理>平台差异处理</a></li><li><a href=#windows-特殊处理>Windows 特殊处理</a></li></ol></li><li><a href=#最佳实践>最佳实践</a><ol><li><a href=#接口设计原则>接口设计原则</a></li><li><a href=#错误处理模式>错误处理模式</a></li><li><a href=#性能优化建议>性能优化建议</a></li></ol></li></ol></nav></div></section></aside><main class="main full-width"><article class=main-article><header class=article-header><div class=article-details><header class=article-category><a href=/categories/rust/>Rust</a></header><div class=article-title-wrapper><h2 class=article-title><a href=/p/%E4%BD%BF%E7%94%A8-rust-%E5%BC%80%E5%8F%91%E5%8A%A8%E6%80%81%E9%93%BE%E6%8E%A5%E5%BA%93.so%E5%AE%8C%E6%95%B4%E6%8C%87%E5%8D%97/>使用 Rust 开发动态链接库（.so）完整指南</a></h2></div><footer class=article-time><div><svg class="icon icon-tabler icon-tabler-calendar-time" width="56" height="56" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><path d="M11.795 21H5a2 2 0 01-2-2V7a2 2 0 012-2h12a2 2 0 012 2v4"/><circle cx="18" cy="18" r="4"/><path d="M15 3v4"/><path d="M7 3v4"/><path d="M3 11h16"/><path d="M18 16.496V18l1 1"/></svg>
+<time class=article-time--published>Aug 01, 2025</time></div><div><svg class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 15"/></svg>
+<time class=article-time--reading>阅读时长: 3 分钟</time></div></footer></div></header><section class=article-content><h2 id=目录><a href=#%e7%9b%ae%e5%bd%95 class=header-anchor></a>目录</h2><p><a class=link href=#1-%e9%a1%b9%e7%9b%ae%e5%88%9b%e5%bb%ba%e4%b8%8e%e9%85%8d%e7%bd%ae>项目创建与配置</a><br><a class=link href=#2-rust-%e4%bb%a3%e7%a0%81%e7%bc%96%e5%86%99%e8%a7%84%e8%8c%83>Rust 代码编写规范</a><br><a class=link href=#3-%e5%a4%b4%e6%96%87%e4%bb%b6%e7%94%9f%e6%88%90%e4%b8%8e%e7%ae%a1%e7%90%86>头文件生成与管理</a><br><a class=link href=#4-%e6%9e%84%e5%bb%ba%e7%b3%bb%e7%bb%9f%e5%ae%9e%e7%8e%b0>构建系统实现</a><br><a class=link href=#5-%e5%ae%89%e8%a3%85%e4%b8%8e%e5%88%86%e5%8f%91>安装与分发</a><br><a class=link href=#6-%e8%b0%83%e7%94%a8%e7%a4%ba%e4%be%8b>调用示例</a><br><a class=link href=#7-%e8%b7%a8%e5%b9%b3%e5%8f%b0%e6%b3%a8%e6%84%8f%e4%ba%8b%e9%a1%b9>跨平台注意事项</a><br><a class=link href=#8-%e6%9c%80%e4%bd%b3%e5%ae%9e%e8%b7%b5>最佳实践</a></p><h2 id=项目创建与配置><a href=#%e9%a1%b9%e7%9b%ae%e5%88%9b%e5%bb%ba%e4%b8%8e%e9%85%8d%e7%bd%ae class=header-anchor></a>项目创建与配置</h2><h3 id=初始化项目><a href=#%e5%88%9d%e5%a7%8b%e5%8c%96%e9%a1%b9%e7%9b%ae class=header-anchor></a>初始化项目</h3><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl>cargo new --lib rust_so_lib
+</span></span><span class=line><span class=cl><span class=nb>cd</span> rust_so_lib
+</span></span></code></pre></td></tr></table></div></div><h3 id=cargotoml-配置><a href=#cargotoml-%e9%85%8d%e7%bd%ae class=header-anchor></a>Cargo.toml 配置</h3><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-toml data-lang=toml><span class=line><span class=cl><span class=p>[</span><span class=nx>package</span><span class=p>]</span>
+</span></span><span class=line><span class=cl><span class=nx>name</span> <span class=p>=</span> <span class=s2>&#34;rust_so_lib&#34;</span>
+</span></span><span class=line><span class=cl><span class=nx>version</span> <span class=p>=</span> <span class=s2>&#34;0.1.0&#34;</span>
+</span></span><span class=line><span class=cl><span class=nx>edition</span> <span class=p>=</span> <span class=s2>&#34;2021&#34;</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=p>[</span><span class=nx>lib</span><span class=p>]</span>
+</span></span><span class=line><span class=cl><span class=nx>name</span> <span class=p>=</span> <span class=s2>&#34;rust_so_lib&#34;</span>
+</span></span><span class=line><span class=cl><span class=nx>crate-type</span> <span class=p>=</span> <span class=p>[</span><span class=s2>&#34;cdylib&#34;</span><span class=p>]</span><span class=c># 关键配置：生成动态链接库</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=p>[</span><span class=nx>dependencies</span><span class=p>]</span>
+</span></span><span class=line><span class=cl><span class=nx>libc</span> <span class=p>=</span> <span class=s2>&#34;0.2&#34;</span><span class=c># 用于C类型兼容</span>
+</span></span></code></pre></td></tr></table></div></div><blockquote><p><strong>重要提示</strong>：确保不要同时使用 <code>[workspace]</code> 和 <code>[lib]</code> 配置，否则会导致编译错误。</p></blockquote><h2 id=rust-代码编写规范><a href=#rust-%e4%bb%a3%e7%a0%81%e7%bc%96%e5%86%99%e8%a7%84%e8%8c%83 class=header-anchor></a>Rust 代码编写规范</h2><h3 id=基础示例-srclibrs><a href=#%e5%9f%ba%e7%a1%80%e7%a4%ba%e4%be%8b-srclibrs class=header-anchor></a>基础示例 (src/lib.rs)</h3><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span><span class=lnt>22
+</span><span class=lnt>23
+</span><span class=lnt>24
+</span><span class=lnt>25
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-rust data-lang=rust><span class=line><span class=cl><span class=k>use</span><span class=w> </span><span class=n>std</span>::<span class=n>os</span>::<span class=n>raw</span>::<span class=p>{</span><span class=n>c_int</span><span class=p>,</span><span class=w> </span><span class=n>c_char</span><span class=p>};</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=k>use</span><span class=w> </span><span class=n>std</span>::<span class=n>ffi</span>::<span class=p>{</span><span class=n>CString</span><span class=p>,</span><span class=w> </span><span class=n>CStr</span><span class=p>};</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=cp>#[unsafe(no_mangle)]</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=k>pub</span><span class=w> </span><span class=k>extern</span><span class=w> </span><span class=s>&#34;C&#34;</span><span class=w> </span><span class=k>fn</span> <span class=nf>add_numbers</span><span class=p>(</span><span class=n>a</span>: <span class=nc>c_int</span><span class=p>,</span><span class=w> </span><span class=n>b</span>: <span class=nc>c_int</span><span class=p>)</span><span class=w> </span>-&gt; <span class=nc>c_int</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=n>a</span><span class=w> </span><span class=o>+</span><span class=w> </span><span class=n>b</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=p>}</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=cp>#[unsafe(no_mangle)]</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=k>pub</span><span class=w> </span><span class=k>extern</span><span class=w> </span><span class=s>&#34;C&#34;</span><span class=w> </span><span class=k>fn</span> <span class=nf>string_length</span><span class=p>(</span><span class=n>s</span>: <span class=o>*</span><span class=k>const</span><span class=w> </span><span class=n>c_char</span><span class=p>)</span><span class=w> </span>-&gt; <span class=nc>c_int</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=kd>let</span><span class=w> </span><span class=n>c_str</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=k>unsafe</span><span class=w> </span><span class=p>{</span><span class=w> </span><span class=n>CStr</span>::<span class=n>from_ptr</span><span class=p>(</span><span class=n>s</span><span class=p>)</span><span class=w> </span><span class=p>};</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=n>c_str</span><span class=p>.</span><span class=n>to_bytes</span><span class=p>().</span><span class=n>len</span><span class=p>()</span><span class=w> </span><span class=k>as</span><span class=w> </span><span class=n>c_int</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=p>}</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=cp>#[unsafe(no_mangle)]</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=k>pub</span><span class=w> </span><span class=k>extern</span><span class=w> </span><span class=s>&#34;C&#34;</span><span class=w> </span><span class=k>fn</span> <span class=nf>create_greeting</span><span class=p>(</span><span class=n>name</span>: <span class=o>*</span><span class=k>const</span><span class=w> </span><span class=n>c_char</span><span class=p>)</span><span class=w> </span>-&gt; <span class=o>*</span><span class=k>mut</span><span class=w> </span><span class=n>c_char</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=kd>let</span><span class=w> </span><span class=n>name_str</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=k>unsafe</span><span class=w> </span><span class=p>{</span><span class=w> </span><span class=n>CStr</span>::<span class=n>from_ptr</span><span class=p>(</span><span class=n>name</span><span class=p>).</span><span class=n>to_string_lossy</span><span class=p>()</span><span class=w> </span><span class=p>};</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=kd>let</span><span class=w> </span><span class=n>greeting</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=fm>format!</span><span class=p>(</span><span class=s>&#34;Hello, </span><span class=si>{}</span><span class=s>!&#34;</span><span class=p>,</span><span class=w> </span><span class=n>name_str</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=n>CString</span>::<span class=n>new</span><span class=p>(</span><span class=n>greeting</span><span class=p>).</span><span class=n>unwrap</span><span class=p>().</span><span class=n>into_raw</span><span class=p>()</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=p>}</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=cp>#[unsafe(no_mangle)]</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=k>pub</span><span class=w> </span><span class=k>extern</span><span class=w> </span><span class=s>&#34;C&#34;</span><span class=w> </span><span class=k>fn</span> <span class=nf>free_string</span><span class=p>(</span><span class=n>s</span>: <span class=o>*</span><span class=k>mut</span><span class=w> </span><span class=n>c_char</span><span class=p>)</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=k>unsafe</span><span class=w> </span><span class=p>{</span><span class=w> </span><span class=n>CString</span>::<span class=n>from_raw</span><span class=p>(</span><span class=n>s</span><span class=p>)</span><span class=w> </span><span class=p>};</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=p>}</span><span class=w>
+</span></span></span></code></pre></td></tr></table></div></div><h3 id=关键编程要点><a href=#%e5%85%b3%e9%94%ae%e7%bc%96%e7%a8%8b%e8%a6%81%e7%82%b9 class=header-anchor></a>关键编程要点</h3><ol><li><strong>ABI 兼容性</strong>：</li></ol><ul><li>使用 <code>extern "C"</code> 确保C兼容调用约定</li><li><code>#[unsafe(no_mangle)]</code> 禁止名称修饰</li></ul><ol start=2><li><p><strong>类型映射</strong>：</p><div class=table-wrapper><table><thead><tr><th>Rust 类型</th><th>C 类型</th></tr></thead><tbody><tr><td><code>c_int</code></td><td><code>int</code></td></tr><tr><td><code>*const c_char</code></td><td><code>const char*</code></td></tr><tr><td><code>*mut c_char</code></td><td><code>char*</code></td></tr></tbody></table></div></li><li><p><strong>内存安全</strong>：</p></li></ol><ul><li>Rust分配的内存应由Rust释放</li><li>提供明确的资源释放函数（如<code>free_string</code>）</li></ul><h2 id=头文件生成与管理><a href=#%e5%a4%b4%e6%96%87%e4%bb%b6%e7%94%9f%e6%88%90%e4%b8%8e%e7%ae%a1%e7%90%86 class=header-anchor></a>头文件生成与管理</h2><h3 id=手动创建头文件><a href=#%e6%89%8b%e5%8a%a8%e5%88%9b%e5%bb%ba%e5%a4%b4%e6%96%87%e4%bb%b6 class=header-anchor></a>手动创建头文件</h3><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-c data-lang=c><span class=line><span class=cl><span class=c1>// rust_so_lib.h
+</span></span></span><span class=line><span class=cl><span class=cp>#ifndef RUST_SO_LIB_H
+</span></span></span><span class=line><span class=cl><span class=cp>#define RUST_SO_LIB_H
+</span></span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=cp>#ifdef __cplusplus
+</span></span></span><span class=line><span class=cl><span class=k>extern</span> <span class=s>&#34;C&#34;</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl><span class=cp>#endif
+</span></span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=kt>int</span> <span class=nf>add_numbers</span><span class=p>(</span><span class=kt>int</span> <span class=n>a</span><span class=p>,</span> <span class=kt>int</span> <span class=n>b</span><span class=p>);</span>
+</span></span><span class=line><span class=cl><span class=kt>int</span> <span class=nf>string_length</span><span class=p>(</span><span class=k>const</span> <span class=kt>char</span><span class=o>*</span> <span class=n>s</span><span class=p>);</span>
+</span></span><span class=line><span class=cl><span class=kt>char</span><span class=o>*</span> <span class=nf>create_greeting</span><span class=p>(</span><span class=k>const</span> <span class=kt>char</span><span class=o>*</span> <span class=n>name</span><span class=p>);</span>
+</span></span><span class=line><span class=cl><span class=kt>void</span> <span class=nf>free_string</span><span class=p>(</span><span class=kt>char</span><span class=o>*</span> <span class=n>s</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=cp>#ifdef __cplusplus
+</span></span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span><span class=line><span class=cl><span class=cp>#endif
+</span></span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=cp>#endif </span><span class=c1>// RUST_SO_LIB_H
+</span></span></span></code></pre></td></tr></table></div></div><h3 id=使用-cbindgen-自动生成><a href=#%e4%bd%bf%e7%94%a8-cbindgen-%e8%87%aa%e5%8a%a8%e7%94%9f%e6%88%90 class=header-anchor></a>使用 cbindgen 自动生成</h3><ol><li><p>安装工具：</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl>cargo install cbindgen
+</span></span></code></pre></td></tr></table></div></div></li><li><p>配置文件 (cbindgen.toml)：</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-toml data-lang=toml><span class=line><span class=cl><span class=nx>language</span> <span class=p>=</span> <span class=s2>&#34;C&#34;</span>
+</span></span><span class=line><span class=cl><span class=nx>include_guard</span> <span class=p>=</span> <span class=s2>&#34;RUST_SO_LIB_H&#34;</span>
+</span></span><span class=line><span class=cl><span class=nx>autogen_warning</span> <span class=p>=</span> <span class=s2>&#34;/* AUTO-GENERATED FILE, DO NOT EDIT */&#34;</span>
+</span></span></code></pre></td></tr></table></div></div></li><li><p>生成命令：</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl>cbindgen --config cbindgen.toml --crate rust_so_lib --output rust_so_lib.h
+</span></span></code></pre></td></tr></table></div></div></li></ol><h2 id=构建系统实现><a href=#%e6%9e%84%e5%bb%ba%e7%b3%bb%e7%bb%9f%e5%ae%9e%e7%8e%b0 class=header-anchor></a>构建系统实现</h2><h3 id=完整-makefile><a href=#%e5%ae%8c%e6%95%b4-makefile class=header-anchor></a>完整 Makefile</h3><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span><span class=lnt>22
+</span><span class=lnt>23
+</span><span class=lnt>24
+</span><span class=lnt>25
+</span><span class=lnt>26
+</span><span class=lnt>27
+</span><span class=lnt>28
+</span><span class=lnt>29
+</span><span class=lnt>30
+</span><span class=lnt>31
+</span><span class=lnt>32
+</span><span class=lnt>33
+</span><span class=lnt>34
+</span><span class=lnt>35
+</span><span class=lnt>36
+</span><span class=lnt>37
+</span><span class=lnt>38
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-makefile data-lang=makefile><span class=line><span class=cl><span class=c># 项目配置
+</span></span></span><span class=line><span class=cl><span class=nv>TARGET</span> <span class=o>:=</span> rust_so_lib
+</span></span><span class=line><span class=cl><span class=nv>VERSION</span> <span class=o>:=</span> 0.1.0
+</span></span><span class=line><span class=cl><span class=nv>PREFIX</span> <span class=o>?=</span> /usr/local
+</span></span><span class=line><span class=cl><span class=nv>LIBDIR</span> <span class=o>:=</span> <span class=k>$(</span>PREFIX<span class=k>)</span>/lib
+</span></span><span class=line><span class=cl><span class=nv>INCLUDEDIR</span> <span class=o>:=</span> <span class=k>$(</span>PREFIX<span class=k>)</span>/include
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c># 构建目标
+</span></span></span><span class=line><span class=cl><span class=nv>RUST_TARGET</span> <span class=o>:=</span> release
+</span></span><span class=line><span class=cl><span class=nv>RUST_LIB</span> <span class=o>:=</span> target/<span class=k>$(</span>RUST_TARGET<span class=k>)</span>/lib<span class=k>$(</span>TARGET<span class=k>)</span>.so
+</span></span><span class=line><span class=cl><span class=nv>HEADER</span> <span class=o>:=</span> <span class=k>$(</span>TARGET<span class=k>)</span>.h
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=nf>.PHONY</span><span class=o>:</span> <span class=n>all</span> <span class=n>build</span> <span class=n>install</span> <span class=n>uninstall</span> <span class=n>clean</span> <span class=n>test</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=nf>all</span><span class=o>:</span> <span class=n>build</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=nf>build</span><span class=o>:</span>
+</span></span><span class=line><span class=cl><span class=err>cargo</span> <span class=err>build</span> <span class=err>--</span><span class=k>$(</span><span class=nv>RUST_TARGET</span><span class=k>)</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=nf>install</span><span class=o>:</span> <span class=n>build</span>
+</span></span><span class=line><span class=cl><span class=err>install</span> <span class=err>-d</span> <span class=k>$(</span><span class=nv>LIBDIR</span><span class=k>)</span> <span class=k>$(</span><span class=nv>INCLUDEDIR</span><span class=k>)</span>
+</span></span><span class=line><span class=cl><span class=err>install</span> <span class=err>-m</span> <span class=err>755</span> <span class=k>$(</span><span class=nv>RUST_LIB</span><span class=k>)</span> <span class=k>$(</span><span class=nv>LIBDIR</span><span class=k>)</span><span class=err>/lib</span><span class=k>$(</span><span class=nv>TARGET</span><span class=k>)</span><span class=err>.so.</span><span class=k>$(</span><span class=nv>VERSION</span><span class=k>)</span>
+</span></span><span class=line><span class=cl><span class=err>ln</span> <span class=err>-sf</span> <span class=err>lib</span><span class=k>$(</span><span class=nv>TARGET</span><span class=k>)</span><span class=err>.so.</span><span class=k>$(</span><span class=nv>VERSION</span><span class=k>)</span> <span class=k>$(</span><span class=nv>LIBDIR</span><span class=k>)</span><span class=err>/lib</span><span class=k>$(</span><span class=nv>TARGET</span><span class=k>)</span><span class=err>.so</span>
+</span></span><span class=line><span class=cl><span class=err>install</span> <span class=err>-m</span> <span class=err>644</span> <span class=k>$(</span><span class=nv>HEADER</span><span class=k>)</span> <span class=k>$(</span><span class=nv>INCLUDEDIR</span><span class=k>)</span>
+</span></span><span class=line><span class=cl><span class=err>ldconfig</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=nf>uninstall</span><span class=o>:</span>
+</span></span><span class=line><span class=cl><span class=err>rm</span> <span class=err>-f</span> <span class=k>$(</span><span class=nv>LIBDIR</span><span class=k>)</span><span class=err>/lib</span><span class=k>$(</span><span class=nv>TARGET</span><span class=k>)</span><span class=err>.so*</span>
+</span></span><span class=line><span class=cl><span class=err>rm</span> <span class=err>-f</span> <span class=k>$(</span><span class=nv>INCLUDEDIR</span><span class=k>)</span><span class=err>/</span><span class=k>$(</span><span class=nv>HEADER</span><span class=k>)</span>
+</span></span><span class=line><span class=cl><span class=err>ldconfig</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=nf>clean</span><span class=o>:</span>
+</span></span><span class=line><span class=cl><span class=err>cargo</span> <span class=err>clean</span>
+</span></span><span class=line><span class=cl><span class=err>rm</span> <span class=err>-f</span> <span class=err>*.o</span> <span class=err>*.a</span> <span class=err>*.so</span> <span class=err>test_</span><span class=k>$(</span><span class=nv>TARGET</span><span class=k>)</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=nf>test</span><span class=o>:</span> <span class=k>$(</span><span class=nv>RUST_LIB</span><span class=k>)</span>
+</span></span><span class=line><span class=cl><span class=k>$(</span><span class=nv>CC</span><span class=k>)</span> <span class=err>test.c</span> <span class=err>-o</span> <span class=err>test_</span><span class=k>$(</span><span class=nv>TARGET</span><span class=k>)</span> <span class=err>-l</span><span class=k>$(</span><span class=nv>TARGET</span><span class=k>)</span> <span class=err>-Ltarget/</span><span class=k>$(</span><span class=nv>RUST_TARGET</span><span class=k>)</span> <span class=err>-I.</span>
+</span></span><span class=line><span class=cl><span class=nv>LD_LIBRARY_PATH</span><span class=o>=</span>target/<span class=k>$(</span>RUST_TARGET<span class=k>)</span> ./test_<span class=k>$(</span>TARGET<span class=k>)</span>
+</span></span></code></pre></td></tr></table></div></div><h3 id=makefile-功能说明><a href=#makefile-%e5%8a%9f%e8%83%bd%e8%af%b4%e6%98%8e class=header-anchor></a>Makefile 功能说明</h3><div class=table-wrapper><table><thead><tr><th>命令</th><th>功能描述</th></tr></thead><tbody><tr><td><code>make</code></td><td>构建Release版本的动态库</td></tr><tr><td><code>make install</code></td><td>安装到系统目录</td></tr><tr><td><code>make uninstall</code></td><td>卸载已安装的库</td></tr><tr><td><code>make clean</code></td><td>清理所有生成文件</td></tr><tr><td><code>make test</code></td><td>编译并运行测试程序</td></tr></tbody></table></div><h2 id=安装与分发><a href=#%e5%ae%89%e8%a3%85%e4%b8%8e%e5%88%86%e5%8f%91 class=header-anchor></a>安装与分发</h2><h3 id=标准安装流程><a href=#%e6%a0%87%e5%87%86%e5%ae%89%e8%a3%85%e6%b5%81%e7%a8%8b class=header-anchor></a>标准安装流程</h3><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl>cargo build --release
+</span></span><span class=line><span class=cl>sudo make install
+</span></span></code></pre></td></tr></table></div></div><h3 id=自定义安装路径><a href=#%e8%87%aa%e5%ae%9a%e4%b9%89%e5%ae%89%e8%a3%85%e8%b7%af%e5%be%84 class=header-anchor></a>自定义安装路径</h3><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl>make install <span class=nv>PREFIX</span><span class=o>=</span>/custom/install/path
+</span></span></code></pre></td></tr></table></div></div><h3 id=分发包内容><a href=#%e5%88%86%e5%8f%91%e5%8c%85%e5%86%85%e5%ae%b9 class=header-anchor></a>分发包内容</h3><p>建议包含以下文件结构：</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span><span class=lnt>7
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback><span class=line><span class=cl>dist/
+</span></span><span class=line><span class=cl>├── include/
+</span></span><span class=line><span class=cl>│└── rust_so_lib.h# 头文件
+</span></span><span class=line><span class=cl>├── lib/
+</span></span><span class=line><span class=cl>│└── librust_so_lib.so # 动态库
+</span></span><span class=line><span class=cl>└── examples/# 调用示例
+</span></span><span class=line><span class=cl>└── test.c
+</span></span></code></pre></td></tr></table></div></div><h2 id=调用示例><a href=#%e8%b0%83%e7%94%a8%e7%a4%ba%e4%be%8b class=header-anchor></a>调用示例</h2><h3 id=c-语言示例-testc><a href=#c-%e8%af%ad%e8%a8%80%e7%a4%ba%e4%be%8b-testc class=header-anchor></a>C 语言示例 (test.c)</h3><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-c data-lang=c><span class=line><span class=cl><span class=cp>#include</span> <span class=cpf>&lt;stdio.h&gt;</span><span class=cp>
+</span></span></span><span class=line><span class=cl><span class=cp>#include</span> <span class=cpf>&#34;rust_so_lib.h&#34;</span><span class=cp>
+</span></span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=kt>int</span> <span class=nf>main</span><span class=p>()</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>   <span class=c1>// 数值计算
+</span></span></span><span class=line><span class=cl>   <span class=nf>printf</span><span class=p>(</span><span class=s>&#34;3 + 5 = %d</span><span class=se>\n</span><span class=s>&#34;</span><span class=p>,</span> <span class=nf>add_numbers</span><span class=p>(</span><span class=mi>3</span><span class=p>,</span> <span class=mi>5</span><span class=p>));</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>   <span class=c1>// 字符串处理
+</span></span></span><span class=line><span class=cl>   <span class=k>const</span> <span class=kt>char</span><span class=o>*</span> <span class=n>name</span> <span class=o>=</span> <span class=s>&#34;Rust&#34;</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>   <span class=kt>char</span><span class=o>*</span> <span class=n>greeting</span> <span class=o>=</span> <span class=nf>create_greeting</span><span class=p>(</span><span class=n>name</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>   <span class=nf>printf</span><span class=p>(</span><span class=s>&#34;%s</span><span class=se>\n</span><span class=s>&#34;</span><span class=p>,</span> <span class=n>greeting</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>   <span class=nf>printf</span><span class=p>(</span><span class=s>&#34;String length: %d</span><span class=se>\n</span><span class=s>&#34;</span><span class=p>,</span> <span class=nf>string_length</span><span class=p>(</span><span class=n>greeting</span><span class=p>));</span>
+</span></span><span class=line><span class=cl>   <span class=nf>free_string</span><span class=p>(</span><span class=n>greeting</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>   <span class=k>return</span> <span class=mi>0</span><span class=p>;</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span></code></pre></td></tr></table></div></div><h3 id=编译与运行><a href=#%e7%bc%96%e8%af%91%e4%b8%8e%e8%bf%90%e8%a1%8c class=header-anchor></a>编译与运行</h3><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl><span class=c1># 动态链接方式</span>
+</span></span><span class=line><span class=cl>gcc test.c -o <span class=nb>test</span> -lrust_so_lib -Ltarget/release
+</span></span><span class=line><span class=cl><span class=nv>LD_LIBRARY_PATH</span><span class=o>=</span>target/release ./test
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1># 静态链接方式</span>
+</span></span><span class=line><span class=cl>gcc test.c -o <span class=nb>test</span> target/release/librust_so_lib.so
+</span></span></code></pre></td></tr></table></div></div><h2 id=跨平台注意事项><a href=#%e8%b7%a8%e5%b9%b3%e5%8f%b0%e6%b3%a8%e6%84%8f%e4%ba%8b%e9%a1%b9 class=header-anchor></a>跨平台注意事项</h2><h3 id=平台差异处理><a href=#%e5%b9%b3%e5%8f%b0%e5%b7%ae%e5%bc%82%e5%a4%84%e7%90%86 class=header-anchor></a>平台差异处理</h3><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-makefile data-lang=makefile><span class=line><span class=cl><span class=c># 在Makefile中添加平台检测
+</span></span></span><span class=line><span class=cl><span class=nv>UNAME</span> <span class=o>:=</span> <span class=k>$(</span>shell uname<span class=k>)</span>
+</span></span><span class=line><span class=cl><span class=err>ifeq</span> <span class=err>(</span><span class=k>$(</span><span class=nv>UNAME</span><span class=k>)</span><span class=err>,</span> <span class=err>Darwin)</span>
+</span></span><span class=line><span class=cl><span class=nv>LIB_EXT</span> <span class=o>:=</span> dylib
+</span></span><span class=line><span class=cl><span class=nv>LDLIBS</span> <span class=o>:=</span> -Wl,-rpath,@loader_path
+</span></span><span class=line><span class=cl><span class=err>else</span> <span class=err>ifeq</span> <span class=err>(</span><span class=k>$(</span><span class=nv>OS</span><span class=k>)</span><span class=err>,</span> <span class=err>Windows_NT)</span>
+</span></span><span class=line><span class=cl><span class=nv>LIB_EXT</span> <span class=o>:=</span> dll
+</span></span><span class=line><span class=cl><span class=nv>LDLIBS</span> <span class=o>:=</span> -Wl,-rpath<span class=o>=</span><span class=s1>&#39;$$ORIGIN&#39;</span>
+</span></span><span class=line><span class=cl><span class=err>else</span>
+</span></span><span class=line><span class=cl><span class=nv>LIB_EXT</span> <span class=o>:=</span> so
+</span></span><span class=line><span class=cl><span class=nv>LDLIBS</span> <span class=o>:=</span> -Wl,-rpath<span class=o>=</span><span class=se>\$</span><span class=nv>$ORIGIN</span>
+</span></span><span class=line><span class=cl><span class=err>endif</span>
+</span></span></code></pre></td></tr></table></div></div><h3 id=windows-特殊处理><a href=#windows-%e7%89%b9%e6%ae%8a%e5%a4%84%e7%90%86 class=header-anchor></a>Windows 特殊处理</h3><ol><li>修改 Cargo.toml：</li></ol><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-toml data-lang=toml><span class=line><span class=cl><span class=p>[</span><span class=nx>target</span><span class=p>.</span><span class=s1>&#39;cfg(windows)&#39;</span><span class=p>.</span><span class=nx>dependencies</span><span class=p>]</span>
+</span></span><span class=line><span class=cl><span class=nx>winapi</span> <span class=p>=</span> <span class=p>{</span> <span class=nx>version</span> <span class=p>=</span> <span class=s2>&#34;0.3&#34;</span><span class=p>,</span> <span class=nx>features</span> <span class=p>=</span> <span class=p>[</span><span class=s2>&#34;winbase&#34;</span><span class=p>]</span> <span class=p>}</span>
+</span></span></code></pre></td></tr></table></div></div><ol start=2><li>添加 DLL 导出属性：</li></ol><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-rust data-lang=rust><span class=line><span class=cl><span class=cp>#[cfg_attr(target_os = </span><span class=s>&#34;windows&#34;</span><span class=cp>, link(name = </span><span class=s>&#34;rust_so_lib&#34;</span><span class=cp>))]</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=k>extern</span><span class=w> </span><span class=s>&#34;C&#34;</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=c1>// 导出函数
+</span></span></span><span class=line><span class=cl><span class=p>}</span><span class=w>
+</span></span></span></code></pre></td></tr></table></div></div><h2 id=最佳实践><a href=#%e6%9c%80%e4%bd%b3%e5%ae%9e%e8%b7%b5 class=header-anchor></a>最佳实践</h2><h3 id=接口设计原则><a href=#%e6%8e%a5%e5%8f%a3%e8%ae%be%e8%ae%a1%e5%8e%9f%e5%88%99 class=header-anchor></a>接口设计原则</h3><ol><li><strong>保持接口稳定</strong>：</li></ol><ul><li><p>使用版本号控制ABI兼容性</p></li><li><p>避免频繁变更函数签名</p></li></ul><ol start=2><li><strong>内存管理规范</strong>：</li></ol><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-rust data-lang=rust><span class=line><span class=cl><span class=c1>// 明确所有权转移
+</span></span></span><span class=line><span class=cl><span class=cp>#[unsafe(no_mangle)]</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=k>pub</span><span class=w> </span><span class=k>extern</span><span class=w> </span><span class=s>&#34;C&#34;</span><span class=w> </span><span class=k>fn</span> <span class=nf>create_buffer</span><span class=p>(</span><span class=n>size</span>: <span class=kt>usize</span><span class=p>)</span><span class=w> </span>-&gt; <span class=o>*</span><span class=k>mut</span><span class=w> </span><span class=kt>u8</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>   </span><span class=kd>let</span><span class=w> </span><span class=k>mut</span><span class=w> </span><span class=n>buf</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=nb>Vec</span>::<span class=n>with_capacity</span><span class=p>(</span><span class=n>size</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>   </span><span class=kd>let</span><span class=w> </span><span class=n>ptr</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=n>buf</span><span class=p>.</span><span class=n>as_mut_ptr</span><span class=p>();</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>   </span><span class=n>std</span>::<span class=n>mem</span>::<span class=n>forget</span><span class=p>(</span><span class=n>buf</span><span class=p>);</span><span class=w> </span><span class=c1>// 明确转移所有权
+</span></span></span><span class=line><span class=cl><span class=w>   </span><span class=n>ptr</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=p>}</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=cp>#[unsafe(no_mangle)]</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=k>pub</span><span class=w> </span><span class=k>extern</span><span class=w> </span><span class=s>&#34;C&#34;</span><span class=w> </span><span class=k>fn</span> <span class=nf>free_buffer</span><span class=p>(</span><span class=n>ptr</span>: <span class=o>*</span><span class=k>mut</span><span class=w> </span><span class=kt>u8</span><span class=p>,</span><span class=w> </span><span class=n>size</span>: <span class=kt>usize</span><span class=p>)</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>   </span><span class=k>unsafe</span><span class=w> </span><span class=p>{</span><span class=w> </span><span class=nb>Vec</span>::<span class=n>from_raw_parts</span><span class=p>(</span><span class=n>ptr</span><span class=p>,</span><span class=w> </span><span class=mi>0</span><span class=p>,</span><span class=w> </span><span class=n>size</span><span class=p>)</span><span class=w> </span><span class=p>};</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=p>}</span><span class=w>
+</span></span></span></code></pre></td></tr></table></div></div><h3 id=错误处理模式><a href=#%e9%94%99%e8%af%af%e5%a4%84%e7%90%86%e6%a8%a1%e5%bc%8f class=header-anchor></a>错误处理模式</h3><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-rust data-lang=rust><span class=line><span class=cl><span class=cp>#[repr(C)]</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=k>pub</span><span class=w> </span><span class=k>enum</span> <span class=nc>ErrorCode</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>   </span><span class=n>Success</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=mi>0</span><span class=p>,</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>   </span><span class=n>InvalidInput</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=mi>1</span><span class=p>,</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>   </span><span class=n>MemoryError</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=mi>2</span><span class=p>,</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=p>}</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=cp>#[unsafe(no_mangle)]</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=k>pub</span><span class=w> </span><span class=k>extern</span><span class=w> </span><span class=s>&#34;C&#34;</span><span class=w> </span><span class=k>fn</span> <span class=nf>safe_operation</span><span class=p>(</span><span class=n>input</span>: <span class=o>*</span><span class=k>const</span><span class=w> </span><span class=n>c_char</span><span class=p>)</span><span class=w> </span>-&gt; <span class=nc>ErrorCode</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>   </span><span class=k>if</span><span class=w> </span><span class=n>input</span><span class=p>.</span><span class=n>is_null</span><span class=p>()</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>   </span><span class=k>return</span><span class=w> </span><span class=n>ErrorCode</span>::<span class=n>InvalidInput</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=p>}</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=c1>// ...操作逻辑
+</span></span></span><span class=line><span class=cl><span class=n>ErrorCode</span>::<span class=n>Success</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=p>}</span><span class=w>
+</span></span></span></code></pre></td></tr></table></div></div><h3 id=性能优化建议><a href=#%e6%80%a7%e8%83%bd%e4%bc%98%e5%8c%96%e5%bb%ba%e8%ae%ae class=header-anchor></a>性能优化建议</h3><ol><li><strong>批量数据处理</strong>：</li></ol><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-rust data-lang=rust><span class=line><span class=cl><span class=cp>#[unsafe(no_mangle)]</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=k>pub</span><span class=w> </span><span class=k>extern</span><span class=w> </span><span class=s>&#34;C&#34;</span><span class=w> </span><span class=k>fn</span> <span class=nf>process_batch</span><span class=p>(</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>   </span><span class=n>inputs</span>: <span class=o>*</span><span class=k>const</span><span class=w> </span><span class=n>c_int</span><span class=p>,</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>   </span><span class=n>count</span>: <span class=kt>usize</span><span class=p>,</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>   </span><span class=n>outputs</span>: <span class=o>*</span><span class=k>mut</span><span class=w> </span><span class=n>c_int</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>   </span><span class=p>)</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>   </span><span class=kd>let</span><span class=w> </span><span class=n>inputs</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=k>unsafe</span><span class=w> </span><span class=p>{</span><span class=w> </span><span class=n>std</span>::<span class=n>slice</span>::<span class=n>from_raw_parts</span><span class=p>(</span><span class=n>inputs</span><span class=p>,</span><span class=w> </span><span class=n>count</span><span class=p>)</span><span class=w> </span><span class=p>};</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>   </span><span class=kd>let</span><span class=w> </span><span class=n>outputs</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=k>unsafe</span><span class=w> </span><span class=p>{</span><span class=w> </span><span class=n>std</span>::<span class=n>slice</span>::<span class=n>from_raw_parts_mut</span><span class=p>(</span><span class=n>outputs</span><span class=p>,</span><span class=w> </span><span class=n>count</span><span class=p>)</span><span class=w> </span><span class=p>};</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>   </span><span class=c1>// 批量处理...
+</span></span></span><span class=line><span class=cl><span class=p>}</span><span class=w>
+</span></span></span></code></pre></td></tr></table></div></div><ol start=2><li><strong>零拷贝接口</strong>：</li></ol><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span><span class=lnt>7
+</span><span class=lnt>8
+</span><span class=lnt>9
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-rust data-lang=rust><span class=line><span class=cl><span class=cp>#[unsafe(no_mangle)]</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=k>pub</span><span class=w> </span><span class=k>extern</span><span class=w> </span><span class=s>&#34;C&#34;</span><span class=w> </span><span class=k>fn</span> <span class=nf>get_data</span><span class=p>(</span><span class=n>buffer</span>: <span class=o>*</span><span class=k>mut</span><span class=w> </span><span class=kt>u8</span><span class=p>,</span><span class=w> </span><span class=n>max_size</span>: <span class=kt>usize</span><span class=p>)</span><span class=w> </span>-&gt; <span class=kt>usize</span> <span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>   </span><span class=kd>let</span><span class=w> </span><span class=n>data</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=n>generate_data</span><span class=p>();</span><span class=w> </span><span class=c1>// Rust端生成数据
+</span></span></span><span class=line><span class=cl><span class=w>   </span><span class=kd>let</span><span class=w> </span><span class=n>copy_size</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=n>data</span><span class=p>.</span><span class=n>len</span><span class=p>().</span><span class=n>min</span><span class=p>(</span><span class=n>max_size</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>   </span><span class=k>unsafe</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>   </span><span class=n>std</span>::<span class=n>ptr</span>::<span class=n>copy_nonoverlapping</span><span class=p>(</span><span class=n>data</span><span class=p>.</span><span class=n>as_ptr</span><span class=p>(),</span><span class=w> </span><span class=n>buffer</span><span class=p>,</span><span class=w> </span><span class=n>copy_size</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>   </span><span class=p>}</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>   </span><span class=n>copy_size</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=p>}</span><span class=w>
+</span></span></span></code></pre></td></tr></table></div></div><p>通过本指南，您可以系统性地掌握使用 Rust 开发生产级动态库的全流程，从项目创建、代码编写、构建系统到分发部署的完整知识体系。实际开发中应根据具体需求调整接口设计和构建流程。</p></section><footer class=article-footer><section class=article-tags><a href=/tags/clang/>Clang</a></section><section class=article-copyright><svg class="icon icon-tabler icon-tabler-copyright" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="12" r="9"/><path d="M14.5 9a3.5 4 0 100 6"/></svg>
+<span>Licensed under CC BY-NC-SA 4.0</span></section></footer><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css integrity=sha384-n8MVd4RsNIU0tAv4ct0nTaAbDJwPJzDEaqSD1odI+WdtXRGWt2kTvGFasHpSy3SV crossorigin=anonymous><script src=https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js integrity=sha384-XjKyOOlGwcjNTAIQHIpgOno0Hl1YQqzUOEleOLALmuqehneUG+vnGctmUb0ZY0l8 crossorigin=anonymous defer></script><script src=https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js integrity=sha384-+VBxd3r6XgURycqtZ117nYw44OOcIax56Z4dCRWbxyPt0Koah1uHoK0o4+/RRE05 crossorigin=anonymous defer></script><script>window.addEventListener("DOMContentLoaded",()=>{const e=document.querySelector(".main-article");renderMathInElement(e,{delimiters:[{left:"$$",right:"$$",display:!0},{left:"$",right:"$",display:!1},{left:"\\(",right:"\\)",display:!1},{left:"\\[",right:"\\]",display:!0}],ignoredClasses:["gist"]})})</script></article><aside class=related-content--wrapper><h2 class=section-title>相关文章</h2><div class=related-content><div class="flex article-list--tile"><article><a href=/p/webassemblywasm%E5%85%A5%E9%97%A8%E6%8C%87%E5%8D%97%E4%BB%8E%E5%9F%BA%E7%A1%80%E5%88%B0%E5%AE%9E%E8%B7%B5/><div class=article-details><h2 class=article-title>WebAssembly（Wasm）入门指南：从基础到实践</h2></div></a></article><article><a href=/p/%E4%BD%BF%E7%94%A8-rust-criterion-%E8%BF%9B%E8%A1%8C%E6%80%A7%E8%83%BD%E5%9F%BA%E5%87%86%E6%B5%8B%E8%AF%95/><div class=article-details><h2 class=article-title>使用 Rust Criterion 进行性能基准测试</h2></div></a></article></div></div></aside><div class=disqus-container></div><style>.disqus-container{background-color:var(--card-background);border-radius:var(--card-border-radius);box-shadow:var(--shadow-l1);padding:var(--card-padding)}</style><script>window.addEventListener("onColorSchemeChange",e=>{typeof DISQUS=="object"&&DISQUS.reset({reload:!0})})</script><footer class=site-footer><section class=copyright>&copy;
+2014 -
+2026 Tech In Sight</section><section class=powerby>使用 <a href=https://gohugo.io/ target=_blank rel=noopener>Hugo</a> 构建<br>主题 <b><a href=https://github.com/CaiJimmy/hugo-theme-stack target=_blank rel=noopener data-version=3.30.0>Stack</a></b> 由 <a href=https://jimmycai.com target=_blank rel=noopener>Jimmy</a> 设计</section></footer><div class=pswp tabindex=-1 role=dialog aria-hidden=true><div class=pswp__bg></div><div class=pswp__scroll-wrap><div class=pswp__container><div class=pswp__item></div><div class=pswp__item></div><div class=pswp__item></div></div><div class="pswp__ui pswp__ui--hidden"><div class=pswp__top-bar><div class=pswp__counter></div><button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+<button class="pswp__button pswp__button--share" title=Share></button>
+<button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+<button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button><div class=pswp__preloader><div class=pswp__preloader__icn><div class=pswp__preloader__cut><div class=pswp__preloader__donut></div></div></div></div></div><div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap"><div class=pswp__share-tooltip></div></div><button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+</button>
+<button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)"></button><div class=pswp__caption><div class=pswp__caption__center></div></div></div></div></div><script src=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js integrity="sha256-ePwmChbbvXbsO02lbM3HoHbSHTHFAeChekF1xKJdleo=" crossorigin=anonymous defer></script><script src=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js integrity="sha256-UKkzOn/w1mBxRmLLGrSeyB4e1xbrp4xylgAWb3M42pU=" crossorigin=anonymous defer></script><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.min.css crossorigin=anonymous><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.css crossorigin=anonymous></main></div><script src=https://cdn.jsdelivr.net/npm/node-vibrant@3.1.6/dist/vibrant.min.js integrity="sha256-awcR2jno4kI5X0zL8ex0vi2z+KMkF24hUW8WePSA9HM=" crossorigin=anonymous></script><script type=text/javascript src=/ts/main.1e9a3bafd846ced4c345d084b355fb8c7bae75701c338f8a1f8a82c780137826.js defer></script><script>(function(){const e=document.createElement("link");e.href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap",e.type="text/css",e.rel="stylesheet",document.head.appendChild(e)})()</script></body></html>

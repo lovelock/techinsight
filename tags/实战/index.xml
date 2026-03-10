@@ -1,0 +1,207 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>实战 on Tech In Sight</title><link>https://techinsight.pages.dev/tags/%E5%AE%9E%E6%88%98/</link><description>Recent content in 实战 on Tech In Sight</description><generator>Hugo -- gohugo.io</generator><language>zh-cn</language><lastBuildDate>Fri, 15 Nov 2024 09:56:01 +0800</lastBuildDate><atom:link href="https://techinsight.pages.dev/tags/%E5%AE%9E%E6%88%98/index.xml" rel="self" type="application/rss+xml"/><item><title>使用 Rust Criterion 进行性能基准测试</title><link>https://techinsight.pages.dev/p/%E4%BD%BF%E7%94%A8-rust-criterion-%E8%BF%9B%E8%A1%8C%E6%80%A7%E8%83%BD%E5%9F%BA%E5%87%86%E6%B5%8B%E8%AF%95/</link><pubDate>Fri, 15 Nov 2024 09:56:01 +0800</pubDate><guid>https://techinsight.pages.dev/p/%E4%BD%BF%E7%94%A8-rust-criterion-%E8%BF%9B%E8%A1%8C%E6%80%A7%E8%83%BD%E5%9F%BA%E5%87%86%E6%B5%8B%E8%AF%95/</guid><description>&lt;p&gt;在 Rust 开发中，性能基准测试是非常重要的一环，能够帮助开发者评估代码的性能并进行优化。&lt;code&gt;Criterion.rs&lt;/code&gt; 是一个强大的 Rust 基准测试框架，它提供了简单易用的接口和丰富的功能。本文将介绍如何使用 &lt;code&gt;Criterion&lt;/code&gt; 进行基准测试，以及一些注意事项。&lt;/p&gt;
+&lt;h3 id="1-什么是-criterionrs"&gt;&lt;a href="#1-%e4%bb%80%e4%b9%88%e6%98%af-criterionrs" class="header-anchor"&gt;&lt;/a&gt;1. 什么是 Criterion.rs？
+&lt;/h3&gt;&lt;p&gt;&lt;code&gt;Criterion.rs&lt;/code&gt; 是一个用于 Rust 的基准测试库，旨在取代 Rust 标准库中的基准测试功能。它提供更精确的测量手段和更好的报告功能，能够帮助开发者深入了解代码的性能表现。&lt;/p&gt;
+&lt;h3 id="2-安装-criterionrs"&gt;&lt;a href="#2-%e5%ae%89%e8%a3%85-criterionrs" class="header-anchor"&gt;&lt;/a&gt;2. 安装 Criterion.rs
+&lt;/h3&gt;&lt;p&gt;要在项目中使用 &lt;code&gt;Criterion.rs&lt;/code&gt;，首先需要在 &lt;code&gt;Cargo.toml&lt;/code&gt; 文件中添加依赖。你可以使用以下命令来安装：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;div class="chroma"&gt;
+&lt;table class="lntable"&gt;&lt;tr&gt;&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code&gt;&lt;span class="lnt"&gt;1
+&lt;/span&gt;&lt;span class="lnt"&gt;2
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code class="language-toml" data-lang="toml"&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="nx"&gt;dev-dependencies&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="nx"&gt;criterion&lt;/span&gt; &lt;span class="p"&gt;=&lt;/span&gt; &lt;span class="s2"&gt;&amp;#34;0.5.1&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;注意：这个依赖是添加在&lt;code&gt;dev-dependencies&lt;/code&gt;中的，所以不能直接用&lt;code&gt;cargo add criterion&lt;/code&gt;来安装。那么它有两种方式实现&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;编辑&lt;code&gt;Cargo.toml&lt;/code&gt;&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;这是废话&lt;/p&gt;
+&lt;ol start="2"&gt;
+&lt;li&gt;通过&lt;code&gt;cargo-edit&lt;/code&gt;&lt;/li&gt;
+&lt;/ol&gt;
+&lt;div class="highlight"&gt;&lt;div class="chroma"&gt;
+&lt;table class="lntable"&gt;&lt;tr&gt;&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code&gt;&lt;span class="lnt"&gt;1
+&lt;/span&gt;&lt;span class="lnt"&gt;2
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code class="language-bash" data-lang="bash"&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;cargo install cargo-edit
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;cargo add --dev criterion
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;安装&lt;code&gt;cargo-edit&lt;/code&gt;就是为了能让&lt;code&gt;cargo add&lt;/code&gt;支持一个&lt;code&gt;--dev&lt;/code&gt;的选项。&lt;/p&gt;
+&lt;h3 id="3-创建基准测试"&gt;&lt;a href="#3-%e5%88%9b%e5%bb%ba%e5%9f%ba%e5%87%86%e6%b5%8b%e8%af%95" class="header-anchor"&gt;&lt;/a&gt;3. 创建基准测试
+&lt;/h3&gt;&lt;p&gt;创建一个基准测试非常简单。首先，在项目的 &lt;code&gt;benches&lt;/code&gt; 目录中创建一个新的基准测试文件，例如 &lt;code&gt;benches/bench_hash.rs&lt;/code&gt;。以下是一个简单的例子：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;div class="chroma"&gt;
+&lt;table class="lntable"&gt;&lt;tr&gt;&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code&gt;&lt;span class="lnt"&gt; 1
+&lt;/span&gt;&lt;span class="lnt"&gt; 2
+&lt;/span&gt;&lt;span class="lnt"&gt; 3
+&lt;/span&gt;&lt;span class="lnt"&gt; 4
+&lt;/span&gt;&lt;span class="lnt"&gt; 5
+&lt;/span&gt;&lt;span class="lnt"&gt; 6
+&lt;/span&gt;&lt;span class="lnt"&gt; 7
+&lt;/span&gt;&lt;span class="lnt"&gt; 8
+&lt;/span&gt;&lt;span class="lnt"&gt; 9
+&lt;/span&gt;&lt;span class="lnt"&gt;10
+&lt;/span&gt;&lt;span class="lnt"&gt;11
+&lt;/span&gt;&lt;span class="lnt"&gt;12
+&lt;/span&gt;&lt;span class="lnt"&gt;13
+&lt;/span&gt;&lt;span class="lnt"&gt;14
+&lt;/span&gt;&lt;span class="lnt"&gt;15
+&lt;/span&gt;&lt;span class="lnt"&gt;16
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code class="language-rust" data-lang="rust"&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="c1"&gt;// benches/bench_hash.rs
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="k"&gt;use&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;criterion&lt;/span&gt;::&lt;span class="p"&gt;{&lt;/span&gt;&lt;span class="n"&gt;criterion_group&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;criterion_main&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;Criterion&lt;/span&gt;&lt;span class="p"&gt;};&lt;/span&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="k"&gt;use&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;deduplicate&lt;/span&gt;::&lt;span class="n"&gt;file_info&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="k"&gt;fn&lt;/span&gt; &lt;span class="nf"&gt;bench_hash&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="p"&gt;{&lt;/span&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="kd"&gt;let&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;path&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s"&gt;&amp;#34;/path/to/a/file&amp;#34;&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;file_info&lt;/span&gt;::&lt;span class="n"&gt;sha256_hash&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;path&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="p"&gt;}&lt;/span&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="k"&gt;fn&lt;/span&gt; &lt;span class="nf"&gt;benchmark_hash&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;c&lt;/span&gt;: &lt;span class="kp"&gt;&amp;amp;&lt;/span&gt;&lt;span class="nc"&gt;mut&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;Criterion&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="p"&gt;{&lt;/span&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;c&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;bench_function&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;&amp;#34;benchmark_sha256&amp;#34;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;|&lt;/span&gt;&lt;span class="n"&gt;b&lt;/span&gt;&lt;span class="o"&gt;|&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;b&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;iter&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="o"&gt;||&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;bench_hash&lt;/span&gt;&lt;span class="p"&gt;()));&lt;/span&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="p"&gt;}&lt;/span&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="fm"&gt;criterion_group!&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;benches&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;benchmark_hash&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="fm"&gt;criterion_main!&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;benches&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;在这个例子中，我们定义了一个 &lt;code&gt;bench_hash()&lt;/code&gt; 方法，用来调用你的&lt;code&gt;lib.rs&lt;/code&gt;中已经定义过的&lt;code&gt;file_info::sha256_hash()&lt;/code&gt;方法，这里只是为了给它一个输入参数，并创建了一个基准测试来测量其性能。&lt;code&gt;c.bench_function&lt;/code&gt; 函数接收一个名称和一个闭包作为参数，闭包中是我们希望基准测试执行的代码。&lt;/p&gt;
+&lt;h3 id="4-运行基准测试"&gt;&lt;a href="#4-%e8%bf%90%e8%a1%8c%e5%9f%ba%e5%87%86%e6%b5%8b%e8%af%95" class="header-anchor"&gt;&lt;/a&gt;4. 运行基准测试
+&lt;/h3&gt;&lt;p&gt;要运行基准测试，你可以使用以下命令：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;div class="chroma"&gt;
+&lt;table class="lntable"&gt;&lt;tr&gt;&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code&gt;&lt;span class="lnt"&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code class="language-bash" data-lang="bash"&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;cargo bench
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;这时你会发现基准测试并没有执行，这是因为还需要在&lt;code&gt;Cargo.toml&lt;/code&gt;中添加下列的内容&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;div class="chroma"&gt;
+&lt;table class="lntable"&gt;&lt;tr&gt;&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code&gt;&lt;span class="lnt"&gt;1
+&lt;/span&gt;&lt;span class="lnt"&gt;2
+&lt;/span&gt;&lt;span class="lnt"&gt;3
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code class="language-toml" data-lang="toml"&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="p"&gt;[[&lt;/span&gt;&lt;span class="nx"&gt;bench&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="nx"&gt;name&lt;/span&gt; &lt;span class="p"&gt;=&lt;/span&gt; &lt;span class="s2"&gt;&amp;#34;bench_hash&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="nx"&gt;harness&lt;/span&gt; &lt;span class="p"&gt;=&lt;/span&gt; &lt;span class="kc"&gt;false&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;这里解释一下这几行的含义&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;&lt;code&gt;name = &amp;quot;bench_hash&amp;quot;&lt;/code&gt; 告诉criterion去&lt;code&gt;benches&lt;/code&gt;目录中找&lt;code&gt;bench_hash.rs&lt;/code&gt;或&lt;code&gt;bench_hash/main.rs&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;harness = false&lt;/code&gt; cargo自带的bench是使用harness，这也是个基准测试框架，但我们现在要用的是一个第三方的框架，所以就要把内置的框架给禁用掉&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;以此类推，还可以定义更多的&lt;code&gt;[[bench]]&lt;/code&gt;。&lt;/p&gt;
+&lt;h3 id="5-输出结果"&gt;&lt;a href="#5-%e8%be%93%e5%87%ba%e7%bb%93%e6%9e%9c" class="header-anchor"&gt;&lt;/a&gt;5. 输出结果
+&lt;/h3&gt;&lt;p&gt;运行基准测试后，&lt;code&gt;Criterion.rs&lt;/code&gt; 将会生成详细的输出，显示每个基准测试的平均时间、标准差、样本数量等信息。这些结果可以帮助你了解代码在不同条件下的表现。&lt;/p&gt;
+&lt;h3 id="6-自定义"&gt;&lt;a href="#6-%e8%87%aa%e5%ae%9a%e4%b9%89" class="header-anchor"&gt;&lt;/a&gt;6. 自定义
+&lt;/h3&gt;&lt;h4 id="迭代次数"&gt;&lt;a href="#%e8%bf%ad%e4%bb%a3%e6%ac%a1%e6%95%b0" class="header-anchor"&gt;&lt;/a&gt;迭代次数
+&lt;/h4&gt;&lt;p&gt;对于比较慢的方法，默认会运行100个迭代，如果你的方法非常慢，就会消耗大量时间，比如像上面的给文件计算SHA256散列值的，对于大文件来说就会很慢，这时可能会希望减少执行次数来减少等待时间。通过自定义&lt;code&gt;criterion_group!(benches, benchmark_hash);&lt;/code&gt;这行来解决&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;div class="chroma"&gt;
+&lt;table class="lntable"&gt;&lt;tr&gt;&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code&gt;&lt;span class="lnt"&gt;1
+&lt;/span&gt;&lt;span class="lnt"&gt;2
+&lt;/span&gt;&lt;span class="lnt"&gt;3
+&lt;/span&gt;&lt;span class="lnt"&gt;4
+&lt;/span&gt;&lt;span class="lnt"&gt;5
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code class="language-rust" data-lang="rust"&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="fm"&gt;criterion_group!&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;name&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;benches&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;config&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;Criterion&lt;/span&gt;::&lt;span class="n"&gt;default&lt;/span&gt;&lt;span class="p"&gt;().&lt;/span&gt;&lt;span class="n"&gt;sample_size&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="mi"&gt;10&lt;/span&gt;&lt;span class="p"&gt;).&lt;/span&gt;&lt;span class="n"&gt;warm_up_time&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;Duration&lt;/span&gt;::&lt;span class="n"&gt;from_secs&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="mi"&gt;20&lt;/span&gt;&lt;span class="p"&gt;));&lt;/span&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;targets&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;benchmark_hash&lt;/span&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="p"&gt;);&lt;/span&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;其中&lt;code&gt;sample_size&lt;/code&gt;就是迭代次数，不能低于10，&lt;code&gt;warm_up_time&lt;/code&gt;是预热用的时间，有兴趣可以再研究其他的选项。&lt;/p&gt;
+&lt;p&gt;注意：&lt;code&gt;criterion_group!&lt;/code&gt;是一个宏，里面的三行结尾就是&lt;code&gt;;&lt;/code&gt;，而不是&lt;code&gt;,&lt;/code&gt;，我没有写错，&lt;code&gt;targets&lt;/code&gt;可以有多个，可以自己尝试一下。&lt;/p&gt;
+&lt;h4 id="日志"&gt;&lt;a href="#%e6%97%a5%e5%bf%97" class="header-anchor"&gt;&lt;/a&gt;日志
+&lt;/h4&gt;&lt;p&gt;一般最简单的日志可以通过&lt;code&gt;log&lt;/code&gt;接口和&lt;code&gt;env_logger&lt;/code&gt;来实现，而&lt;code&gt;env_logger&lt;/code&gt;在使用之前需要执行一次&lt;code&gt;env_logger::init()&lt;/code&gt;，可以放在这里&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;div class="chroma"&gt;
+&lt;table class="lntable"&gt;&lt;tr&gt;&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code&gt;&lt;span class="lnt"&gt;1
+&lt;/span&gt;&lt;span class="lnt"&gt;2
+&lt;/span&gt;&lt;span class="lnt"&gt;3
+&lt;/span&gt;&lt;span class="lnt"&gt;4
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code class="language-rust" data-lang="rust"&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="k"&gt;fn&lt;/span&gt; &lt;span class="nf"&gt;benchmark_hash&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;c&lt;/span&gt;: &lt;span class="kp"&gt;&amp;amp;&lt;/span&gt;&lt;span class="nc"&gt;mut&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;Criterion&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="p"&gt;{&lt;/span&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;env_logger&lt;/span&gt;::&lt;span class="n"&gt;init&lt;/span&gt;&lt;span class="p"&gt;();&lt;/span&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;c&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;bench_function&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;&amp;#34;benchmark_sha256&amp;#34;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;|&lt;/span&gt;&lt;span class="n"&gt;b&lt;/span&gt;&lt;span class="o"&gt;|&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;b&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;iter&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="o"&gt;||&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;bench_hash&lt;/span&gt;&lt;span class="p"&gt;()));&lt;/span&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="p"&gt;}&lt;/span&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;当然如果要定义多个类似&lt;code&gt;benchmark_hash&lt;/code&gt;的函数，这也会有一些冲突，就需要&lt;code&gt;once_cell&lt;/code&gt;或&lt;code&gt;lazy_static&lt;/code&gt;等其他方案了。&lt;/p&gt;
+&lt;h4 id="输出结果"&gt;&lt;a href="#%e8%be%93%e5%87%ba%e7%bb%93%e6%9e%9c" class="header-anchor"&gt;&lt;/a&gt;输出结果
+&lt;/h4&gt;&lt;p&gt;安装&lt;code&gt;criterion&lt;/code&gt;时有一个选项是使用&lt;code&gt;html_report&lt;/code&gt;，默认会使用gnuplot来画图，但rust里有一个比较好的实现是plotters，所以如果没有安装gnuplot就会默认使用plotters。&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;div class="chroma"&gt;
+&lt;table class="lntable"&gt;&lt;tr&gt;&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code&gt;&lt;span class="lnt"&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code class="language-fallback" data-lang="fallback"&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;Gnuplot not found, using plotters backend
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;div class="highlight"&gt;&lt;div class="chroma"&gt;
+&lt;table class="lntable"&gt;&lt;tr&gt;&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code&gt;&lt;span class="lnt"&gt;1
+&lt;/span&gt;&lt;span class="lnt"&gt;2
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code class="language-toml" data-lang="toml"&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="nx"&gt;dev-dependencies&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="nx"&gt;criterion&lt;/span&gt; &lt;span class="p"&gt;=&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt; &lt;span class="nx"&gt;version&lt;/span&gt; &lt;span class="p"&gt;=&lt;/span&gt; &lt;span class="s2"&gt;&amp;#34;0.5.1&amp;#34;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="nx"&gt;features&lt;/span&gt; &lt;span class="p"&gt;=&lt;/span&gt; &lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="s2"&gt;&amp;#34;html_reports&amp;#34;&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt; &lt;span class="p"&gt;}&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;这样执行完之后会生成&lt;code&gt;target/criterion&lt;/code&gt;目录，其中有&lt;code&gt;/report/index.html&lt;/code&gt;文件，用浏览器打开，会看到类似这样的结果&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://techinsight.pages.dev/images/rust/criterion_plotters_report.png"
+loading="lazy"
+&gt;&lt;/p&gt;
+&lt;p&gt;非常美观了，从直线的情况来看，说明并没有随着运行次数的增加性能变差。&lt;/p&gt;
+&lt;h4 id="调优"&gt;&lt;a href="#%e8%b0%83%e4%bc%98" class="header-anchor"&gt;&lt;/a&gt;调优
+&lt;/h4&gt;&lt;p&gt;运行性能测试肯定是为了调优，当你调整了代码，再次执行时，会得到一个类似这样的报告&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;div class="chroma"&gt;
+&lt;table class="lntable"&gt;&lt;tr&gt;&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code&gt;&lt;span class="lnt"&gt;1
+&lt;/span&gt;&lt;span class="lnt"&gt;2
+&lt;/span&gt;&lt;span class="lnt"&gt;3
+&lt;/span&gt;&lt;span class="lnt"&gt;4
+&lt;/span&gt;&lt;span class="lnt"&gt;5
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code class="language-fallback" data-lang="fallback"&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;benchmark_sha256 time: [40.128 µs 40.160 µs 40.191 µs]
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; change: [-0.5928% -0.3165% -0.0596%] (p = 0.04 &amp;lt; 0.05)
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; Change within noise threshold.
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;Found 1 outliers among 10 measurements (10.00%)
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; 1 (10.00%) high mild
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;还是用截图会更直观一些，因为它带颜色&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://techinsight.pages.dev/images/rust/comparison.png"
+loading="lazy"
+&gt;&lt;/p&gt;
+&lt;p&gt;就能看到每次的改动优化了多少，当然我这里没有改代码，所以基本上测试结果也没变化。&lt;/p&gt;
+&lt;p&gt;而运行第二次测试之后刚才的report也会更新，新增了一部分变成这样&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://techinsight.pages.dev/images/rust/bench_comparison.png"
+loading="lazy"
+&gt;&lt;/p&gt;
+&lt;p&gt;可以说是非常贴心了。&lt;/p&gt;
+&lt;h3 id="7-注意事项"&gt;&lt;a href="#7-%e6%b3%a8%e6%84%8f%e4%ba%8b%e9%a1%b9" class="header-anchor"&gt;&lt;/a&gt;7. 注意事项
+&lt;/h3&gt;&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;多次运行&lt;/strong&gt;：&lt;code&gt;Criterion.rs&lt;/code&gt; 会自动进行多次运行以提高结果的准确性。默认情况下，它会运行 100 次并根据结果进行统计分析。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;测量影响&lt;/strong&gt;：基准测试可能会受到多种因素的影响，如 CPU 温度、背景进程等。在进行基准测试时，建议尽量减少外部干扰，最好在空闲的机器上运行。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;避免优化&lt;/strong&gt;：在基准测试中，Rust 编译器可能会对未使用的结果进行优化。确保你的基准测试代码中使用了结果，可以通过将结果赋值给 &lt;code&gt;_&lt;/code&gt; 变量来避免这种情况。例如：&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;清理数据&lt;/strong&gt;：&lt;code&gt;Criterion.rs&lt;/code&gt; 会在每次运行后生成输出数据。可以通过删除 &lt;code&gt;target/criterion&lt;/code&gt; 目录来清理旧的数据和基准测试结果。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;使用基准聚合&lt;/strong&gt;：你可以将多个基准测试组合在一起以获得更全面的性能评估。使用 &lt;code&gt;criterion_group!&lt;/code&gt; 和 &lt;code&gt;criterion_main!&lt;/code&gt; 宏来组织你的基准测试。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id="8-结论"&gt;&lt;a href="#8-%e7%bb%93%e8%ae%ba" class="header-anchor"&gt;&lt;/a&gt;8. 结论
+&lt;/h3&gt;&lt;p&gt;&lt;code&gt;Criterion.rs&lt;/code&gt; 是一个强大且灵活的基准测试工具，能够帮助 Rust 开发者获取详细的性能数据。通过遵循本文的步骤和注意事项，你可以有效地使用 Criterion 进行性能基准测试，从而找到代码中的瓶颈并进行优化。希望这篇文章能够帮助你更好地理解和使用 Criterion.rs，提升你的 Rust 编程能力！&lt;/p&gt;</description></item></channel></rss>

@@ -1,0 +1,210 @@
+<!doctype html><html lang=zh-cn dir=ltr><head><meta charset=utf-8><meta name=viewport content='width=device-width,initial-scale=1'><meta name=description content='在一些介绍Rust的文章中经常会说Rust具有RAII的机制，所谓的Resource Acquisition Is Initialization，也即"资源获取即初始化"，那到底什么是RAII呢？我们从资源管理最初的问题开始说起。\n'><title>从C++和Rust聊聊RAII</title><link rel=canonical href=https://techinsight.pages.dev/p/%E4%BB%8Ec-%E5%92%8Crust%E8%81%8A%E8%81%8Araii/><link rel=stylesheet href=/scss/style.min.3c33722a11bfa97f07308377e860d658770fe60627a4c2b1b7d46497ac9c35c3.css><meta property='og:title' content="从C++和Rust聊聊RAII"><meta property='og:description' content='在一些介绍Rust的文章中经常会说Rust具有RAII的机制，所谓的Resource Acquisition Is Initialization，也即"资源获取即初始化"，那到底什么是RAII呢？我们从资源管理最初的问题开始说起。\n'><meta property='og:url' content='https://techinsight.pages.dev/p/%E4%BB%8Ec-%E5%92%8Crust%E8%81%8A%E8%81%8Araii/'><meta property='og:site_name' content='Tech In Sight'><meta property='og:type' content='article'><meta property='article:section' content='Post'><meta property='article:tag' content='Rust'><meta property='article:tag' content='RAII'><meta property='article:tag' content='C++'><meta property='article:published_time' content='2025-01-23T09:21:25+08:00'><meta property='article:modified_time' content='2025-01-23T09:21:25+08:00'><meta name=twitter:title content="从C++和Rust聊聊RAII"><meta name=twitter:description content='在一些介绍Rust的文章中经常会说Rust具有RAII的机制，所谓的Resource Acquisition Is Initialization，也即"资源获取即初始化"，那到底什么是RAII呢？我们从资源管理最初的问题开始说起。\n'><link rel="shortcut icon" href=/favicon.ico></head><body class=article-page><script>(function(){const e="StackColorScheme";localStorage.getItem(e)||localStorage.setItem(e,"auto")})()</script><script>(function(){const t="StackColorScheme",e=localStorage.getItem(t),n=window.matchMedia("(prefers-color-scheme: dark)").matches===!0;e=="dark"||e==="auto"&&n?document.documentElement.dataset.scheme="dark":document.documentElement.dataset.scheme="light"})()</script><div class="container main-container flex on-phone--column extended"><aside class="sidebar left-sidebar sticky"><button class="hamburger hamburger--spin" type=button id=toggle-menu aria-label=切换菜单>
+<span class=hamburger-box><span class=hamburger-inner></span></span></button><header><figure class=site-avatar><a href=/><img src=/img/avatar_hu_31786b9867641d1c.png width=300 height=280 class=site-logo loading=lazy alt=Avatar></a></figure><div class=site-meta><h1 class=site-name><a href=/>Tech In Sight</a></h1><h2 class=site-description>聊聊技术，聊聊人生</h2></div></header><ol class=menu-social><li><a href=https://github.com/lovelock target=_blank title=GitHub rel=me><svg class="icon icon-tabler icon-tabler-brand-github" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M9 19c-4.3 1.4-4.3-2.5-6-3m12 5v-3.5c0-1 .1-1.4-.5-2 2.8-.3 5.5-1.4 5.5-6a4.6 4.6.0 00-1.3-3.2 4.2 4.2.0 00-.1-3.2s-1.1-.3-3.5 1.3a12.3 12.3.0 00-6.2.0C6.5 2.8 5.4 3.1 5.4 3.1a4.2 4.2.0 00-.1 3.2A4.6 4.6.0 004 9.5c0 4.6 2.7 5.7 5.5 6-.6.6-.6 1.2-.5 2V21"/></svg></a></li><li><a href=https://twitter.com target=_blank title=Twitter rel=me><svg class="icon icon-tabler icon-tabler-brand-twitter" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M22 4.01c-1 .49-1.98.689-3 .99-1.121-1.265-2.783-1.335-4.38-.737S11.977 6.323 12 8v1c-3.245.083-6.135-1.395-8-4 0 0-4.182 7.433 4 11-1.872 1.247-3.739 2.088-6 2 3.308 1.803 6.913 2.423 10.034 1.517 3.58-1.04 6.522-3.723 7.651-7.742a13.84 13.84.0 00.497-3.753C20.18 7.773 21.692 5.25 22 4.009z"/></svg></a></li></ol><ol class=menu id=main-menu><li><a href=/><svg class="icon icon-tabler icon-tabler-home" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><polyline points="5 12 3 12 12 3 21 12 19 12"/><path d="M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7"/><path d="M9 21v-6a2 2 0 012-2h2a2 2 0 012 2v6"/></svg>
+<span>Home</span></a></li><li><a href=/archives/><svg class="icon icon-tabler icon-tabler-archive" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><rect x="3" y="4" width="18" height="4" rx="2"/><path d="M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8"/><line x1="10" y1="12" x2="14" y2="12"/></svg>
+<span>Archives</span></a></li><li><a href=/search/><svg class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="10" cy="10" r="7"/><line x1="21" y1="21" x2="15" y2="15"/></svg>
+<span>Search</span></a></li><li><a href=/links/><svg class="icon icon-tabler icon-tabler-link" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><path d="M10 14a3.5 3.5.0 005 0l4-4a3.5 3.5.0 00-5-5l-.5.5"/><path d="M14 10a3.5 3.5.0 00-5 0l-4 4a3.5 3.5.0 005 5l.5-.5"/></svg>
+<span>Links</span></a></li><li class=menu-bottom-section><ol class=menu><li id=dark-mode-toggle><svg class="icon icon-tabler icon-tabler-toggle-left" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="8" cy="12" r="2"/><rect x="2" y="6" width="20" height="12" rx="6"/></svg>
+<svg class="icon icon-tabler icon-tabler-toggle-right" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="16" cy="12" r="2"/><rect x="2" y="6" width="20" height="12" rx="6"/></svg>
+<span>暗色模式</span></li></ol></li></ol></aside><aside class="sidebar right-sidebar sticky"><section class="widget archives"><div class=widget-icon><svg class="icon icon-tabler icon-tabler-hash" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><line x1="5" y1="9" x2="19" y2="9"/><line x1="5" y1="15" x2="19" y2="15"/><line x1="11" y1="4" x2="7" y2="20"/><line x1="17" y1="4" x2="13" y2="20"/></svg></div><h2 class="widget-title section-title">目录</h2><div class=widget--toc><nav id=TableOfContents><ol><li><a href=#没有raii时c是如何管理资源的>没有RAII时C++是如何管理资源的</a><ol><li><a href=#什么是资源>什么是资源？</a></li><li><a href=#实现raii最简单的形式>实现RAII最简单的形式</a></li><li><a href=#自定义一个对象来包装资源>自定义一个对象来包装资源</a></li><li><a href=#使用c内置的智能指针来包装资源>使用C++内置的智能指针来包装资源</a></li></ol></li><li><a href=#为什么资源需要手动回收>为什么资源需要手动回收?</a><ol><li><a href=#普通的资源回收自己指定在何时close>普通的资源回收(自己指定在何时close)</a></li><li><a href=#改进后的资源回收golang的-defer-close>改进后的资源回收(Golang的 defer Close)</a></li></ol></li><li><a href=#raii的资源回收>RAII的资源回收</a><ol><li><a href=#最简单的例子>最简单的例子</a></li><li><a href=#稍稍复杂一点的例子>稍稍复杂一点的例子</a></li></ol></li><li><a href=#总结>总结</a></li></ol></nav></div></section></aside><main class="main full-width"><article class=main-article><header class=article-header><div class=article-details><header class=article-category><a href=/categories/rust/>Rust</a></header><div class=article-title-wrapper><h2 class=article-title><a href=/p/%E4%BB%8Ec-%E5%92%8Crust%E8%81%8A%E8%81%8Araii/>从C++和Rust聊聊RAII</a></h2></div><footer class=article-time><div><svg class="icon icon-tabler icon-tabler-calendar-time" width="56" height="56" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><path d="M11.795 21H5a2 2 0 01-2-2V7a2 2 0 012-2h12a2 2 0 012 2v4"/><circle cx="18" cy="18" r="4"/><path d="M15 3v4"/><path d="M7 3v4"/><path d="M3 11h16"/><path d="M18 16.496V18l1 1"/></svg>
+<time class=article-time--published>Jan 23, 2025</time></div><div><svg class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 15"/></svg>
+<time class=article-time--reading>阅读时长: 5 分钟</time></div></footer></div></header><section class=article-content><p>在一些介绍Rust的文章中经常会说Rust具有RAII的机制，所谓的Resource Acquisition Is Initialization，也即"资源获取即初始化"，那到底什么是RAII呢？我们从<strong>资源管理</strong>最初的问题开始说起。</p><h2 id=没有raii时c是如何管理资源的><a href=#%e6%b2%a1%e6%9c%89raii%e6%97%b6c%e6%98%af%e5%a6%82%e4%bd%95%e7%ae%a1%e7%90%86%e8%b5%84%e6%ba%90%e7%9a%84 class=header-anchor></a>没有RAII时C++是如何管理资源的</h2><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span><span class=lnt>22
+</span><span class=lnt>23
+</span><span class=lnt>24
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-cpp data-lang=cpp><span class=line><span class=cl><span class=cp>#include</span> <span class=cpf>&lt;iostream&gt;</span><span class=cp>
+</span></span></span><span class=line><span class=cl><span class=cp>#include</span> <span class=cpf>&lt;fstream&gt;</span><span class=cp>
+</span></span></span><span class=line><span class=cl><span class=cp>#include</span> <span class=cpf>&lt;string&gt;</span><span class=cp>
+</span></span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=kt>int</span> <span class=nf>main</span><span class=p>()</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>    <span class=c1>// 创建一个文件流对象
+</span></span></span><span class=line><span class=cl>    <span class=n>std</span><span class=o>::</span><span class=n>ifstream</span> <span class=n>inputFile</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=c1>// 打开文件
+</span></span></span><span class=line><span class=cl>    <span class=n>inputFile</span><span class=p>.</span><span class=n>open</span><span class=p>(</span><span class=s>&#34;example.txt&#34;</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=c1>// 检查文件是否成功打开
+</span></span></span><span class=line><span class=cl>    <span class=k>if</span> <span class=p>(</span><span class=o>!</span><span class=n>inputFile</span><span class=p>)</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>        <span class=n>std</span><span class=o>::</span><span class=n>cerr</span> <span class=o>&lt;&lt;</span> <span class=s>&#34;无法打开文件!&#34;</span> <span class=o>&lt;&lt;</span> <span class=n>std</span><span class=o>::</span><span class=n>endl</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>        <span class=k>return</span> <span class=mi>1</span><span class=p>;</span> <span class=c1>// 返回错误代码
+</span></span></span><span class=line><span class=cl>    <span class=p>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=c1>// 处理文件内容
+</span></span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=c1>// 关闭文件
+</span></span></span><span class=line><span class=cl>    <span class=n>inputFile</span><span class=p>.</span><span class=n>close</span><span class=p>();</span> <span class=c1>// 关闭文件流
+</span></span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=k>return</span> <span class=mi>0</span><span class=p>;</span> <span class=c1>// 正常结束程序
+</span></span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span></code></pre></td></tr></table></div></div><p>可以看到，打开资源之后还要手动进行关闭，否则就会产生资源泄漏，这是为什么呢？</p><h3 id=什么是资源><a href=#%e4%bb%80%e4%b9%88%e6%98%af%e8%b5%84%e6%ba%90 class=header-anchor></a>什么是资源？</h3><p>资源可以理解为程序在运行时锁使用的任何外部或内部的实体，包括但不限于：</p><ol><li>内存：动态分配的内存块（例如通过new或者malloc分配的内存）</li><li>文件句柄：打开的文件，涉及读写操作</li><li>网络连接：与外部服务或设备的连接</li><li>数据库连接：与数据库的链接，执行查询和事务</li><li>锁：在并发编程中，用于保护共享资源的机制</li></ol><p>资源通过是有限的，程序需要合理地管理这些资源，以避免资源泄漏或者触发系统限制。</p><h3 id=实现raii最简单的形式><a href=#%e5%ae%9e%e7%8e%b0raii%e6%9c%80%e7%ae%80%e5%8d%95%e7%9a%84%e5%bd%a2%e5%bc%8f class=header-anchor></a>实现RAII最简单的形式</h3><p>我们知道很多面向对象的语言都有<strong>构造函数</strong>和<strong>析构函数</strong>，这不就是天然的创建和释放<strong>资源</strong>的方法吗？如果把资源的创建放在构造函数里，在析构函数里释放它，就可以通过这个<strong>包装对象</strong>来自动管理资源了。</p><h3 id=自定义一个对象来包装资源><a href=#%e8%87%aa%e5%ae%9a%e4%b9%89%e4%b8%80%e4%b8%aa%e5%af%b9%e8%b1%a1%e6%9d%a5%e5%8c%85%e8%a3%85%e8%b5%84%e6%ba%90 class=header-anchor></a>自定义一个对象来包装资源</h3><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-cpp data-lang=cpp><span class=line><span class=cl><span class=k>class</span> <span class=nc>Resource</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl><span class=k>public</span><span class=o>:</span>
+</span></span><span class=line><span class=cl>    <span class=n>Resource</span><span class=p>()</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>        <span class=n>inputFile</span><span class=p>.</span><span class=n>open</span><span class=p>(</span><span class=s>&#34;example.txt&#34;</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>    <span class=p>}</span>
+</span></span><span class=line><span class=cl>    <span class=o>~</span><span class=n>Resource</span><span class=p>()</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>        <span class=n>inputFile</span><span class=p>.</span><span class=n>close</span><span class=p>();</span>
+</span></span><span class=line><span class=cl>    <span class=p>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=k>private</span><span class=o>:</span>
+</span></span><span class=line><span class=cl>    <span class=n>std</span><span class=o>::</span><span class=n>ifstream</span> <span class=n>inputFile</span><span class=p>;</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span></code></pre></td></tr></table></div></div><p>这就是RAII最基本的形式了。</p><h3 id=使用c内置的智能指针来包装资源><a href=#%e4%bd%bf%e7%94%a8c%e5%86%85%e7%bd%ae%e7%9a%84%e6%99%ba%e8%83%bd%e6%8c%87%e9%92%88%e6%9d%a5%e5%8c%85%e8%a3%85%e8%b5%84%e6%ba%90 class=header-anchor></a>使用C++内置的智能指针来包装资源</h3><p>但如果这样是不是就太麻烦了，要给每个对象定义一个包装类，再去写它的构造函数和析构函数，有没有更简单的用法呢？</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-cpp data-lang=cpp><span class=line><span class=cl><span class=cp>#include</span> <span class=cpf>&lt;iostream&gt;</span><span class=cp>
+</span></span></span><span class=line><span class=cl><span class=cp>#include</span> <span class=cpf>&lt;fstream&gt;</span><span class=cp>
+</span></span></span><span class=line><span class=cl><span class=cp>#include</span> <span class=cpf>&lt;memory&gt;</span><span class=cp>
+</span></span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=kt>int</span> <span class=nf>main</span><span class=p>()</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>    <span class=c1>// 使用智能指针管理文件流
+</span></span></span><span class=line><span class=cl>    <span class=n>std</span><span class=o>::</span><span class=n>unique_ptr</span><span class=o>&lt;</span><span class=n>std</span><span class=o>::</span><span class=n>ifstream</span><span class=o>&gt;</span> <span class=n>inputFile</span> <span class=o>=</span> <span class=n>std</span><span class=o>::</span><span class=n>make_unique</span><span class=o>&lt;</span><span class=n>std</span><span class=o>::</span><span class=n>ifstream</span><span class=o>&gt;</span><span class=p>(</span><span class=s>&#34;example.txt&#34;</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=c1>// 检查文件是否成功打开
+</span></span></span><span class=line><span class=cl>    <span class=k>if</span> <span class=p>(</span><span class=o>!</span><span class=p>(</span><span class=o>*</span><span class=n>inputFile</span><span class=p>))</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>        <span class=n>std</span><span class=o>::</span><span class=n>cerr</span> <span class=o>&lt;&lt;</span> <span class=s>&#34;无法打开文件!&#34;</span> <span class=o>&lt;&lt;</span> <span class=n>std</span><span class=o>::</span><span class=n>endl</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>        <span class=k>return</span> <span class=mi>1</span><span class=p>;</span> <span class=c1>// 返回错误代码
+</span></span></span><span class=line><span class=cl>    <span class=p>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=c1>// 处理文件内容
+</span></span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=c1>// inputFile 会在超出作用域时自动关闭
+</span></span></span><span class=line><span class=cl>    <span class=k>return</span> <span class=mi>0</span><span class=p>;</span> <span class=c1>// 正常结束程序
+</span></span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span></code></pre></td></tr></table></div></div><p>这样就不用再去手动<code>close</code>了。</p><h2 id=为什么资源需要手动回收><a href=#%e4%b8%ba%e4%bb%80%e4%b9%88%e8%b5%84%e6%ba%90%e9%9c%80%e8%a6%81%e6%89%8b%e5%8a%a8%e5%9b%9e%e6%94%b6 class=header-anchor></a>为什么资源需要手动回收?</h2><p>但为什么？</p><p>为什么资源需要手动回收呢？</p><p>首先要明确的是，这里说的资源通常是和外部系统有交互的，所以对资源的使用很多都是有限制的，比如系统会限制一个文件被多个进程同时打开，如果不<strong>及时释放</strong>，可能会导致其他进程无法使用这个资源。</p><p>到这里又要分两块说：无GC的语言和有GC的语言。</p><p>对于无GC的语言，也就只能手动回收了，那有GC的语言比如PHP、Java为什么也需要呢？这是因为垃圾回收也不是时刻在进行的，手动回收是为了<strong>及时释放</strong>，避免对有限资源的长期占用。</p><h3 id=普通的资源回收自己指定在何时close><a href=#%e6%99%ae%e9%80%9a%e7%9a%84%e8%b5%84%e6%ba%90%e5%9b%9e%e6%94%b6%e8%87%aa%e5%b7%b1%e6%8c%87%e5%ae%9a%e5%9c%a8%e4%bd%95%e6%97%b6close class=header-anchor></a>普通的资源回收(自己指定在何时close)</h3><p>上面讲的都是要手动释放资源，即通过一个指令告知程序何时要释放资源，但大多数时候都是在方法结束时释放，而且有时打开资源的过程可能会有异常，这时最下面的资源回收的语句还没来得及执行就已经退出了，资源就泄漏了。</p><h3 id=改进后的资源回收golang的-defer-close><a href=#%e6%94%b9%e8%bf%9b%e5%90%8e%e7%9a%84%e8%b5%84%e6%ba%90%e5%9b%9e%e6%94%b6golang%e7%9a%84-defer-close class=header-anchor></a>改进后的资源回收(Golang的 defer Close)</h3><p>为了解决上面提到的异常退出时资源无法成功回收的问题，Java做了一个<code>try-with-resource</code>，可以自动关闭<code>Closable</code>类型的资源。而Golang的方案要更灵活，只需要在打开资源之后立即写一条<code>defer</code>就可以了，当资源使用完毕后就会自动触发defer中的语句，而且和打开过程中是否出现异常无关。相比Java，这个通用型强了很多，而且defer的语句也不限于资源，其他的也都可以，比如退出前记录一条日志之类。</p><p>但即便这样，还是要手动管理，这顶多算个半自动挡。</p><h2 id=raii的资源回收><a href=#raii%e7%9a%84%e8%b5%84%e6%ba%90%e5%9b%9e%e6%94%b6 class=header-anchor></a>RAII的资源回收</h2><p>回到最初的问题，<strong>吹</strong>Rust的人总说它有RAII，然后C++这边就说“不就是RAII吗？搞得好像谁没有似的”，到这里就要体现出区别了。</p><p>从上面的例子来看，C++还需要<strong>显式</strong>使用智能指针来利用RAII自动回收资源，但Rust的RAII机制是根植在语法中的。Rust的所有权系统是实现RAII的基础，<strong>每个对象都有一个所有者，并且只能被一个所有者管理</strong>，当超出所有者的作用域时，Rust就会自动调用该对象的析构函数，释放资源。而析构函数是通过实现<code>Drop</code>trait来定义的，当一个对象超出其作用域时，Rust会自动调用它的<code>drop</code>方法，从而释放关联的资源。对于文件、网络连接等资源，Rust会在对象析构时自动关闭它们。</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span><span class=lnt>7
+</span><span class=lnt>8
+</span><span class=lnt>9
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-rust data-lang=rust><span class=line><span class=cl><span class=k>struct</span> <span class=nc>MyFile</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=n>file</span>: <span class=nc>File</span><span class=p>,</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=p>}</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=k>impl</span><span class=w> </span><span class=nb>Drop</span><span class=w> </span><span class=k>for</span><span class=w> </span><span class=n>MyFile</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=k>fn</span> <span class=nf>drop</span><span class=p>(</span><span class=o>&amp;</span><span class=k>mut</span><span class=w> </span><span class=bp>self</span><span class=p>)</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=c1>// 在此处释放资源，例如关闭文件
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=p>}</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=p>}</span><span class=w>
+</span></span></span></code></pre></td></tr></table></div></div><h3 id=最简单的例子><a href=#%e6%9c%80%e7%ae%80%e5%8d%95%e7%9a%84%e4%be%8b%e5%ad%90 class=header-anchor></a>最简单的例子</h3><p>看一个最简单的例子，打开文件，读取文件，剩下的事交给Rust就好了。</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-rust data-lang=rust><span class=line><span class=cl><span class=k>use</span><span class=w> </span><span class=n>std</span>::<span class=n>fs</span>::<span class=n>File</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=k>use</span><span class=w> </span><span class=n>std</span>::<span class=n>io</span>::<span class=p>{</span><span class=bp>self</span><span class=p>,</span><span class=w> </span><span class=n>Read</span><span class=p>};</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=k>fn</span> <span class=nf>main</span><span class=p>()</span><span class=w> </span>-&gt; <span class=nc>io</span>::<span class=nb>Result</span><span class=o>&lt;</span><span class=p>()</span><span class=o>&gt;</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=kd>let</span><span class=w> </span><span class=k>mut</span><span class=w> </span><span class=n>file</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=n>File</span>::<span class=n>open</span><span class=p>(</span><span class=s>&#34;file.txt&#34;</span><span class=p>)</span><span class=o>?</span><span class=p>;</span><span class=w> </span><span class=c1>// 打开文件
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=kd>let</span><span class=w> </span><span class=k>mut</span><span class=w> </span><span class=n>contents</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=nb>String</span>::<span class=n>new</span><span class=p>();</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=n>file</span><span class=p>.</span><span class=n>read_to_string</span><span class=p>(</span><span class=o>&amp;</span><span class=k>mut</span><span class=w> </span><span class=n>contents</span><span class=p>)</span><span class=o>?</span><span class=p>;</span><span class=w> </span><span class=c1>// 读取文件内容
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=fm>println!</span><span class=p>(</span><span class=s>&#34;</span><span class=si>{}</span><span class=s>&#34;</span><span class=p>,</span><span class=w> </span><span class=n>contents</span><span class=p>);</span><span class=w> </span><span class=c1>// 打印文件内容
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=c1>// 当 `file` 超出作用域时，文件会自动关闭
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=nb>Ok</span><span class=p>(())</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=p>}</span><span class=w> </span><span class=c1>// `file` 变量在这里超出作用域，资源会被自动释放
+</span></span></span></code></pre></td></tr></table></div></div><h3 id=稍稍复杂一点的例子><a href=#%e7%a8%8d%e7%a8%8d%e5%a4%8d%e6%9d%82%e4%b8%80%e7%82%b9%e7%9a%84%e4%be%8b%e5%ad%90 class=header-anchor></a>稍稍复杂一点的例子</h3><p>上面这个和Golang的<code>defer</code>相比看不出明显的优势，但如果再加一个额外的<strong>使用</strong>这个<code>file</code>的方法呢？</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-rust data-lang=rust><span class=line><span class=cl><span class=k>use</span><span class=w> </span><span class=n>std</span>::<span class=n>fs</span>::<span class=n>File</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=k>use</span><span class=w> </span><span class=n>std</span>::<span class=n>io</span>::<span class=p>{</span><span class=bp>self</span><span class=p>,</span><span class=w> </span><span class=n>Read</span><span class=p>};</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=k>fn</span> <span class=nf>process_file</span><span class=p>(</span><span class=n>file</span>: <span class=nc>File</span><span class=p>)</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=c1>// 在这里处理文件
+</span></span></span><span class=line><span class=cl><span class=p>}</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=k>fn</span> <span class=nf>main</span><span class=p>()</span><span class=w> </span>-&gt; <span class=nc>io</span>::<span class=nb>Result</span><span class=o>&lt;</span><span class=p>()</span><span class=o>&gt;</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=kd>let</span><span class=w> </span><span class=k>mut</span><span class=w> </span><span class=n>file</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=n>File</span>::<span class=n>open</span><span class=p>(</span><span class=s>&#34;file.txt&#34;</span><span class=p>)</span><span class=o>?</span><span class=p>;</span><span class=w> </span><span class=c1>// 打开文件
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=kd>let</span><span class=w> </span><span class=k>mut</span><span class=w> </span><span class=n>contents</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=nb>String</span>::<span class=n>new</span><span class=p>();</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=n>file</span><span class=p>.</span><span class=n>read_to_string</span><span class=p>(</span><span class=o>&amp;</span><span class=k>mut</span><span class=w> </span><span class=n>contents</span><span class=p>)</span><span class=o>?</span><span class=p>;</span><span class=w> </span><span class=c1>// 读取文件内容
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=fm>println!</span><span class=p>(</span><span class=s>&#34;</span><span class=si>{}</span><span class=s>&#34;</span><span class=p>,</span><span class=w> </span><span class=n>contents</span><span class=p>);</span><span class=w> </span><span class=c1>// 打印文件内容
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=n>process_file</span><span class=p>(</span><span class=n>file</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=c1>// 当 `file` 超出作用域时，文件会自动关闭
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=nb>Ok</span><span class=p>(())</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=p>}</span><span class=w> </span><span class=c1>// `file` 变量在这里超出作用域，资源会被自动释放
+</span></span></span></code></pre></td></tr></table></div></div><p>把<code>file</code>句柄传递到别的方法里去了，还怎么在<code>main</code>里<code>defer</code>呢？这就是Golang的半自动化处理留下的问题，而Rust由于存在所有权系统，当把<code>file</code>作为参数传递给<code>process_file</code>方法之后，它的所有权就发生了转移，就只能在<code>process_file</code>方法里去释放它了。</p><h2 id=总结><a href=#%e6%80%bb%e7%bb%93 class=header-anchor></a>总结</h2><p>本文通过一个典型的例子解释了什么是RAII，以及在不同语言中实现RAII的区别，总的来说Rust的RAII机制更加<strong>原生</strong>，当然这也是有代价的，比如上面的例子，<code>file</code>的所有权转移给<code>process_file</code>之后，<code>main</code>方法的下半部分就无法使用<code>file</code>变量了，这又涉及<code>Clone</code>、<code>Copy</code>等一堆概念了。所以给我的感觉是为了避免所有权系统带来的麻烦，用Rust可能会写出更加长的方法——既然所有权会被方法调用转移，那么就不调用其他方法了。</p></section><footer class=article-footer><section class=article-tags><a href=/tags/rust/>Rust</a>
+<a href=/tags/raii/>RAII</a>
+<a href=/tags/c++/>C++</a></section><section class=article-copyright><svg class="icon icon-tabler icon-tabler-copyright" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="12" r="9"/><path d="M14.5 9a3.5 4 0 100 6"/></svg>
+<span>Licensed under CC BY-NC-SA 4.0</span></section></footer><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css integrity=sha384-n8MVd4RsNIU0tAv4ct0nTaAbDJwPJzDEaqSD1odI+WdtXRGWt2kTvGFasHpSy3SV crossorigin=anonymous><script src=https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js integrity=sha384-XjKyOOlGwcjNTAIQHIpgOno0Hl1YQqzUOEleOLALmuqehneUG+vnGctmUb0ZY0l8 crossorigin=anonymous defer></script><script src=https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js integrity=sha384-+VBxd3r6XgURycqtZ117nYw44OOcIax56Z4dCRWbxyPt0Koah1uHoK0o4+/RRE05 crossorigin=anonymous defer></script><script>window.addEventListener("DOMContentLoaded",()=>{const e=document.querySelector(".main-article");renderMathInElement(e,{delimiters:[{left:"$$",right:"$$",display:!0},{left:"$",right:"$",display:!1},{left:"\\(",right:"\\)",display:!1},{left:"\\[",right:"\\]",display:!0}],ignoredClasses:["gist"]})})</script></article><aside class=related-content--wrapper><h2 class=section-title>相关文章</h2><div class=related-content><div class="flex article-list--tile"><article><a href=/p/rust-%E4%B8%AD%E7%9A%84-for...in-%E5%BE%AA%E7%8E%AF%E7%AE%80%E6%B4%81%E8%BF%AD%E4%BB%A3%E7%9A%84%E8%89%BA%E6%9C%AF/><div class=article-details><h2 class=article-title>Rust 中的 `for...in` 循环：简洁迭代的艺术</h2></div></a></article><article><a href=/p/%E5%AD%97%E8%8A%82%E5%BA%8F%E9%9A%90%E8%97%8F%E5%9C%A8cpu%E6%B7%B1%E5%A4%84%E7%9A%84%E5%AD%98%E5%82%A8%E5%AF%86%E7%A0%81%E4%BB%8E%E5%8E%9F%E7%90%86%E5%88%B0rust%E5%AE%9E%E8%B7%B5/><div class=article-details><h2 class=article-title>字节序：隐藏在CPU深处的“存储密码”，从原理到Rust实践</h2></div></a></article><article><a href=/p/%E6%B7%B1%E5%BA%A6%E8%A7%A3%E6%9E%90-rust-%E4%B8%AD%E8%AF%BB%E5%8F%96%E6%96%87%E6%9C%AC%E6%96%87%E4%BB%B6%E4%B8%8E%E5%AD%97%E8%8A%82%E6%B5%81%E4%BA%8C%E8%BF%9B%E5%88%B6%E6%96%87%E4%BB%B6%E7%9A%84%E6%A0%B8%E5%BF%83%E6%B3%A8%E6%84%8F%E4%BA%8B%E9%A1%B9/><div class=article-details><h2 class=article-title>深度解析 Rust 中读取文本文件与字节流（二进制文件）的核心注意事项</h2></div></a></article><article><a href=/p/%E6%B7%B1%E5%BA%A6%E8%A7%A3%E6%9E%90-rust-%E4%B8%AD%E7%9A%84-slicearray-%E4%B8%8E-vector%E7%89%B9%E6%80%A7%E5%85%B3%E8%81%94%E4%B8%8E%E5%BA%95%E5%B1%82%E5%AE%9E%E7%8E%B0/><div class=article-details><h2 class=article-title>深度解析 Rust 中的 Slice、Array 与 Vector：特性、关联与底层实现</h2></div></a></article><article><a href=/p/%E6%B7%B1%E5%85%A5%E8%A7%A3%E6%9E%90-rust-%E4%B8%AD%E7%9A%84%E5%AD%97%E7%AC%A6%E4%B8%B2%E7%B1%BB%E5%9E%8B%E5%85%B3%E7%B3%BB%E5%8C%BA%E5%88%AB%E4%B8%8E-0x00-%E5%A4%84%E7%90%86%E6%96%B9%E6%A1%88/><div class=article-details><h2 class=article-title>深入解析 Rust 中的字符串类型：关系、区别与 '0x00' 处理方案</h2></div></a></article></div></div></aside><div class=disqus-container></div><style>.disqus-container{background-color:var(--card-background);border-radius:var(--card-border-radius);box-shadow:var(--shadow-l1);padding:var(--card-padding)}</style><script>window.addEventListener("onColorSchemeChange",e=>{typeof DISQUS=="object"&&DISQUS.reset({reload:!0})})</script><footer class=site-footer><section class=copyright>&copy;
+2014 -
+2026 Tech In Sight</section><section class=powerby>使用 <a href=https://gohugo.io/ target=_blank rel=noopener>Hugo</a> 构建<br>主题 <b><a href=https://github.com/CaiJimmy/hugo-theme-stack target=_blank rel=noopener data-version=3.30.0>Stack</a></b> 由 <a href=https://jimmycai.com target=_blank rel=noopener>Jimmy</a> 设计</section></footer><div class=pswp tabindex=-1 role=dialog aria-hidden=true><div class=pswp__bg></div><div class=pswp__scroll-wrap><div class=pswp__container><div class=pswp__item></div><div class=pswp__item></div><div class=pswp__item></div></div><div class="pswp__ui pswp__ui--hidden"><div class=pswp__top-bar><div class=pswp__counter></div><button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+<button class="pswp__button pswp__button--share" title=Share></button>
+<button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+<button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button><div class=pswp__preloader><div class=pswp__preloader__icn><div class=pswp__preloader__cut><div class=pswp__preloader__donut></div></div></div></div></div><div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap"><div class=pswp__share-tooltip></div></div><button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+</button>
+<button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)"></button><div class=pswp__caption><div class=pswp__caption__center></div></div></div></div></div><script src=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js integrity="sha256-ePwmChbbvXbsO02lbM3HoHbSHTHFAeChekF1xKJdleo=" crossorigin=anonymous defer></script><script src=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js integrity="sha256-UKkzOn/w1mBxRmLLGrSeyB4e1xbrp4xylgAWb3M42pU=" crossorigin=anonymous defer></script><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.min.css crossorigin=anonymous><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.css crossorigin=anonymous></main></div><script src=https://cdn.jsdelivr.net/npm/node-vibrant@3.1.6/dist/vibrant.min.js integrity="sha256-awcR2jno4kI5X0zL8ex0vi2z+KMkF24hUW8WePSA9HM=" crossorigin=anonymous></script><script type=text/javascript src=/ts/main.1e9a3bafd846ced4c345d084b355fb8c7bae75701c338f8a1f8a82c780137826.js defer></script><script>(function(){const e=document.createElement("link");e.href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap",e.type="text/css",e.rel="stylesheet",document.head.appendChild(e)})()</script></body></html>

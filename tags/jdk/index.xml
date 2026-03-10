@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Jdk on Tech In Sight</title><link>https://techinsight.pages.dev/tags/jdk/</link><description>Recent content in Jdk on Tech In Sight</description><generator>Hugo -- gohugo.io</generator><language>zh-cn</language><lastBuildDate>Thu, 14 Jan 2021 16:28:04 +0800</lastBuildDate><atom:link href="https://techinsight.pages.dev/tags/jdk/index.xml" rel="self" type="application/rss+xml"/><item><title>通过 homebrew 安装 JDK</title><link>https://techinsight.pages.dev/p/%E9%80%9A%E8%BF%87-homebrew-%E5%AE%89%E8%A3%85-jdk/</link><pubDate>Thu, 14 Jan 2021 16:28:04 +0800</pubDate><guid>https://techinsight.pages.dev/p/%E9%80%9A%E8%BF%87-homebrew-%E5%AE%89%E8%A3%85-jdk/</guid><description>&lt;p&gt;Oracle JDK 现在收费了，macOS 上安装个 JDK 还挺麻烦。&lt;/p&gt;
+&lt;h2 id="tldr"&gt;&lt;a href="#tldr" class="header-anchor"&gt;&lt;/a&gt;TL；DR
+&lt;/h2&gt;&lt;p&gt;简单来讲，可以直接运行&lt;code&gt;brew search openjdk&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://techinsight.pages.dev/images/2021-01-14-17-13-40.png"
+loading="lazy"
+alt="Oracle OpenJDK"
+&gt;&lt;/p&gt;
+&lt;p&gt;这样搜索出来的是 Oracle 发布的 OpenJDK。其中&lt;code&gt;openjdk&lt;/code&gt;就是最新版本的，带&lt;code&gt;@&lt;/code&gt;的就是指定版本的，其中 8 和 11 是 LTS 版本，所以可以拥有姓名，至于其他的短期版本，这里就干脆也没有了。&lt;/p&gt;
+&lt;h2 id="adoptopenjdk"&gt;&lt;a href="#adoptopenjdk" class="header-anchor"&gt;&lt;/a&gt;AdoptOpenJDK
+&lt;/h2&gt;&lt;p&gt;这个名字有点长，其实是 Eclipse 基金会在维护的发行版，它和 Oracle OpenJDK 的关系有点类似于 MIUI 和 Andriod AOSP 的关系，功能上应该是一样的，不过添加了一些特色的功能，如图所示&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://techinsight.pages.dev/images/2021-01-14-17-17-47.png"
+loading="lazy"
+alt="AdoptOpenJDK"
+&gt;&lt;/p&gt;
+&lt;p&gt;它提供了不同的垃圾收集器和所有的版本号，社区应该也比较流行吧（好吧，其实更多人还是会去下载 Oracle JDK，只是它的免费的 JDK1.8 永远的停留在了8u231）。&lt;/p&gt;
+&lt;p&gt;参考这个&lt;a class="link" href="https://github.com/AdoptOpenJDK/homebrew-openjdk" target="_blank" rel="noopener"
+&gt;https://github.com/AdoptOpenJDK/homebrew-openjdk&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;强烈推荐使用这个脚本&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;div class="chroma"&gt;
+&lt;table class="lntable"&gt;&lt;tr&gt;&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code&gt;&lt;span class="lnt"&gt;1
+&lt;/span&gt;&lt;span class="lnt"&gt;2
+&lt;/span&gt;&lt;span class="lnt"&gt;3
+&lt;/span&gt;&lt;span class="lnt"&gt;4
+&lt;/span&gt;&lt;span class="lnt"&gt;5
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code class="language-bash" data-lang="bash"&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;jdk&lt;span class="o"&gt;()&lt;/span&gt; &lt;span class="o"&gt;{&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="nv"&gt;version&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="nv"&gt;$1&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="nb"&gt;export&lt;/span&gt; &lt;span class="nv"&gt;JAVA_HOME&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="k"&gt;$(&lt;/span&gt;/usr/libexec/java_home -v&lt;span class="s2"&gt;&amp;#34;&lt;/span&gt;&lt;span class="nv"&gt;$version&lt;/span&gt;&lt;span class="s2"&gt;&amp;#34;&lt;/span&gt;&lt;span class="k"&gt;)&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; java -version
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="o"&gt;}&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;可以让你在不同版本的 JDK 中自由切换。&lt;/p&gt;</description></item></channel></rss>
