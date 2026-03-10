@@ -88,7 +88,7 @@ pub extern "C" fn free_string(s: *mut c_char) {
 - `#[unsafe(no_mangle)]` 禁止名称修饰
 2. **类型映射**：
    
-   | Rust 类型       | C 类型        |
+   | Rust 类型         | C 类型          |
    | --------------- | ------------- |
    | `c_int`         | `int`         |
    | `*const c_char` | `const char*` |
@@ -192,13 +192,13 @@ LD_LIBRARY_PATH=target/$(RUST_TARGET) ./test_$(TARGET)
 
 ### Makefile 功能说明
 
-| 命令             | 功能描述                |
-| ---------------- | ----------------------- |
+| 命令               | 功能描述            |
+| ---------------- | --------------- |
 | `make`           | 构建Release版本的动态库 |
-| `make install`   | 安装到系统目录          |
-| `make uninstall` | 卸载已安装的库          |
+| `make install`   | 安装到系统目录         |
+| `make uninstall` | 卸载已安装的库         |
 | `make clean`     | 清理所有生成文件        |
-| `make test`      | 编译并运行测试程序      |
+| `make test`      | 编译并运行测试程序       |
 
 ## 安装与分发
 
@@ -285,14 +285,14 @@ endif
 ### Windows 特殊处理
 
 1. 修改 Cargo.toml：
-   
+
 ```toml
 [target.'cfg(windows)'.dependencies]
 winapi = { version = "0.3", features = ["winbase"] }
 ```
 
 2. 添加 DLL 导出属性：
-   
+
 ```rust
 #[cfg_attr(target_os = "windows", link(name = "rust_so_lib"))]
 extern "C" {
@@ -324,9 +324,10 @@ pub extern "C" fn create_buffer(size: usize) -> *mut u8 {
 pub extern "C" fn free_buffer(ptr: *mut u8, size: usize) {
    unsafe { Vec::from_raw_parts(ptr, 0, size) };
 }
-
 ```
+
 ### 错误处理模式
+
 ```rust
 #[repr(C)]
 pub enum ErrorCode {
