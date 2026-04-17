@@ -1,0 +1,225 @@
+<!doctype html><html lang=zh-cn dir=ltr><head><meta charset=utf-8><meta name=viewport content='width=device-width,initial-scale=1'><meta name=description content="在大型 Flink 数据处理项目的演进过程中，随着业务复杂度的提升，工程构建与作业部署的效率往往会成为制约团队交付的瓶颈。本文将记录一次真实的 Flink 项目架构优化过程：从最初冗长的多作业分别打包，到统一构建并利用 AspectJ 进行编译期字节码织入，最终在不侵入业务代码的前提下，优雅地解决了运行期全局参数初始化的难题。\n"><title>从 150 分钟到 4 分钟：Flink 批量作业编译优化与 AspectJ 字节码织入实践</title><link rel=canonical href=https://techinsight.pages.dev/p/%E4%BB%8E-150-%E5%88%86%E9%92%9F%E5%88%B0-4-%E5%88%86%E9%92%9Fflink-%E6%89%B9%E9%87%8F%E4%BD%9C%E4%B8%9A%E7%BC%96%E8%AF%91%E4%BC%98%E5%8C%96%E4%B8%8E-aspectj-%E5%AD%97%E8%8A%82%E7%A0%81%E7%BB%87%E5%85%A5%E5%AE%9E%E8%B7%B5/><link rel=stylesheet href=/scss/style.min.3c33722a11bfa97f07308377e860d658770fe60627a4c2b1b7d46497ac9c35c3.css><meta property='og:title' content="从 150 分钟到 4 分钟：Flink 批量作业编译优化与 AspectJ 字节码织入实践"><meta property='og:description' content="在大型 Flink 数据处理项目的演进过程中，随着业务复杂度的提升，工程构建与作业部署的效率往往会成为制约团队交付的瓶颈。本文将记录一次真实的 Flink 项目架构优化过程：从最初冗长的多作业分别打包，到统一构建并利用 AspectJ 进行编译期字节码织入，最终在不侵入业务代码的前提下，优雅地解决了运行期全局参数初始化的难题。\n"><meta property='og:url' content='https://techinsight.pages.dev/p/%E4%BB%8E-150-%E5%88%86%E9%92%9F%E5%88%B0-4-%E5%88%86%E9%92%9Fflink-%E6%89%B9%E9%87%8F%E4%BD%9C%E4%B8%9A%E7%BC%96%E8%AF%91%E4%BC%98%E5%8C%96%E4%B8%8E-aspectj-%E5%AD%97%E8%8A%82%E7%A0%81%E7%BB%87%E5%85%A5%E5%AE%9E%E8%B7%B5/'><meta property='og:site_name' content='Tech In Sight'><meta property='og:type' content='article'><meta property='article:section' content='Post'><meta property='article:tag' content='Java'><meta property='article:tag' content='Flink'><meta property='article:tag' content='AspectJ'><meta property='article:tag' content='AOP'><meta property='article:tag' content='架构设计'><meta property='article:tag' content='工程实践'><meta property='article:published_time' content='2026-03-13T23:00:00+09:00'><meta property='article:modified_time' content='2026-03-13T23:00:00+09:00'><meta name=twitter:title content="从 150 分钟到 4 分钟：Flink 批量作业编译优化与 AspectJ 字节码织入实践"><meta name=twitter:description content="在大型 Flink 数据处理项目的演进过程中，随着业务复杂度的提升，工程构建与作业部署的效率往往会成为制约团队交付的瓶颈。本文将记录一次真实的 Flink 项目架构优化过程：从最初冗长的多作业分别打包，到统一构建并利用 AspectJ 进行编译期字节码织入，最终在不侵入业务代码的前提下，优雅地解决了运行期全局参数初始化的难题。\n"><link rel="shortcut icon" href=/favicon.ico></head><body class=article-page><script>(function(){const e="StackColorScheme";localStorage.getItem(e)||localStorage.setItem(e,"auto")})()</script><script>(function(){const t="StackColorScheme",e=localStorage.getItem(t),n=window.matchMedia("(prefers-color-scheme: dark)").matches===!0;e=="dark"||e==="auto"&&n?document.documentElement.dataset.scheme="dark":document.documentElement.dataset.scheme="light"})()</script><div class="container main-container flex on-phone--column extended"><aside class="sidebar left-sidebar sticky"><button class="hamburger hamburger--spin" type=button id=toggle-menu aria-label=切换菜单>
+<span class=hamburger-box><span class=hamburger-inner></span></span></button><header><figure class=site-avatar><a href=/><img src=/img/avatar_hu_31786b9867641d1c.png width=300 height=280 class=site-logo loading=lazy alt=Avatar></a></figure><div class=site-meta><h1 class=site-name><a href=/>Tech In Sight</a></h1><h2 class=site-description>聊聊技术，聊聊人生</h2></div></header><ol class=menu-social><li><a href=https://github.com/lovelock target=_blank title=GitHub rel=me><svg class="icon icon-tabler icon-tabler-brand-github" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M9 19c-4.3 1.4-4.3-2.5-6-3m12 5v-3.5c0-1 .1-1.4-.5-2 2.8-.3 5.5-1.4 5.5-6a4.6 4.6.0 00-1.3-3.2 4.2 4.2.0 00-.1-3.2s-1.1-.3-3.5 1.3a12.3 12.3.0 00-6.2.0C6.5 2.8 5.4 3.1 5.4 3.1a4.2 4.2.0 00-.1 3.2A4.6 4.6.0 004 9.5c0 4.6 2.7 5.7 5.5 6-.6.6-.6 1.2-.5 2V21"/></svg></a></li><li><a href=https://twitter.com target=_blank title=Twitter rel=me><svg class="icon icon-tabler icon-tabler-brand-twitter" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M22 4.01c-1 .49-1.98.689-3 .99-1.121-1.265-2.783-1.335-4.38-.737S11.977 6.323 12 8v1c-3.245.083-6.135-1.395-8-4 0 0-4.182 7.433 4 11-1.872 1.247-3.739 2.088-6 2 3.308 1.803 6.913 2.423 10.034 1.517 3.58-1.04 6.522-3.723 7.651-7.742a13.84 13.84.0 00.497-3.753C20.18 7.773 21.692 5.25 22 4.009z"/></svg></a></li></ol><ol class=menu id=main-menu><li><a href=/><svg class="icon icon-tabler icon-tabler-home" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><polyline points="5 12 3 12 12 3 21 12 19 12"/><path d="M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7"/><path d="M9 21v-6a2 2 0 012-2h2a2 2 0 012 2v6"/></svg>
+<span>Home</span></a></li><li><a href=/archives/><svg class="icon icon-tabler icon-tabler-archive" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><rect x="3" y="4" width="18" height="4" rx="2"/><path d="M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8"/><line x1="10" y1="12" x2="14" y2="12"/></svg>
+<span>Archives</span></a></li><li><a href=/search/><svg class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="10" cy="10" r="7"/><line x1="21" y1="21" x2="15" y2="15"/></svg>
+<span>Search</span></a></li><li><a href=/links/><svg class="icon icon-tabler icon-tabler-link" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><path d="M10 14a3.5 3.5.0 005 0l4-4a3.5 3.5.0 00-5-5l-.5.5"/><path d="M14 10a3.5 3.5.0 00-5 0l-4 4a3.5 3.5.0 005 5l.5-.5"/></svg>
+<span>Links</span></a></li><li class=menu-bottom-section><ol class=menu><li id=dark-mode-toggle><svg class="icon icon-tabler icon-tabler-toggle-left" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="8" cy="12" r="2"/><rect x="2" y="6" width="20" height="12" rx="6"/></svg>
+<svg class="icon icon-tabler icon-tabler-toggle-right" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="16" cy="12" r="2"/><rect x="2" y="6" width="20" height="12" rx="6"/></svg>
+<span>暗色模式</span></li></ol></li></ol></aside><aside class="sidebar right-sidebar sticky"><section class="widget archives"><div class=widget-icon><svg class="icon icon-tabler icon-tabler-hash" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><line x1="5" y1="9" x2="19" y2="9"/><line x1="5" y1="15" x2="19" y2="15"/><line x1="11" y1="4" x2="7" y2="20"/><line x1="17" y1="4" x2="13" y2="20"/></svg></div><h2 class="widget-title section-title">目录</h2><div class=widget--toc><nav id=TableOfContents><ol><li><ol><li><ol><li><a href=#一-效率瓶颈与架构妥协>一、 效率瓶颈与架构妥协</a></li><li><a href=#二-参数传递的困境与层层探索>二、 参数传递的困境与层层探索</a></li><li><a href=#三-破局为何摒弃动态代理选择字节码织入>三、 破局：为何摒弃动态代理，选择字节码织入</a></li><li><a href=#四-核心能力剖析与切面生命周期>四、 核心能力剖析与切面生命周期</a></li><li><a href=#五-aspectj-实战maven-配置与切面实现>五、 AspectJ 实战：Maven 配置与切面实现</a></li><li><a href=#六-编译验证查看织入结果>六、 编译验证：查看织入结果</a></li><li><a href=#七-aspectj-的局限性与替代方案>七、 AspectJ 的局限性与替代方案</a></li><li><a href=#八-总结>八、 总结</a></li></ol></li></ol></li></ol></nav></div></section></aside><main class="main full-width"><article class=main-article><header class=article-header><div class=article-details><header class=article-category><a href=/categories/%E5%90%8E%E7%AB%AF%E5%BC%80%E5%8F%91/>后端开发</a></header><div class=article-title-wrapper><h2 class=article-title><a href=/p/%E4%BB%8E-150-%E5%88%86%E9%92%9F%E5%88%B0-4-%E5%88%86%E9%92%9Fflink-%E6%89%B9%E9%87%8F%E4%BD%9C%E4%B8%9A%E7%BC%96%E8%AF%91%E4%BC%98%E5%8C%96%E4%B8%8E-aspectj-%E5%AD%97%E8%8A%82%E7%A0%81%E7%BB%87%E5%85%A5%E5%AE%9E%E8%B7%B5/>从 150 分钟到 4 分钟：Flink 批量作业编译优化与 AspectJ 字节码织入实践</a></h2></div><footer class=article-time><div><svg class="icon icon-tabler icon-tabler-calendar-time" width="56" height="56" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><path d="M11.795 21H5a2 2 0 01-2-2V7a2 2 0 012-2h12a2 2 0 012 2v4"/><circle cx="18" cy="18" r="4"/><path d="M15 3v4"/><path d="M7 3v4"/><path d="M3 11h16"/><path d="M18 16.496V18l1 1"/></svg>
+<time class=article-time--published>Mar 13, 2026</time></div><div><svg class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 15"/></svg>
+<time class=article-time--reading>阅读时长: 8 分钟</time></div></footer></div></header><section class=article-content><p>在大型 Flink 数据处理项目的演进过程中，随着业务复杂度的提升，工程构建与作业部署的效率往往会成为制约团队交付的瓶颈。本文将记录一次真实的 Flink 项目架构优化过程：从最初冗长的多作业分别打包，到统一构建并利用 AspectJ 进行编译期字节码织入，最终在不侵入业务代码的前提下，优雅地解决了运行期全局参数初始化的难题。</p><h4 id=一-效率瓶颈与架构妥协><a href=#%e4%b8%80-%e6%95%88%e7%8e%87%e7%93%b6%e9%a2%88%e4%b8%8e%e6%9e%b6%e6%9e%84%e5%a6%a5%e5%8d%8f class=header-anchor></a>一、 效率瓶颈与架构妥协</h4><p>我们的项目采用共享 common 模块的设计，每个具体的 Flink 作业由一个独立的 Job 类作为入口。在项目初期，作业数量较少，为每个环境和作业单独进行编译打包的流程尚能有效运转。此时，打包一个 Job 的 Jar 包大约需要耗时 3 分钟。</p><p>然而，随着系统承载的作业量迅速增长至 50 个，原有的 CI/CD 流程暴露出致命的效率问题。按照每个包 3 分钟计算，50 个作业全量打包一次的理论耗时高达 150 分钟。这种长达两个半小时的构建过程，让日常的测试发布与紧急的代码修复变得极其沉重，彻底失去了敏捷性。</p><p>为了打破这一效率瓶颈，团队决定对参数控制机制进行彻底重构。我们剥离了此前大量依赖编译期绑定的参数，将其统一改造为运行期参数。基于这一调整，系统实现了一次编译即可生成适配全部 50 个作业的通用发布包。经过重构，构建流程的总耗时从惊人的 150 分钟骤降至仅仅 4 分钟，极大释放了流水线的压力。</p><h4 id=二-参数传递的困境与层层探索><a href=#%e4%ba%8c-%e5%8f%82%e6%95%b0%e4%bc%a0%e9%80%92%e7%9a%84%e5%9b%b0%e5%a2%83%e4%b8%8e%e5%b1%82%e5%b1%82%e6%8e%a2%e7%b4%a2 class=header-anchor></a>二、 参数传递的困境与层层探索</h4><p>合并打包虽然解决了构建效率问题，却引发了运行期参数传递的新困境。</p><p>最初的设想是通过 JVM 启动参数的方式来传递环境配置。在常规的 Java 后端开发中，通过 <code>-Denv.java.opts=""</code> 传递诸如内存分配策略、GC 控制以及部分业务全局变量是一种标准做法。我们期望维护一个全局静态配置类，在应用启动时自动读取这些系统属性，供所有底层模块全局获取。</p><p>但在实际测试中，这种方案在 Flink 架构下并未按预期工作。Flink 的分布式架构将作业的执行严格划分为客户端（Client）提交阶段与工作节点（TaskManager）运行阶段。通过 <code>-D</code> 传递的参数通常在 TaskManager 的 <code>open</code> 等生命周期方法中才能可靠生效。而我们需要在 Job 类的 <code>main</code> 方法（即客户端提交环境）中提前读取这些参数，进而对 <code>StreamExecutionEnvironment</code> 进行针对性调整。由于环境隔离，系统属性在这里出现了断层。</p><p>为了在 <code>main</code> 方法中准确获取配置，我们不得不回归到 Flink 提供的 <code>ParameterTool.fromArgs(args)</code> 方法，直接解析作业启动时传入的命令行参数。</p><p>但这就衍生出了一个极其棘手的代码侵入问题。既然参数必须从 <code>args</code> 中解析，要实现全局配置的初始化，就意味着必须在全部 50 个 Job 类的 <code>main</code> 方法开头，硬编码一段初始化逻辑。这不仅造成了严重的代码冗余，增加了新作业接入时的心智负担，也为未来的统一升级埋下了隐患。</p><h4 id=三-破局为何摒弃动态代理选择字节码织入><a href=#%e4%b8%89-%e7%a0%b4%e5%b1%80%e4%b8%ba%e4%bd%95%e6%91%92%e5%bc%83%e5%8a%a8%e6%80%81%e4%bb%a3%e7%90%86%e9%80%89%e6%8b%a9%e5%ad%97%e8%8a%82%e7%a0%81%e7%bb%87%e5%85%a5 class=header-anchor></a>三、 破局：为何摒弃动态代理，选择字节码织入</h4><p>为了在不修改 50 个 Job 类源码的前提下完成参数的统一拦截与初始化，面向切面编程（AOP）成为了唯一的解法。</p><p>在 Java 生态中，Spring AOP 是最为人熟知的实现方案，其底层依赖于动态代理技术（JDK 动态代理或 CGLIB）。动态代理的核心逻辑是在程序运行期间，由框架在内存中动态生成一个目标类的子类或接口实现类，并将切面逻辑包裹在代理类中。然而，这种机制存在两个致命的限制：第一，它要求目标对象必须被实例化并由 IoC 容器托管；第二，它无法拦截静态（<code>static</code>）方法或私有方法。由于 Flink 作业的入口是标准的 <code>public static void main(String[] args)</code>，且作业类本身并不由 Spring 容器管理，基于动态代理的方案在这里彻底失效。</p><p>既然运行期的代理走不通，我们就必须向更底层的字节码操控技术寻求答案。AspectJ 作为一个功能强大的 AOP 框架，提供了两种核心的织入模式：</p><ol><li><strong>类加载期织入（Load-Time Weaving, LTW）：</strong> 该模式在编译期不干预代码，而是依赖 Java Agent 技术。当 JVM 启动并由类加载器（ClassLoader）尝试加载目标类时，Agent 会拦截加载过程，在字节码正式进入内存前动态插入切面逻辑。这种方式非常灵活，但要求在启动 Java 进程时追加 <code>-javaagent</code> 参数。在大数据生产环境中，Flink 往往部署在受控的 YARN 或 Kubernetes 集群上，随意修改底层 JVM 启动参数不仅受到严格的运维限制，也增加了部署的复杂性。</li><li><strong>编译期织入（Compile-Time Weaving, CTW）：</strong> 该模式直接介入 Maven 构建阶段。通过专用的 <code>ajc</code> 编译器，在 <code>.java</code> 源码编译生成 <code>.class</code> 字节码文件时，将切面逻辑静态地合并到目标方法中。最终输出的 Jar 包已经是包含增强逻辑的完整代码。</li></ol><p>综合考量后，CTW 成为了我们的最终选择。它完美契合了 Flink 提交 Fat Jar 的模式，在不增加任何运行期性能开销、不改变集群部署脚本的前提下，将全局参数的初始化逻辑在编译阶段"无缝缝合"进了每一个作业的入口点。</p><h4 id=四-核心能力剖析与切面生命周期><a href=#%e5%9b%9b-%e6%a0%b8%e5%bf%83%e8%83%bd%e5%8a%9b%e5%89%96%e6%9e%90%e4%b8%8e%e5%88%87%e9%9d%a2%e7%94%9f%e5%91%bd%e5%91%a8%e6%9c%9f class=header-anchor></a>四、 核心能力剖析与切面生命周期</h4><p>在明确了基于编译期织入（CTW）的工程选型后，系统优化的核心便转移到了 AspectJ 本身的能力运用上。在 AspectJ 的体系中，切点（Pointcut）负责精确制导，定义了增强逻辑应当在何处切入；而通知（Advice）则定义了具体的增强逻辑及其执行时机。</p><p>以我们定义的切点表达式 <code>execution(* fun.happyhacker..*Job.execute(..))</code> 为例，它展现了 AspectJ 强大的模式匹配能力。表达式开头的星号代表匹配任意的返回值类型；紧随其后的包名及双点符号 <code>..</code> 表示在 <code>fun.happyhacker</code> 包及其所有层级的子包下进行搜索；<code>*Job</code> 限定了目标类的类名必须以 Job 结尾；最后的 <code>execute(..)</code> 指定了需要拦截的方法名，且括号内的双点表示匹配该方法下任意数量和类型的参数。这种声明式的定位方式，使得我们在未来新增作业时无需做任何额外配置，只要遵循统一的类名与方法规范，即可自动纳入切面的拦截范围。</p><p>在精准定位目标方法后，我们需要进一步利用通知（Advice）来干预方法的执行过程。AspectJ 提供了完整的生命周期干预能力，以满足不同场景的增强需求。其中，<code>@Before</code> 注解标注的方法会在目标方法体执行之前被调用，这是我们在作业启动初期进行参数提取和全局配置初始化的绝佳位置。与之相对，<code>@AfterReturning</code> 会在目标方法正常执行完毕并成功返回结果后触发，通常用于记录操作日志或处理返回值；而 <code>@AfterThrowing</code> 则专门用于捕获并处理目标方法在运行过程中抛出的异常。</p><p>此外，<code>@After</code> 作为最终通知，无论目标方法是正常结束还是发生异常退出，它都会在最后被强制执行，其语义逻辑类似于 Java 标准异常处理中的 <code>finally</code> 代码块。如果工程需要更为细粒度和底层的控制，开发者可以选择使用 <code>@Around</code> 环绕通知。该通知会完全包裹目标方法，开发者必须在逻辑中显式调用 <code>proceed()</code> 方法来放行原流程。通过环绕通知，我们不仅可以决定是否跳过目标方法的执行，甚至能够在中途篡改传入的参数和最终的返回值。</p><h4 id=五-aspectj-实战maven-配置与切面实现><a href=#%e4%ba%94-aspectj-%e5%ae%9e%e6%88%98maven-%e9%85%8d%e7%bd%ae%e4%b8%8e%e5%88%87%e9%9d%a2%e5%ae%9e%e7%8e%b0 class=header-anchor></a>五、 AspectJ 实战：Maven 配置与切面实现</h4><h5 id=51-maven-配置><a href=#51-maven-%e9%85%8d%e7%bd%ae class=header-anchor></a>5.1 Maven 配置</h5><p>要实现编译期织入，需要在 Maven 中配置 AspectJ 编译器插件：</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span><span class=lnt>22
+</span><span class=lnt>23
+</span><span class=lnt>24
+</span><span class=lnt>25
+</span><span class=lnt>26
+</span><span class=lnt>27
+</span><span class=lnt>28
+</span><span class=lnt>29
+</span><span class=lnt>30
+</span><span class=lnt>31
+</span><span class=lnt>32
+</span><span class=lnt>33
+</span><span class=lnt>34
+</span><span class=lnt>35
+</span><span class=lnt>36
+</span><span class=lnt>37
+</span><span class=lnt>38
+</span><span class=lnt>39
+</span><span class=lnt>40
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-xml data-lang=xml><span class=line><span class=cl><span class=nt>&lt;properties&gt;</span>
+</span></span><span class=line><span class=cl>    <span class=nt>&lt;aspectj.version&gt;</span>1.9.19<span class=nt>&lt;/aspectj.version&gt;</span>
+</span></span><span class=line><span class=cl><span class=nt>&lt;/properties&gt;</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=nt>&lt;dependencies&gt;</span>
+</span></span><span class=line><span class=cl>    <span class=c>&lt;!-- AspectJ 运行时依赖 --&gt;</span>
+</span></span><span class=line><span class=cl>    <span class=nt>&lt;dependency&gt;</span>
+</span></span><span class=line><span class=cl>        <span class=nt>&lt;groupId&gt;</span>org.aspectj<span class=nt>&lt;/groupId&gt;</span>
+</span></span><span class=line><span class=cl>        <span class=nt>&lt;artifactId&gt;</span>aspectjrt<span class=nt>&lt;/artifactId&gt;</span>
+</span></span><span class=line><span class=cl>        <span class=nt>&lt;version&gt;</span>${aspectj.version}<span class=nt>&lt;/version&gt;</span>
+</span></span><span class=line><span class=cl>    <span class=nt>&lt;/dependency&gt;</span>
+</span></span><span class=line><span class=cl><span class=nt>&lt;/dependencies&gt;</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=nt>&lt;build&gt;</span>
+</span></span><span class=line><span class=cl>    <span class=nt>&lt;plugins&gt;</span>
+</span></span><span class=line><span class=cl>        <span class=c>&lt;!-- AspectJ 编译器插件 --&gt;</span>
+</span></span><span class=line><span class=cl>        <span class=nt>&lt;plugin&gt;</span>
+</span></span><span class=line><span class=cl>            <span class=nt>&lt;groupId&gt;</span>org.codehaus.mojo<span class=nt>&lt;/groupId&gt;</span>
+</span></span><span class=line><span class=cl>            <span class=nt>&lt;artifactId&gt;</span>aspectj-maven-plugin<span class=nt>&lt;/artifactId&gt;</span>
+</span></span><span class=line><span class=cl>            <span class=nt>&lt;version&gt;</span>1.14.0<span class=nt>&lt;/version&gt;</span>
+</span></span><span class=line><span class=cl>            <span class=nt>&lt;configuration&gt;</span>
+</span></span><span class=line><span class=cl>                <span class=nt>&lt;source&gt;</span>1.8<span class=nt>&lt;/source&gt;</span>
+</span></span><span class=line><span class=cl>                <span class=nt>&lt;target&gt;</span>1.8<span class=nt>&lt;/target&gt;</span>
+</span></span><span class=line><span class=cl>                <span class=nt>&lt;complianceLevel&gt;</span>1.8<span class=nt>&lt;/complianceLevel&gt;</span>
+</span></span><span class=line><span class=cl>                <span class=nt>&lt;showWeaveInfo&gt;</span>true<span class=nt>&lt;/showWeaveInfo&gt;</span>
+</span></span><span class=line><span class=cl>                <span class=nt>&lt;verbose&gt;</span>true<span class=nt>&lt;/verbose&gt;</span>
+</span></span><span class=line><span class=cl>                <span class=nt>&lt;Xlint&gt;</span>ignore<span class=nt>&lt;/Xlint&gt;</span>
+</span></span><span class=line><span class=cl>                <span class=nt>&lt;encoding&gt;</span>UTF-8<span class=nt>&lt;/encoding&gt;</span>
+</span></span><span class=line><span class=cl>            <span class=nt>&lt;/configuration&gt;</span>
+</span></span><span class=line><span class=cl>            <span class=nt>&lt;executions&gt;</span>
+</span></span><span class=line><span class=cl>                <span class=nt>&lt;execution&gt;</span>
+</span></span><span class=line><span class=cl>                    <span class=nt>&lt;goals&gt;</span>
+</span></span><span class=line><span class=cl>                        <span class=nt>&lt;goal&gt;</span>compile<span class=nt>&lt;/goal&gt;</span>
+</span></span><span class=line><span class=cl>                        <span class=nt>&lt;goal&gt;</span>test-compile<span class=nt>&lt;/goal&gt;</span>
+</span></span><span class=line><span class=cl>                    <span class=nt>&lt;/goals&gt;</span>
+</span></span><span class=line><span class=cl>                <span class=nt>&lt;/execution&gt;</span>
+</span></span><span class=line><span class=cl>            <span class=nt>&lt;/executions&gt;</span>
+</span></span><span class=line><span class=cl>        <span class=nt>&lt;/plugin&gt;</span>
+</span></span><span class=line><span class=cl>    <span class=nt>&lt;/plugins&gt;</span>
+</span></span><span class=line><span class=cl><span class=nt>&lt;/build&gt;</span>
+</span></span></code></pre></td></tr></table></div></div><h5 id=52-定义切点与切面><a href=#52-%e5%ae%9a%e4%b9%89%e5%88%87%e7%82%b9%e4%b8%8e%e5%88%87%e9%9d%a2 class=header-anchor></a>5.2 定义切点与切面</h5><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span><span class=lnt>22
+</span><span class=lnt>23
+</span><span class=lnt>24
+</span><span class=lnt>25
+</span><span class=lnt>26
+</span><span class=lnt>27
+</span><span class=lnt>28
+</span><span class=lnt>29
+</span><span class=lnt>30
+</span><span class=lnt>31
+</span><span class=lnt>32
+</span><span class=lnt>33
+</span><span class=lnt>34
+</span><span class=lnt>35
+</span><span class=lnt>36
+</span><span class=lnt>37
+</span><span class=lnt>38
+</span><span class=lnt>39
+</span><span class=lnt>40
+</span><span class=lnt>41
+</span><span class=lnt>42
+</span><span class=lnt>43
+</span><span class=lnt>44
+</span><span class=lnt>45
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-java data-lang=java><span class=line><span class=cl><span class=kn>package</span><span class=w> </span><span class=nn>fun.happyhacker.aspect</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=kn>import</span><span class=w> </span><span class=nn>org.aspectj.lang.JoinPoint</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=kn>import</span><span class=w> </span><span class=nn>org.aspectj.lang.annotation.Aspect</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=kn>import</span><span class=w> </span><span class=nn>org.aspectj.lang.annotation.Before</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=kn>import</span><span class=w> </span><span class=nn>org.aspectj.lang.annotation.Pointcut</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=kn>import</span><span class=w> </span><span class=nn>org.aspectj.lang.reflect.MethodSignature</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=nd>@Aspect</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=kd>public</span><span class=w> </span><span class=kd>class</span> <span class=nc>JobMethodAspect</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=c1>// 拦截所有 Job 类的 execute 启动方法</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=nd>@Pointcut</span><span class=p>(</span><span class=s>&#34;execution(* fun.happyhacker..*Job.execute(..))&#34;</span><span class=p>)</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=kd>public</span><span class=w> </span><span class=kt>void</span><span class=w> </span><span class=nf>jobMethodPointCut</span><span class=p>()</span><span class=w> </span><span class=p>{}</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=nd>@Before</span><span class=p>(</span><span class=s>&#34;jobMethodPointCut()&#34;</span><span class=p>)</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=kd>public</span><span class=w> </span><span class=kt>void</span><span class=w> </span><span class=nf>processJobParameters</span><span class=p>(</span><span class=n>JoinPoint</span><span class=w> </span><span class=n>joinPoint</span><span class=p>)</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>MethodSignature</span><span class=w> </span><span class=n>methodSignature</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=p>(</span><span class=n>MethodSignature</span><span class=p>)</span><span class=w> </span><span class=n>joinPoint</span><span class=p>.</span><span class=na>getSignature</span><span class=p>();</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>String</span><span class=w> </span><span class=n>className</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=n>joinPoint</span><span class=p>.</span><span class=na>getTarget</span><span class=p>().</span><span class=na>getClass</span><span class=p>().</span><span class=na>getSimpleName</span><span class=p>();</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>Object</span><span class=o>[]</span><span class=w> </span><span class=n>arguments</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=n>joinPoint</span><span class=p>.</span><span class=na>getArgs</span><span class=p>();</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>System</span><span class=p>.</span><span class=na>out</span><span class=p>.</span><span class=na>println</span><span class=p>(</span><span class=s>&#34;&gt;&gt;&gt; [AspectJ Interceptor] 开始初始化作业环境: &#34;</span><span class=w> </span><span class=o>+</span><span class=w> </span><span class=n>className</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=c1>// 1. 深度解析：寻找我们要的 String[] args</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>String</span><span class=o>[]</span><span class=w> </span><span class=n>jobArgs</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=k>new</span><span class=w> </span><span class=n>String</span><span class=o>[</span><span class=n>0</span><span class=o>]</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=k>for</span><span class=w> </span><span class=p>(</span><span class=n>Object</span><span class=w> </span><span class=n>arg</span><span class=w> </span><span class=p>:</span><span class=w> </span><span class=n>arguments</span><span class=p>)</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=k>if</span><span class=w> </span><span class=p>(</span><span class=n>arg</span><span class=w> </span><span class=k>instanceof</span><span class=w> </span><span class=n>String</span><span class=o>[]</span><span class=p>)</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>                </span><span class=n>jobArgs</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=p>(</span><span class=n>String</span><span class=o>[]</span><span class=p>)</span><span class=w> </span><span class=n>arg</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>                </span><span class=k>break</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=p>}</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=p>}</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=c1>// 2. 执行参数处理逻辑</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>processArgs</span><span class=p>(</span><span class=n>jobArgs</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>System</span><span class=p>.</span><span class=na>out</span><span class=p>.</span><span class=na>println</span><span class=p>(</span><span class=s>&#34;&gt;&gt;&gt; [AspectJ Interceptor] 全局配置已就绪&#34;</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=p>}</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=kd>private</span><span class=w> </span><span class=kt>void</span><span class=w> </span><span class=nf>processArgs</span><span class=p>(</span><span class=n>String</span><span class=o>[]</span><span class=w> </span><span class=n>args</span><span class=p>)</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=c1>// 参数解析逻辑</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=k>for</span><span class=w> </span><span class=p>(</span><span class=n>String</span><span class=w> </span><span class=n>arg</span><span class=w> </span><span class=p>:</span><span class=w> </span><span class=n>args</span><span class=p>)</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=n>System</span><span class=p>.</span><span class=na>out</span><span class=p>.</span><span class=na>println</span><span class=p>(</span><span class=s>&#34;  参数: &#34;</span><span class=w> </span><span class=o>+</span><span class=w> </span><span class=n>arg</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=p>}</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=p>}</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=p>}</span><span class=w>
+</span></span></span></code></pre></td></tr></table></div></div><h5 id=53-目标类示例><a href=#53-%e7%9b%ae%e6%a0%87%e7%b1%bb%e7%a4%ba%e4%be%8b class=header-anchor></a>5.3 目标类示例</h5><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-java data-lang=java><span class=line><span class=cl><span class=kn>package</span><span class=w> </span><span class=nn>fun.happyhacker.job</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=kd>public</span><span class=w> </span><span class=kd>class</span> <span class=nc>UserActionAnalysisJob</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=kd>public</span><span class=w> </span><span class=kt>void</span><span class=w> </span><span class=nf>execute</span><span class=p>(</span><span class=n>String</span><span class=o>[]</span><span class=w> </span><span class=n>args</span><span class=p>)</span><span class=w> </span><span class=kd>throws</span><span class=w> </span><span class=n>Exception</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=c1>// 不需要手动处理 args，AspectJ 会自动拦截</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>System</span><span class=p>.</span><span class=na>out</span><span class=p>.</span><span class=na>println</span><span class=p>(</span><span class=s>&#34;作业执行中...&#34;</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=c1>// 业务逻辑...</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=p>}</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=p>}</span><span class=w>
+</span></span></span></code></pre></td></tr></table></div></div><h4 id=六-编译验证查看织入结果><a href=#%e5%85%ad-%e7%bc%96%e8%af%91%e9%aa%8c%e8%af%81%e6%9f%a5%e7%9c%8b%e7%bb%87%e5%85%a5%e7%bb%93%e6%9e%9c class=header-anchor></a>六、 编译验证：查看织入结果</h4><p>编译完成后，可以通过反编译工具查看字节码是否被正确织入：</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl><span class=c1># 使用 javap 查看类结构</span>
+</span></span><span class=line><span class=cl>javap -c -p target/classes/fun/happyhacker/job/UserActionAnalysisJob.class
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1># 或者使用 CFR、FernFlower 等反编译工具</span>
+</span></span><span class=line><span class=cl>java -jar cfr.jar target/classes/fun/happyhacker/job/UserActionAnalysisJob.class
+</span></span></code></pre></td></tr></table></div></div><p>反编译后可以看到，AspectJ 在 <code>execute</code> 方法的开头自动插入了切面调用代码。</p><h4 id=七-aspectj-的局限性与替代方案><a href=#%e4%b8%83-aspectj-%e7%9a%84%e5%b1%80%e9%99%90%e6%80%a7%e4%b8%8e%e6%9b%bf%e4%bb%a3%e6%96%b9%e6%a1%88 class=header-anchor></a>七、 AspectJ 的局限性与替代方案</h4><p>虽然 AspectJ CTW 方案在 Demo 中表现良好，但在实际 Flink 生产环境中可能遇到以下问题：</p><ol><li><strong>类加载器隔离</strong>：Flink 使用自定义的类加载器机制，可能导致织入的切面在 TM 中无法生效</li><li><strong>依赖冲突</strong>：AspectJ 运行时库可能与 Flink 集群的依赖产生冲突</li><li><strong>调试困难</strong>：字节码织入后的代码调试体验较差</li></ol><p><strong>替代方案</strong>：</p><p>如果 AspectJ 在实际项目中无法正常工作，可以考虑以下替代方案：</p><ol><li><strong>基类模板模式</strong>：定义抽象基类，在基类中统一处理参数初始化</li><li><strong>工厂模式</strong>：通过 JobFactory 统一创建和初始化 Job 实例</li><li><strong>注解处理器（APT）</strong>：在编译期生成初始化代码，而非字节码织入</li></ol><h4 id=八-总结><a href=#%e5%85%ab-%e6%80%bb%e7%bb%93 class=header-anchor></a>八、 总结</h4><p>回顾整个优化过程：我们将 150 分钟的打包时间压缩到 4 分钟，代价是破坏了原有的参数传递体系；而在修复参数传递问题时，为了避免 50 个类的代码大面积"污染"，我们尝试了 AspectJ 字节码织入方案。</p><p>AspectJ 编译期织入（CTW）的核心价值在于：</p><ul><li><strong>零侵入</strong>：无需修改业务代码</li><li><strong>零运行时开销</strong>：织入在编译期完成，运行期无额外代理层</li><li><strong>精准定位</strong>：通过切点表达式精确控制织入位置</li></ul><p>但也要清醒认识到其局限性：字节码操作是一把双刃剑，在享受其强大能力的同时，也要承担相应的维护成本。在实际项目中，需要根据团队技术能力和运维环境，权衡选择最适合的方案。</p></section><footer class=article-footer><section class=article-tags><a href=/tags/java/>Java</a>
+<a href=/tags/flink/>Flink</a>
+<a href=/tags/aspectj/>AspectJ</a>
+<a href=/tags/aop/>AOP</a>
+<a href=/tags/%E6%9E%B6%E6%9E%84%E8%AE%BE%E8%AE%A1/>架构设计</a>
+<a href=/tags/%E5%B7%A5%E7%A8%8B%E5%AE%9E%E8%B7%B5/>工程实践</a></section><section class=article-copyright><svg class="icon icon-tabler icon-tabler-copyright" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="12" r="9"/><path d="M14.5 9a3.5 4 0 100 6"/></svg>
+<span>Licensed under CC BY-NC-SA 4.0</span></section></footer><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css integrity=sha384-n8MVd4RsNIU0tAv4ct0nTaAbDJwPJzDEaqSD1odI+WdtXRGWt2kTvGFasHpSy3SV crossorigin=anonymous><script src=https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js integrity=sha384-XjKyOOlGwcjNTAIQHIpgOno0Hl1YQqzUOEleOLALmuqehneUG+vnGctmUb0ZY0l8 crossorigin=anonymous defer></script><script src=https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js integrity=sha384-+VBxd3r6XgURycqtZ117nYw44OOcIax56Z4dCRWbxyPt0Koah1uHoK0o4+/RRE05 crossorigin=anonymous defer></script><script>window.addEventListener("DOMContentLoaded",()=>{const e=document.querySelector(".main-article");renderMathInElement(e,{delimiters:[{left:"$$",right:"$$",display:!0},{left:"$",right:"$",display:!1},{left:"\\(",right:"\\)",display:!1},{left:"\\[",right:"\\]",display:!0}],ignoredClasses:["gist"]})})</script></article><aside class=related-content--wrapper><h2 class=section-title>相关文章</h2><div class=related-content><div class="flex article-list--tile"><article><a href=/p/%E4%BB%8E%E5%8D%95%E6%9C%BA%E4%BB%A3%E7%90%86%E5%88%B0%E5%88%86%E5%B8%83%E5%BC%8F%E5%8D%9A%E5%BC%88%E5%BD%BB%E5%BA%95%E5%90%83%E9%80%8F-spring-%E4%BA%8B%E5%8A%A1%E4%B8%8E-seata-%E6%9E%B6%E6%9E%84%E6%BC%94%E8%BF%9B/><div class=article-details><h2 class=article-title>从单机代理到分布式博弈：彻底吃透 Spring 事务与 Seata 架构演进</h2></div></a></article><article><a href=/p/%E6%B7%B1%E5%BA%A6%E8%A7%A3%E6%9E%90-java-%E4%BB%A3%E7%90%86%E6%9C%BA%E5%88%B6jdk-%E5%8A%A8%E6%80%81%E4%BB%A3%E7%90%86cglib-%E4%B8%8E-spring-%E6%A1%86%E6%9E%B6%E7%9A%84%E5%BA%95%E5%B1%82%E5%8D%9A%E5%BC%88/><div class=article-details><h2 class=article-title>深度解析 Java 代理机制：JDK 动态代理、CGLIB 与 Spring 框架的底层博弈</h2></div></a></article><article><a href=/p/spring-boot-%E6%A0%B8%E5%BF%83%E6%B3%A8%E8%A7%A3%E8%BE%A8%E6%9E%90@configuration-vs-@service-vs-@component/><div class=article-details><h2 class=article-title>Spring Boot 核心注解辨析：@Configuration vs @Service vs @Component</h2></div></a></article></div></div></aside><div class=disqus-container></div><style>.disqus-container{background-color:var(--card-background);border-radius:var(--card-border-radius);box-shadow:var(--shadow-l1);padding:var(--card-padding)}</style><script>window.addEventListener("onColorSchemeChange",e=>{typeof DISQUS=="object"&&DISQUS.reset({reload:!0})})</script><footer class=site-footer><section class=copyright>&copy;
+2014 -
+2026 Tech In Sight</section><section class=powerby>使用 <a href=https://gohugo.io/ target=_blank rel=noopener>Hugo</a> 构建<br>主题 <b><a href=https://github.com/CaiJimmy/hugo-theme-stack target=_blank rel=noopener data-version=3.30.0>Stack</a></b> 由 <a href=https://jimmycai.com target=_blank rel=noopener>Jimmy</a> 设计</section></footer><div class=pswp tabindex=-1 role=dialog aria-hidden=true><div class=pswp__bg></div><div class=pswp__scroll-wrap><div class=pswp__container><div class=pswp__item></div><div class=pswp__item></div><div class=pswp__item></div></div><div class="pswp__ui pswp__ui--hidden"><div class=pswp__top-bar><div class=pswp__counter></div><button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+<button class="pswp__button pswp__button--share" title=Share></button>
+<button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+<button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button><div class=pswp__preloader><div class=pswp__preloader__icn><div class=pswp__preloader__cut><div class=pswp__preloader__donut></div></div></div></div></div><div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap"><div class=pswp__share-tooltip></div></div><button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+</button>
+<button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)"></button><div class=pswp__caption><div class=pswp__caption__center></div></div></div></div></div><script src=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js integrity="sha256-ePwmChbbvXbsO02lbM3HoHbSHTHFAeChekF1xKJdleo=" crossorigin=anonymous defer></script><script src=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js integrity="sha256-UKkzOn/w1mBxRmLLGrSeyB4e1xbrp4xylgAWb3M42pU=" crossorigin=anonymous defer></script><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.min.css crossorigin=anonymous><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.css crossorigin=anonymous></main></div><script src=https://cdn.jsdelivr.net/npm/node-vibrant@3.1.6/dist/vibrant.min.js integrity="sha256-awcR2jno4kI5X0zL8ex0vi2z+KMkF24hUW8WePSA9HM=" crossorigin=anonymous></script><script type=text/javascript src=/ts/main.1e9a3bafd846ced4c345d084b355fb8c7bae75701c338f8a1f8a82c780137826.js defer></script><script>(function(){const e=document.createElement("link");e.href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap",e.type="text/css",e.rel="stylesheet",document.head.appendChild(e)})()</script></body></html>

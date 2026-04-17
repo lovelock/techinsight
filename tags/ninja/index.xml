@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Ninja on Tech In Sight</title><link>https://techinsight.pages.dev/tags/ninja/</link><description>Recent content in Ninja on Tech In Sight</description><generator>Hugo -- gohugo.io</generator><language>zh-cn</language><lastBuildDate>Thu, 04 Apr 2024 22:00:30 +0800</lastBuildDate><atom:link href="https://techinsight.pages.dev/tags/ninja/index.xml" rel="self" type="application/rss+xml"/><item><title>使用Ninja作为CMake的后端</title><link>https://techinsight.pages.dev/p/%E4%BD%BF%E7%94%A8ninja%E4%BD%9C%E4%B8%BAcmake%E7%9A%84%E5%90%8E%E7%AB%AF/</link><pubDate>Thu, 04 Apr 2024 22:00:30 +0800</pubDate><guid>https://techinsight.pages.dev/p/%E4%BD%BF%E7%94%A8ninja%E4%BD%9C%E4%B8%BAcmake%E7%9A%84%E5%90%8E%E7%AB%AF/</guid><description>&lt;img src="https://techinsight.pages.dev/images/covers/CMake-with-Ninja-cover.png" alt="Featured image of post 使用Ninja作为CMake的后端" /&gt;&lt;p&gt;使用CMake的小伙伴可能大部分都是在（类）Unix环境下，所以一般都是用Unix Makefile作为默认后端，我这两天在修改一个多年前的C项目，把它从一坨Automake、Autoconf中拯救出来，改成了CMake的形式，清爽多了。&lt;/p&gt;
+&lt;p&gt;为什么这么说呢？是因为原先的方式就是把项目本身的代码放在根目录，然后几个依赖放在和自己的代码同一级的文件夹里，对于这几个依赖也是动态链接的方式，所以就需要先手动按顺序编译、安装这些依赖，然后再编译自己的代码。而改成CMake之后就变成静态依赖了，编译过程简化不少。&lt;/p&gt;
+&lt;p&gt;但问题也来了，我发现每次编译都要花挺长时间，那么有没有办法加速呢？这时候我想到了在很多开源项目都会用到的Ninja，于是了解了下，发现像Chromium、Android（部分）都是用它编译的，主打一个&lt;strong&gt;增量编译&lt;/strong&gt;，说白了就是只编译修改了的部分，它能够更智能地决定哪些部分需要重新构建，从而减少不必要的编译。&lt;/p&gt;
+&lt;h2 id="使用方法"&gt;&lt;a href="#%e4%bd%bf%e7%94%a8%e6%96%b9%e6%b3%95" class="header-anchor"&gt;&lt;/a&gt;使用方法
+&lt;/h2&gt;&lt;p&gt;首先当然是安装了，在Debian上的名字叫&lt;code&gt;ninja-build&lt;/code&gt;，其他系统可以参考这个名字。&lt;/p&gt;
+&lt;p&gt;正常使用CMake是这样的：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;div class="chroma"&gt;
+&lt;table class="lntable"&gt;&lt;tr&gt;&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code&gt;&lt;span class="lnt"&gt;1
+&lt;/span&gt;&lt;span class="lnt"&gt;2
+&lt;/span&gt;&lt;span class="lnt"&gt;3
+&lt;/span&gt;&lt;span class="lnt"&gt;4
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code class="language-bash" data-lang="bash"&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;mkdir build
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="nb"&gt;cd&lt;/span&gt; build
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;cmake ..
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;cmake --build
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;而对比使用Ninja作为状态后端，流程是这样的&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;div class="chroma"&gt;
+&lt;table class="lntable"&gt;&lt;tr&gt;&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code&gt;&lt;span class="lnt"&gt;1
+&lt;/span&gt;&lt;span class="lnt"&gt;2
+&lt;/span&gt;&lt;span class="lnt"&gt;3
+&lt;/span&gt;&lt;span class="lnt"&gt;4
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code class="language-bash" data-lang="bash"&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;mkdir build
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="nb"&gt;cd&lt;/span&gt; build
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;cmake -G &lt;span class="s2"&gt;&amp;#34;Ninja&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;cmake --build
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;区别就在于加了&lt;code&gt;-G &amp;quot;Ninja&amp;quot;&lt;/code&gt;，一定注意这里要大写，否则你可以试试。&lt;/p&gt;
+&lt;p&gt;由于代码量比较少，所以比较下来区别不大，但公司的那个C项目，实际使用时还是有点明显的。&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://techinsight.pages.dev/images/CMake-with-Ninja-build-time.png"
+loading="lazy"
+alt="CMake with Ninja build time"
+&gt;&lt;br /&gt;
+&lt;img src="https://techinsight.pages.dev/images/CMake-with-Unix-Makefiles-build-time.png"
+loading="lazy"
+alt="CMake with Unix Makefiles build time"
+&gt;&lt;/p&gt;
+&lt;p&gt;查了一下Help，如下&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;div class="chroma"&gt;
+&lt;table class="lntable"&gt;&lt;tr&gt;&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code&gt;&lt;span class="lnt"&gt; 1
+&lt;/span&gt;&lt;span class="lnt"&gt; 2
+&lt;/span&gt;&lt;span class="lnt"&gt; 3
+&lt;/span&gt;&lt;span class="lnt"&gt; 4
+&lt;/span&gt;&lt;span class="lnt"&gt; 5
+&lt;/span&gt;&lt;span class="lnt"&gt; 6
+&lt;/span&gt;&lt;span class="lnt"&gt; 7
+&lt;/span&gt;&lt;span class="lnt"&gt; 8
+&lt;/span&gt;&lt;span class="lnt"&gt; 9
+&lt;/span&gt;&lt;span class="lnt"&gt;10
+&lt;/span&gt;&lt;span class="lnt"&gt;11
+&lt;/span&gt;&lt;span class="lnt"&gt;12
+&lt;/span&gt;&lt;span class="lnt"&gt;13
+&lt;/span&gt;&lt;span class="lnt"&gt;14
+&lt;/span&gt;&lt;span class="lnt"&gt;15
+&lt;/span&gt;&lt;span class="lnt"&gt;16
+&lt;/span&gt;&lt;span class="lnt"&gt;17
+&lt;/span&gt;&lt;span class="lnt"&gt;18
+&lt;/span&gt;&lt;span class="lnt"&gt;19
+&lt;/span&gt;&lt;span class="lnt"&gt;20
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code class="language-plaintext" data-lang="plaintext"&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;Generators
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;The following generators are available on this platform (* marks default):
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; Green Hills MULTI = Generates Green Hills MULTI files
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; (experimental, work-in-progress).
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;* Unix Makefiles = Generates standard UNIX makefiles.
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; Ninja = Generates build.ninja files.
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; Ninja Multi-Config = Generates build-&amp;lt;Config&amp;gt;.ninja files.
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; Watcom WMake = Generates Watcom WMake makefiles.
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; CodeBlocks - Ninja = Generates CodeBlocks project files.
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; CodeBlocks - Unix Makefiles = Generates CodeBlocks project files.
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; CodeLite - Ninja = Generates CodeLite project files.
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; CodeLite - Unix Makefiles = Generates CodeLite project files.
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; Eclipse CDT4 - Ninja = Generates Eclipse CDT 4.0 project files.
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; Eclipse CDT4 - Unix Makefiles= Generates Eclipse CDT 4.0 project files.
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; Kate - Ninja = Generates Kate project files.
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; Kate - Unix Makefiles = Generates Kate project files.
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; Sublime Text 2 - Ninja = Generates Sublime Text 2 project files.
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; Sublime Text 2 - Unix Makefiles
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; = Generates Sublime Text 2 project files.
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;所以&lt;code&gt;-G&lt;/code&gt;其实就是指定generator，默认是&lt;code&gt;Unix Makefiles&lt;/code&gt;。&lt;/p&gt;
+&lt;h2 id="再进一步"&gt;&lt;a href="#%e5%86%8d%e8%bf%9b%e4%b8%80%e6%ad%a5" class="header-anchor"&gt;&lt;/a&gt;再进一步
+&lt;/h2&gt;&lt;p&gt;前面&lt;code&gt;mkdir build &amp;amp;&amp;amp; cd build&lt;/code&gt;这些步骤其实有点初级，可以改成这样的&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;div class="chroma"&gt;
+&lt;table class="lntable"&gt;&lt;tr&gt;&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code&gt;&lt;span class="lnt"&gt;1
+&lt;/span&gt;&lt;span class="lnt"&gt;2
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code class="language-bash" data-lang="bash"&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;cmake -G &lt;span class="s2"&gt;&amp;#34;Ninja&amp;#34;&lt;/span&gt; -B build
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;cmake --build build
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;第一行的意思是指定Ninja作为generator，指定build作为编译用的目录，如果build目录不存在就会自动创建。&lt;br /&gt;
+第二行的意思是在build目录里执行编译过程。&lt;/p&gt;
+&lt;p&gt;这就更适合自己写一个编译脚本来执行了。&lt;/p&gt;
+&lt;h2 id="总结"&gt;&lt;a href="#%e6%80%bb%e7%bb%93" class="header-anchor"&gt;&lt;/a&gt;总结
+&lt;/h2&gt;&lt;p&gt;Ninja的优势主要表现在以下几个方面：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;速度：Ninja被设计为比Make更快。Ninja的设计重点是实现高性能，这意味着它能够更快地开始编译过程并更高效地执行构建。&lt;/li&gt;
+&lt;li&gt;简化的构建文件：Ninja的构建文件通常比Makefiles更加简单和易于理解。这是因为CMake负责生成这些文件，而Ninja仅仅执行它们。&lt;/li&gt;
+&lt;li&gt;并行构建：虽然Make也支持并行构建（例如通过make -j 参数），但Ninja通常在并行构建方面更加高效和智能，它会自动推断出最优的任务数来使用所有可用的处理器核心。&lt;/li&gt;
+&lt;li&gt;更好的构建进度估计：Ninja提供了更准确的构建进度信息，这对于长时间的构建过程来说非常有用。&lt;/li&gt;
+&lt;li&gt;更少的重新构建：Ninja更智能地处理构建文件的生成，从而避免了一些不必要的重新构建，这可能发生在Makefiles中。&lt;/li&gt;
+&lt;li&gt;快速的无操作构建：当没有任何东西需要构建时（即所有目标都是最新的），Ninja可以更快地确定没有工作要做，并立即完成构建过程。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;总的来说，虽然Make和Ninja都支持增量构建，但Ninja在执行构建任务时通常会更快，尤其是对于大型项目。这不仅节省了开发者的时间，也提高了构建系统的整体效率。对于有大量源文件的复杂项目，采用Ninja可能会显著减少构建的时间。&lt;/p&gt;</description></item></channel></rss>
