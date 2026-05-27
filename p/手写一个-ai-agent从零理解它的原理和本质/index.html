@@ -1,0 +1,390 @@
+<!doctype html><html lang=zh-cn dir=ltr><head><meta charset=utf-8><meta name=viewport content='width=device-width,initial-scale=1'><meta name=description content="用 300 行 Python 代码手写一个 ReAct Agent，带你从零理解 AI Agent 的核心原理——LLM + 工具 + 循环。"><meta name=keywords content="AI Agent,ReAct,手写Agent,LLM,DeepSeek,Python"><title>手写一个 AI Agent：从零理解它的原理和本质</title><link rel=canonical href=https://techinsight.pages.dev/p/%E6%89%8B%E5%86%99%E4%B8%80%E4%B8%AA-ai-agent%E4%BB%8E%E9%9B%B6%E7%90%86%E8%A7%A3%E5%AE%83%E7%9A%84%E5%8E%9F%E7%90%86%E5%92%8C%E6%9C%AC%E8%B4%A8/><link rel=stylesheet href=/scss/style.min.3c33722a11bfa97f07308377e860d658770fe60627a4c2b1b7d46497ac9c35c3.css><meta property='og:title' content="手写一个 AI Agent：从零理解它的原理和本质"><meta property='og:description' content="用 300 行 Python 代码手写一个 ReAct Agent，带你从零理解 AI Agent 的核心原理——LLM + 工具 + 循环。"><meta property='og:url' content='https://techinsight.pages.dev/p/%E6%89%8B%E5%86%99%E4%B8%80%E4%B8%AA-ai-agent%E4%BB%8E%E9%9B%B6%E7%90%86%E8%A7%A3%E5%AE%83%E7%9A%84%E5%8E%9F%E7%90%86%E5%92%8C%E6%9C%AC%E8%B4%A8/'><meta property='og:site_name' content='Tech In Sight'><meta property='og:type' content='article'><meta property='article:section' content='Post'><meta property='article:tag' content='AI'><meta property='article:tag' content='Agent'><meta property='article:tag' content='Python'><meta property='article:tag' content='深度学习'><meta property='article:tag' content='实战'><meta property='article:published_time' content='2026-05-24T17:00:00+08:00'><meta property='article:modified_time' content='2026-05-24T17:00:00+08:00'><meta name=twitter:title content="手写一个 AI Agent：从零理解它的原理和本质"><meta name=twitter:description content="用 300 行 Python 代码手写一个 ReAct Agent，带你从零理解 AI Agent 的核心原理——LLM + 工具 + 循环。"><link rel="shortcut icon" href=/favicon.ico></head><body class=article-page><script>(function(){const e="StackColorScheme";localStorage.getItem(e)||localStorage.setItem(e,"auto")})()</script><script>(function(){const t="StackColorScheme",e=localStorage.getItem(t),n=window.matchMedia("(prefers-color-scheme: dark)").matches===!0;e=="dark"||e==="auto"&&n?document.documentElement.dataset.scheme="dark":document.documentElement.dataset.scheme="light"})()</script><div class="container main-container flex on-phone--column extended"><aside class="sidebar left-sidebar sticky"><button class="hamburger hamburger--spin" type=button id=toggle-menu aria-label=切换菜单>
+<span class=hamburger-box><span class=hamburger-inner></span></span></button><header><figure class=site-avatar><a href=/><img src=/img/avatar_hu_31786b9867641d1c.png width=300 height=280 class=site-logo loading=lazy alt=Avatar></a></figure><div class=site-meta><h1 class=site-name><a href=/>Tech In Sight</a></h1><h2 class=site-description>聊聊技术，聊聊人生</h2></div></header><ol class=menu-social><li><a href=https://github.com/lovelock target=_blank title=GitHub rel=me><svg class="icon icon-tabler icon-tabler-brand-github" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M9 19c-4.3 1.4-4.3-2.5-6-3m12 5v-3.5c0-1 .1-1.4-.5-2 2.8-.3 5.5-1.4 5.5-6a4.6 4.6.0 00-1.3-3.2 4.2 4.2.0 00-.1-3.2s-1.1-.3-3.5 1.3a12.3 12.3.0 00-6.2.0C6.5 2.8 5.4 3.1 5.4 3.1a4.2 4.2.0 00-.1 3.2A4.6 4.6.0 004 9.5c0 4.6 2.7 5.7 5.5 6-.6.6-.6 1.2-.5 2V21"/></svg></a></li><li><a href=https://twitter.com target=_blank title=Twitter rel=me><svg class="icon icon-tabler icon-tabler-brand-twitter" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M22 4.01c-1 .49-1.98.689-3 .99-1.121-1.265-2.783-1.335-4.38-.737S11.977 6.323 12 8v1c-3.245.083-6.135-1.395-8-4 0 0-4.182 7.433 4 11-1.872 1.247-3.739 2.088-6 2 3.308 1.803 6.913 2.423 10.034 1.517 3.58-1.04 6.522-3.723 7.651-7.742a13.84 13.84.0 00.497-3.753C20.18 7.773 21.692 5.25 22 4.009z"/></svg></a></li></ol><ol class=menu id=main-menu><li><a href=/><svg class="icon icon-tabler icon-tabler-home" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><polyline points="5 12 3 12 12 3 21 12 19 12"/><path d="M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7"/><path d="M9 21v-6a2 2 0 012-2h2a2 2 0 012 2v6"/></svg>
+<span>Home</span></a></li><li><a href=/archives/><svg class="icon icon-tabler icon-tabler-archive" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><rect x="3" y="4" width="18" height="4" rx="2"/><path d="M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8"/><line x1="10" y1="12" x2="14" y2="12"/></svg>
+<span>Archives</span></a></li><li><a href=/search/><svg class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="10" cy="10" r="7"/><line x1="21" y1="21" x2="15" y2="15"/></svg>
+<span>Search</span></a></li><li><a href=/links/><svg class="icon icon-tabler icon-tabler-link" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><path d="M10 14a3.5 3.5.0 005 0l4-4a3.5 3.5.0 00-5-5l-.5.5"/><path d="M14 10a3.5 3.5.0 00-5 0l-4 4a3.5 3.5.0 005 5l.5-.5"/></svg>
+<span>Links</span></a></li><li class=menu-bottom-section><ol class=menu><li id=dark-mode-toggle><svg class="icon icon-tabler icon-tabler-toggle-left" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="8" cy="12" r="2"/><rect x="2" y="6" width="20" height="12" rx="6"/></svg>
+<svg class="icon icon-tabler icon-tabler-toggle-right" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="16" cy="12" r="2"/><rect x="2" y="6" width="20" height="12" rx="6"/></svg>
+<span>暗色模式</span></li></ol></li></ol></aside><aside class="sidebar right-sidebar sticky"><section class="widget archives"><div class=widget-icon><svg class="icon icon-tabler icon-tabler-hash" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><line x1="5" y1="9" x2="19" y2="9"/><line x1="5" y1="15" x2="19" y2="15"/><line x1="11" y1="4" x2="7" y2="20"/><line x1="17" y1="4" x2="13" y2="20"/></svg></div><h2 class="widget-title section-title">目录</h2><div class=widget--toc><nav id=TableOfContents><ol><li><a href=#一agent-到底是什么>一、Agent 到底是什么？</a></li><li><a href=#二核心流程react-循环>二、核心流程：ReAct 循环</a></li><li><a href=#三动手写一个逐行解析>三、动手写一个：逐行解析</a><ol><li><a href=#31-llm-客户端>3.1 LLM 客户端</a></li><li><a href=#32-cli-执行器>3.2 CLI 执行器</a></li><li><a href=#33-协议llm-怎么告诉-agent-要干什么>3.3 协议：LLM 怎么告诉 Agent 要干什么？</a></li><li><a href=#34-react-循环核心中的核心>3.4 ReAct 循环（核心中的核心）</a></li></ol></li><li><a href=#四skill-系统让-agent-拥有专业技能>四、Skill 系统：让 Agent 拥有"专业技能"</a><ol><li><a href=#skill-文件>Skill 文件</a></li><li><a href=#加载流程>加载流程</a></li></ol></li><li><a href=#五agent-的协议本质>五、Agent 的"协议"本质</a></li><li><a href=#六从手写到框架>六、从手写到框架</a></li><li><a href=#七试试看>七、试试看</a></li><li><a href=#八写在最后>八、写在最后</a></li></ol></nav></div></section></aside><main class="main full-width"><article class=main-article><header class=article-header><div class=article-details><header class=article-category><a href=/categories/%E6%8A%80%E6%9C%AF%E6%96%87%E7%AB%A0/>技术文章</a></header><div class=article-title-wrapper><h2 class=article-title><a href=/p/%E6%89%8B%E5%86%99%E4%B8%80%E4%B8%AA-ai-agent%E4%BB%8E%E9%9B%B6%E7%90%86%E8%A7%A3%E5%AE%83%E7%9A%84%E5%8E%9F%E7%90%86%E5%92%8C%E6%9C%AC%E8%B4%A8/>手写一个 AI Agent：从零理解它的原理和本质</a></h2><h3 class=article-subtitle>用 300 行 Python 代码手写一个 ReAct Agent，带你从零理解 AI Agent 的核心原理——LLM + 工具 + 循环。</h3></div><footer class=article-time><div><svg class="icon icon-tabler icon-tabler-calendar-time" width="56" height="56" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><path d="M11.795 21H5a2 2 0 01-2-2V7a2 2 0 012-2h12a2 2 0 012 2v4"/><circle cx="18" cy="18" r="4"/><path d="M15 3v4"/><path d="M7 3v4"/><path d="M3 11h16"/><path d="M18 16.496V18l1 1"/></svg>
+<time class=article-time--published>May 24, 2026</time></div><div><svg class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 15"/></svg>
+<time class=article-time--reading>阅读时长: 7 分钟</time></div></footer></div></header><section class=article-content><h1 id=手写一个-ai-agent从零理解它的原理和本质><a href=#%e6%89%8b%e5%86%99%e4%b8%80%e4%b8%aa-ai-agent%e4%bb%8e%e9%9b%b6%e7%90%86%e8%a7%a3%e5%ae%83%e7%9a%84%e5%8e%9f%e7%90%86%e5%92%8c%e6%9c%ac%e8%b4%a8 class=header-anchor></a>手写一个 AI Agent：从零理解它的原理和本质</h1><blockquote><p>用 300 行代码，让你看穿所有 Agent 框架的底牌</p></blockquote><h2 id=一agent-到底是什么><a href=#%e4%b8%80agent-%e5%88%b0%e5%ba%95%e6%98%af%e4%bb%80%e4%b9%88 class=header-anchor></a>一、Agent 到底是什么？</h2><p>这两年 AI 圈最火的概念之一就是 <strong>Agent</strong>。LangChain、LangGraph、AutoGen、CrewAI……框架层出不穷，但如果你扒开这些框架的外衣，会发现最核心的东西只有一句话：</p><blockquote><p>Agent = LLM + 工具 + 循环</p></blockquote><p>把这句话拆开：</p><ul><li><strong>LLM</strong>：大脑，负责推理和决策</li><li><strong>工具</strong>：手脚，让 LLM 能影响外部世界（执行命令、查数据库、发请求）</li><li><strong>循环</strong>：把上面两个串起来：思考 → 行动 → 观察结果 → 继续思考</li></ul><p>这就是 <strong>ReAct (Reasoning + Acting)</strong> 模式，所有 Agent 框架的最底层原语。</p><p>本文不教你用框架，而是带你从零手写一个 Agent，让你<strong>亲眼看到</strong>每一轮对话里 LLM 是怎么思考的、Agent 是怎么解析的、工具是怎么被调用的。</p><h2 id=二核心流程react-循环><a href=#%e4%ba%8c%e6%a0%b8%e5%bf%83%e6%b5%81%e7%a8%8breact-%e5%be%aa%e7%8e%af class=header-anchor></a>二、核心流程：ReAct 循环</h2><p>我们先不看代码，先理解这个循环长什么样。</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback><span class=line><span class=cl>你: &#34;我的机器有几个 CPU 核心？&#34;
+</span></span><span class=line><span class=cl>                  │
+</span></span><span class=line><span class=cl>                  ▼
+</span></span><span class=line><span class=cl>LLM（收到问题，开始推理）:
+</span></span><span class=line><span class=cl>  &#34;用户想知道 CPU 核心数 -&gt; 用 nproc 命令&#34;
+</span></span><span class=line><span class=cl>                  │
+</span></span><span class=line><span class=cl>                  ▼
+</span></span><span class=line><span class=cl>Agent（解析 LLM 输出 → 发现 Action）:
+</span></span><span class=line><span class=cl>  执行: nproc
+</span></span><span class=line><span class=cl>                  │
+</span></span><span class=line><span class=cl>                  ▼
+</span></span><span class=line><span class=cl>命令行返回: &#34;8&#34;
+</span></span><span class=line><span class=cl>                  │
+</span></span><span class=line><span class=cl>                  ▼
+</span></span><span class=line><span class=cl>LLM（看到结果，继续推理）:
+</span></span><span class=line><span class=cl>  &#34;8 个核心 -&gt; 可以回答了&#34;
+</span></span><span class=line><span class=cl>                  │
+</span></span><span class=line><span class=cl>                  ▼
+</span></span><span class=line><span class=cl>你收到: &#34;你的机器有 8 个 CPU 核心 ✅&#34;
+</span></span></code></pre></td></tr></table></div></div><p>关键是：<strong>LLM 不是一次输出就完事</strong>，它在"思考→行动→观察→再思考"这个圈里转，直到它能给出最终答案。</p><p>这个圈，就是 Agent 的全部秘密。</p><h2 id=三动手写一个逐行解析><a href=#%e4%b8%89%e5%8a%a8%e6%89%8b%e5%86%99%e4%b8%80%e4%b8%aa%e9%80%90%e8%a1%8c%e8%a7%a3%e6%9e%90 class=header-anchor></a>三、动手写一个：逐行解析</h2><p>我们的实现分四个模块：</p><h3 id=31-llm-客户端><a href=#31-llm-%e5%ae%a2%e6%88%b7%e7%ab%af class=header-anchor></a>3.1 LLM 客户端</h3><p>最外层是调用大模型的接口。DeepSeek 兼容 OpenAI 协议，所以我们直接用 <code>openai</code> SDK：</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-python data-lang=python><span class=line><span class=cl><span class=k>class</span> <span class=nc>LLMClient</span><span class=p>:</span>
+</span></span><span class=line><span class=cl>    <span class=k>def</span> <span class=fm>__init__</span><span class=p>(</span><span class=bp>self</span><span class=p>):</span>
+</span></span><span class=line><span class=cl>        <span class=n>load_dotenv</span><span class=p>()</span>
+</span></span><span class=line><span class=cl>        <span class=bp>self</span><span class=o>.</span><span class=n>client</span> <span class=o>=</span> <span class=n>OpenAI</span><span class=p>(</span>
+</span></span><span class=line><span class=cl>            <span class=n>api_key</span><span class=o>=</span><span class=n>os</span><span class=o>.</span><span class=n>getenv</span><span class=p>(</span><span class=s2>&#34;DEEPSEEK_API_KEY&#34;</span><span class=p>),</span>
+</span></span><span class=line><span class=cl>            <span class=n>base_url</span><span class=o>=</span><span class=n>os</span><span class=o>.</span><span class=n>getenv</span><span class=p>(</span><span class=s2>&#34;DEEPSEEK_BASE_URL&#34;</span><span class=p>),</span>
+</span></span><span class=line><span class=cl>        <span class=p>)</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=k>def</span> <span class=nf>chat</span><span class=p>(</span><span class=bp>self</span><span class=p>,</span> <span class=n>messages</span><span class=p>)</span> <span class=o>-&gt;</span> <span class=nb>str</span><span class=p>:</span>
+</span></span><span class=line><span class=cl>        <span class=n>response</span> <span class=o>=</span> <span class=bp>self</span><span class=o>.</span><span class=n>client</span><span class=o>.</span><span class=n>chat</span><span class=o>.</span><span class=n>completions</span><span class=o>.</span><span class=n>create</span><span class=p>(</span>
+</span></span><span class=line><span class=cl>            <span class=n>model</span><span class=o>=</span><span class=s2>&#34;deepseek-v4-flash&#34;</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>            <span class=n>messages</span><span class=o>=</span><span class=n>messages</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>            <span class=n>temperature</span><span class=o>=</span><span class=mf>0.0</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>        <span class=p>)</span>
+</span></span><span class=line><span class=cl>        <span class=k>return</span> <span class=n>response</span><span class=o>.</span><span class=n>choices</span><span class=p>[</span><span class=mi>0</span><span class=p>]</span><span class=o>.</span><span class=n>message</span><span class=o>.</span><span class=n>content</span> <span class=ow>or</span> <span class=s2>&#34;&#34;</span>
+</span></span></code></pre></td></tr></table></div></div><p>这段代码没什么神秘的——就是一个 API 封装。关键在后面。</p><h3 id=32-cli-执行器><a href=#32-cli-%e6%89%a7%e8%a1%8c%e5%99%a8 class=header-anchor></a>3.2 CLI 执行器</h3><p>Agent 需要"手脚"来做事。我们给它一个能安全执行 CLI 命令的工具：</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span><span class=lnt>22
+</span><span class=lnt>23
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-python data-lang=python><span class=line><span class=cl><span class=k>class</span> <span class=nc>CLIExecutor</span><span class=p>:</span>
+</span></span><span class=line><span class=cl>    <span class=n>DANGEROUS_PATTERNS</span> <span class=o>=</span> <span class=p>[</span>
+</span></span><span class=line><span class=cl>        <span class=sa>r</span><span class=s2>&#34;\bsudo\b&#34;</span><span class=p>,</span> <span class=sa>r</span><span class=s2>&#34;\bmkfs\b&#34;</span><span class=p>,</span> <span class=sa>r</span><span class=s2>&#34;\brm\s+-rf\s+/$&#34;</span><span class=p>,</span> <span class=o>...</span>
+</span></span><span class=line><span class=cl>    <span class=p>]</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=k>def</span> <span class=nf>run</span><span class=p>(</span><span class=bp>self</span><span class=p>,</span> <span class=n>command</span><span class=p>:</span> <span class=nb>str</span><span class=p>)</span> <span class=o>-&gt;</span> <span class=nb>str</span><span class=p>:</span>
+</span></span><span class=line><span class=cl>        <span class=c1># 1. 安全检查：拒绝危险命令</span>
+</span></span><span class=line><span class=cl>        <span class=k>for</span> <span class=n>pattern</span> <span class=ow>in</span> <span class=bp>self</span><span class=o>.</span><span class=n>DANGEROUS_PATTERNS</span><span class=p>:</span>
+</span></span><span class=line><span class=cl>            <span class=k>if</span> <span class=n>re</span><span class=o>.</span><span class=n>search</span><span class=p>(</span><span class=n>pattern</span><span class=p>,</span> <span class=n>command</span><span class=p>,</span> <span class=n>re</span><span class=o>.</span><span class=n>IGNORECASE</span><span class=p>):</span>
+</span></span><span class=line><span class=cl>                <span class=k>return</span> <span class=sa>f</span><span class=s2>&#34;[Safety Error] 危险命令被拦截&#34;</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>        <span class=c1># 2. 执行命令（带超时）</span>
+</span></span><span class=line><span class=cl>        <span class=n>result</span> <span class=o>=</span> <span class=n>subprocess</span><span class=o>.</span><span class=n>run</span><span class=p>(</span>
+</span></span><span class=line><span class=cl>            <span class=n>command</span><span class=p>,</span> <span class=n>shell</span><span class=o>=</span><span class=kc>True</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>            <span class=n>capture_output</span><span class=o>=</span><span class=kc>True</span><span class=p>,</span> <span class=n>text</span><span class=o>=</span><span class=kc>True</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>            <span class=n>timeout</span><span class=o>=</span><span class=mi>30</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>        <span class=p>)</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>        <span class=c1># 3. 处理输出（截断、报错）</span>
+</span></span><span class=line><span class=cl>        <span class=n>output</span> <span class=o>=</span> <span class=n>result</span><span class=o>.</span><span class=n>stdout</span> <span class=o>+</span> <span class=n>result</span><span class=o>.</span><span class=n>stderr</span>
+</span></span><span class=line><span class=cl>        <span class=k>if</span> <span class=n>result</span><span class=o>.</span><span class=n>returncode</span> <span class=o>!=</span> <span class=mi>0</span><span class=p>:</span>
+</span></span><span class=line><span class=cl>            <span class=n>output</span> <span class=o>=</span> <span class=sa>f</span><span class=s2>&#34;[Exit code: </span><span class=si>{</span><span class=n>result</span><span class=o>.</span><span class=n>returncode</span><span class=si>}</span><span class=s2>]</span><span class=se>\n</span><span class=si>{</span><span class=n>output</span><span class=si>}</span><span class=s2>&#34;</span>
+</span></span><span class=line><span class=cl>        <span class=k>return</span> <span class=n>output</span><span class=p>[:</span><span class=mi>3000</span><span class=p>]</span>
+</span></span></code></pre></td></tr></table></div></div><p>这里有个要点：<strong>工具返回的结果会被送回给 LLM</strong>，让它"看到"自己行动的结果。</p><h3 id=33-协议llm-怎么告诉-agent-要干什么><a href=#33-%e5%8d%8f%e8%ae%aellm-%e6%80%8e%e4%b9%88%e5%91%8a%e8%af%89-agent-%e8%a6%81%e5%b9%b2%e4%bb%80%e4%b9%88 class=header-anchor></a>3.3 协议：LLM 怎么告诉 Agent 要干什么？</h3><p>这是最精妙的部分。LLM 是一个文本输入/文本输出的模型，Agent 要让它"执行命令"，需要一个<strong>约定的格式</strong>。</p><p>我们在 System Prompt 里告诉 LLM：</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback><span class=line><span class=cl>可用工具:
+</span></span><span class=line><span class=cl>- run_command: 执行 shell 命令
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>输出格式（二选一）:
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>=== 要执行命令 ===
+</span></span><span class=line><span class=cl>Thought: &lt;你的推理&gt;
+</span></span><span class=line><span class=cl>Action: run_command
+</span></span><span class=line><span class=cl>Action Input: &lt;命令&gt;
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>=== 要给出答案 ===
+</span></span><span class=line><span class=cl>Final Answer: &lt;你的回答&gt;
+</span></span></code></pre></td></tr></table></div></div><p>Agent 收到 LLM 的输出后，用正则表达式解析：</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-python data-lang=python><span class=line><span class=cl><span class=k>def</span> <span class=nf>parse_response</span><span class=p>(</span><span class=n>response</span><span class=p>:</span> <span class=nb>str</span><span class=p>)</span> <span class=o>-&gt;</span> <span class=nb>dict</span><span class=p>:</span>
+</span></span><span class=line><span class=cl>    <span class=c1># 是 Final Answer 吗？</span>
+</span></span><span class=line><span class=cl>    <span class=k>if</span> <span class=n>re</span><span class=o>.</span><span class=n>search</span><span class=p>(</span><span class=sa>r</span><span class=s2>&#34;Final Answer:\s*(.*)&#34;</span><span class=p>,</span> <span class=n>response</span><span class=p>,</span> <span class=n>re</span><span class=o>.</span><span class=n>DOTALL</span><span class=p>):</span>
+</span></span><span class=line><span class=cl>        <span class=k>return</span> <span class=p>{</span><span class=s2>&#34;type&#34;</span><span class=p>:</span> <span class=s2>&#34;final&#34;</span><span class=p>,</span> <span class=s2>&#34;content&#34;</span><span class=p>:</span> <span class=s2>&#34;...&#34;</span><span class=p>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=c1># 是 Action 吗？</span>
+</span></span><span class=line><span class=cl>    <span class=k>if</span> <span class=n>re</span><span class=o>.</span><span class=n>search</span><span class=p>(</span><span class=sa>r</span><span class=s2>&#34;Action:\s*run_command\s*Action Input:\s*(.*)&#34;</span><span class=p>,</span> <span class=n>response</span><span class=p>):</span>
+</span></span><span class=line><span class=cl>        <span class=k>return</span> <span class=p>{</span><span class=s2>&#34;type&#34;</span><span class=p>:</span> <span class=s2>&#34;action&#34;</span><span class=p>,</span> <span class=s2>&#34;command&#34;</span><span class=p>:</span> <span class=s2>&#34;...&#34;</span><span class=p>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=c1># 都不是 → 还在思考</span>
+</span></span><span class=line><span class=cl>    <span class=k>return</span> <span class=p>{</span><span class=s2>&#34;type&#34;</span><span class=p>:</span> <span class=s2>&#34;thought&#34;</span><span class=p>,</span> <span class=s2>&#34;content&#34;</span><span class=p>:</span> <span class=s2>&#34;...&#34;</span><span class=p>}</span>
+</span></span></code></pre></td></tr></table></div></div><p><strong>这就是 Agent 的核心协议</strong>——双方约定好一套文本格式，LLM 输出 Action，Agent 解析后执行，然后把结果喂回去。</p><blockquote><p>所有 Agent 框架（LangChain、AutoGen、OpenAI Function Calling）都是在给这套"文本协议"加语法糖。</p></blockquote><h3 id=34-react-循环核心中的核心><a href=#34-react-%e5%be%aa%e7%8e%af%e6%a0%b8%e5%bf%83%e4%b8%ad%e7%9a%84%e6%a0%b8%e5%bf%83 class=header-anchor></a>3.4 ReAct 循环（核心中的核心）</h3><p>把上面三块串起来：</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span><span class=lnt>22
+</span><span class=lnt>23
+</span><span class=lnt>24
+</span><span class=lnt>25
+</span><span class=lnt>26
+</span><span class=lnt>27
+</span><span class=lnt>28
+</span><span class=lnt>29
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-python data-lang=python><span class=line><span class=cl><span class=k>def</span> <span class=nf>run_agent</span><span class=p>(</span><span class=n>user_input</span><span class=p>:</span> <span class=nb>str</span><span class=p>):</span>
+</span></span><span class=line><span class=cl>    <span class=n>llm</span> <span class=o>=</span> <span class=n>LLMClient</span><span class=p>()</span>
+</span></span><span class=line><span class=cl>    <span class=n>executor</span> <span class=o>=</span> <span class=n>CLIExecutor</span><span class=p>()</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=n>messages</span> <span class=o>=</span> <span class=p>[</span>
+</span></span><span class=line><span class=cl>        <span class=p>{</span><span class=s2>&#34;role&#34;</span><span class=p>:</span> <span class=s2>&#34;system&#34;</span><span class=p>,</span> <span class=s2>&#34;content&#34;</span><span class=p>:</span> <span class=n>SYSTEM_PROMPT</span><span class=p>},</span>
+</span></span><span class=line><span class=cl>        <span class=p>{</span><span class=s2>&#34;role&#34;</span><span class=p>:</span> <span class=s2>&#34;user&#34;</span><span class=p>,</span> <span class=s2>&#34;content&#34;</span><span class=p>:</span> <span class=n>user_input</span><span class=p>},</span>
+</span></span><span class=line><span class=cl>    <span class=p>]</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=k>for</span> <span class=n>turn</span> <span class=ow>in</span> <span class=nb>range</span><span class=p>(</span><span class=mi>1</span><span class=p>,</span> <span class=mi>11</span><span class=p>):</span>  <span class=c1># 最多 10 轮</span>
+</span></span><span class=line><span class=cl>        <span class=c1># 1. 调 LLM</span>
+</span></span><span class=line><span class=cl>        <span class=n>response</span> <span class=o>=</span> <span class=n>llm</span><span class=o>.</span><span class=n>chat</span><span class=p>(</span><span class=n>messages</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>        <span class=n>parsed</span> <span class=o>=</span> <span class=n>parse_response</span><span class=p>(</span><span class=n>response</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>        <span class=c1># 2. 根据解析结果做不同的事</span>
+</span></span><span class=line><span class=cl>        <span class=k>if</span> <span class=n>parsed</span><span class=p>[</span><span class=s2>&#34;type&#34;</span><span class=p>]</span> <span class=o>==</span> <span class=s2>&#34;final&#34;</span><span class=p>:</span>
+</span></span><span class=line><span class=cl>            <span class=nb>print</span><span class=p>(</span><span class=n>parsed</span><span class=p>[</span><span class=s2>&#34;content&#34;</span><span class=p>])</span>
+</span></span><span class=line><span class=cl>            <span class=k>return</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>        <span class=k>if</span> <span class=n>parsed</span><span class=p>[</span><span class=s2>&#34;type&#34;</span><span class=p>]</span> <span class=o>==</span> <span class=s2>&#34;action&#34;</span><span class=p>:</span>
+</span></span><span class=line><span class=cl>            <span class=n>observation</span> <span class=o>=</span> <span class=n>executor</span><span class=o>.</span><span class=n>run</span><span class=p>(</span><span class=n>parsed</span><span class=p>[</span><span class=s2>&#34;command&#34;</span><span class=p>])</span>
+</span></span><span class=line><span class=cl>            <span class=c1># 把&#34;思考&#34;和&#34;观察结果&#34;都追加到消息历史</span>
+</span></span><span class=line><span class=cl>            <span class=n>messages</span><span class=o>.</span><span class=n>append</span><span class=p>({</span><span class=s2>&#34;role&#34;</span><span class=p>:</span> <span class=s2>&#34;assistant&#34;</span><span class=p>,</span> <span class=s2>&#34;content&#34;</span><span class=p>:</span> <span class=n>response</span><span class=p>})</span>
+</span></span><span class=line><span class=cl>            <span class=n>messages</span><span class=o>.</span><span class=n>append</span><span class=p>({</span><span class=s2>&#34;role&#34;</span><span class=p>:</span> <span class=s2>&#34;user&#34;</span><span class=p>,</span> <span class=s2>&#34;content&#34;</span><span class=p>:</span> <span class=n>observation</span><span class=p>})</span>
+</span></span><span class=line><span class=cl>            <span class=c1># 继续下一轮循环</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>        <span class=k>if</span> <span class=n>parsed</span><span class=p>[</span><span class=s2>&#34;type&#34;</span><span class=p>]</span> <span class=o>==</span> <span class=s2>&#34;thought&#34;</span><span class=p>:</span>
+</span></span><span class=line><span class=cl>            <span class=c1># 还没给出明确指令，推它一把</span>
+</span></span><span class=line><span class=cl>            <span class=n>messages</span><span class=o>.</span><span class=n>append</span><span class=p>({</span><span class=s2>&#34;role&#34;</span><span class=p>:</span> <span class=s2>&#34;user&#34;</span><span class=p>,</span> <span class=s2>&#34;content&#34;</span><span class=p>:</span> <span class=s2>&#34;请给出 Action 或 Final Answer。&#34;</span><span class=p>})</span>
+</span></span></code></pre></td></tr></table></div></div><p>这个循环就是 Agent 的全部。用流程图看更清楚：</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span><span class=lnt>22
+</span><span class=lnt>23
+</span><span class=lnt>24
+</span><span class=lnt>25
+</span><span class=lnt>26
+</span><span class=lnt>27
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback><span class=line><span class=cl>用户输入
+</span></span><span class=line><span class=cl>    │
+</span></span><span class=line><span class=cl>    ▼
+</span></span><span class=line><span class=cl>┌─────────────────────────────┐
+</span></span><span class=line><span class=cl>│  给 LLM 发送消息历史          │
+</span></span><span class=line><span class=cl>│  (system + 之前的对话)        │
+</span></span><span class=line><span class=cl>└──────────┬──────────────────┘
+</span></span><span class=line><span class=cl>           │
+</span></span><span class=line><span class=cl>           ▼
+</span></span><span class=line><span class=cl>┌─────────────────────────────┐
+</span></span><span class=line><span class=cl>│  LLM 返回文本                 │
+</span></span><span class=line><span class=cl>│  &#34;Thought... Action: xxx&#34;    │
+</span></span><span class=line><span class=cl>└──────────┬──────────────────┘
+</span></span><span class=line><span class=cl>           │
+</span></span><span class=line><span class=cl>    ┌──────┴──────┐
+</span></span><span class=line><span class=cl>    ▼              ▼
+</span></span><span class=line><span class=cl> Final?         Action?
+</span></span><span class=line><span class=cl>    │              │
+</span></span><span class=line><span class=cl>    ▼              ▼
+</span></span><span class=line><span class=cl> 输出答案     执行命令 → 拿到结果
+</span></span><span class=line><span class=cl>                             │
+</span></span><span class=line><span class=cl>                  ┌──────────┘
+</span></span><span class=line><span class=cl>                  ▼
+</span></span><span class=line><span class=cl>            追加到消息历史
+</span></span><span class=line><span class=cl>                  │
+</span></span><span class=line><span class=cl>                  ▼
+</span></span><span class=line><span class=cl>            回到 LLM（继续循环）
+</span></span></code></pre></td></tr></table></div></div><h2 id=四skill-系统让-agent-拥有专业技能><a href=#%e5%9b%9bskill-%e7%b3%bb%e7%bb%9f%e8%ae%a9-agent-%e6%8b%a5%e6%9c%89%e4%b8%93%e4%b8%9a%e6%8a%80%e8%83%bd class=header-anchor></a>四、Skill 系统：让 Agent 拥有"专业技能"</h2><p>基础的 ReAct 循环有了，但 LLM 只知道"执行 CLI 命令"这一种能力。如果想让 Agent 能做更专业的事（比如代码审查、技术写作、调试），怎么办？</p><p>答案是 <strong>Skill（技能）系统</strong>。</p><p>思路很简单：每个 Skill 是一段 <strong>prompt 模板</strong>，描述了特定的专业能力。Agent 启动时把所有 skill 的名称和描述列在 system prompt 里，LLM 在推理过程中如果发现需要某个技能，就通过 <code>load_skill</code> action 加载它。</p><h3 id=skill-文件><a href=#skill-%e6%96%87%e4%bb%b6 class=header-anchor></a>Skill 文件</h3><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-markdown data-lang=markdown><span class=line><span class=cl>---
+</span></span><span class=line><span class=cl>name: code-review
+</span></span><span class=line><span class=cl>description: 审查代码质量，检查 bug、安全漏洞和代码风格
+</span></span><span class=line><span class=cl>---
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>你是一个资深代码审查专家。请从以下维度审查用户提供的代码：
+</span></span><span class=line><span class=cl><span class=k>1.</span> 逻辑正确性
+</span></span><span class=line><span class=cl><span class=k>2.</span> 安全漏洞
+</span></span><span class=line><span class=cl><span class=k>3.</span> 代码风格
+</span></span><span class=line><span class=cl><span class=k>4.</span> 性能问题
+</span></span></code></pre></td></tr></table></div></div><h3 id=加载流程><a href=#%e5%8a%a0%e8%bd%bd%e6%b5%81%e7%a8%8b class=header-anchor></a>加载流程</h3><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-gdscript3 data-lang=gdscript3><span class=line><span class=cl><span class=n>User</span><span class=p>:</span> <span class=s2>&#34;帮我审查这段代码&#34;</span>
+</span></span><span class=line><span class=cl>                      <span class=err>│</span>
+</span></span><span class=line><span class=cl>                      <span class=err>▼</span>
+</span></span><span class=line><span class=cl><span class=n>LLM</span><span class=err>（看到</span> <span class=n>system</span> <span class=n>prompt</span> <span class=err>里的</span> <span class=n>skill</span> <span class=err>列表）</span><span class=p>:</span>
+</span></span><span class=line><span class=cl>  <span class=s2>&#34;这需要 code-review skill&#34;</span>
+</span></span><span class=line><span class=cl>  <span class=n>Action</span><span class=p>:</span> <span class=n>load_skill</span>
+</span></span><span class=line><span class=cl>  <span class=n>Action</span> <span class=ne>Input</span><span class=p>:</span> <span class=n>code</span><span class=o>-</span><span class=n>review</span>
+</span></span><span class=line><span class=cl>                      <span class=err>│</span>
+</span></span><span class=line><span class=cl>                      <span class=err>▼</span>
+</span></span><span class=line><span class=cl><span class=n>Agent</span><span class=err>（加载</span> <span class=n>skill</span><span class=o>.</span><span class=n>md</span> <span class=err>文件）</span><span class=p>:</span>
+</span></span><span class=line><span class=cl>  <span class=err>把</span> <span class=n>skill</span> <span class=err>的</span> <span class=n>prompt</span> <span class=err>追加为</span> <span class=n>system</span> <span class=n>message</span>
+</span></span><span class=line><span class=cl>                      <span class=err>│</span>
+</span></span><span class=line><span class=cl>                      <span class=err>▼</span>
+</span></span><span class=line><span class=cl><span class=n>LLM</span><span class=err>（现在拥有了审查专家的指令）</span><span class=p>:</span>
+</span></span><span class=line><span class=cl>  <span class=err>开始按</span> <span class=n>skill</span> <span class=err>要求工作</span>
+</span></span><span class=line><span class=cl>  <span class=n>Action</span><span class=p>:</span> <span class=n>run_command</span>
+</span></span><span class=line><span class=cl>  <span class=n>Action</span> <span class=ne>Input</span><span class=p>:</span> <span class=n>cat</span> <span class=n>file</span><span class=o>.</span><span class=n>py</span>
+</span></span><span class=line><span class=cl>  <span class=o>...</span>
+</span></span></code></pre></td></tr></table></div></div><p>关键要点：</p><ul><li><strong>只把 skill 的"名称+描述"放进 system prompt</strong>（节省 token）</li><li><strong>完整 prompt 只在被调用时才加载</strong></li><li><strong>不额外调用 LLM</strong>（匹配发生在 LLM 的正常推理过程中）</li></ul><p>这和 MCP（Model Context Protocol）的设计哲学相似：工具/技能的描述轻量挂载，按需加载。</p><h2 id=五agent-的协议本质><a href=#%e4%ba%94agent-%e7%9a%84%e5%8d%8f%e8%ae%ae%e6%9c%ac%e8%b4%a8 class=header-anchor></a>五、Agent 的"协议"本质</h2><p>回看整个过程，你会发现一个规律：</p><blockquote><p>所谓的 Agent，本质上是把 LLM 的"对话接口"扩展成了"指令接口"</p></blockquote><ul><li>普通对话：用户问 → LLM 答</li><li>Agent：用户问 → LLM 思考 → LLM 发出指令 → Agent 执行指令 → 结果喂回 → LLM 继续</li></ul><p>这套"指令协议"是手工约定的（正则解析），到了 OpenAI Function Calling 和 Anthropic Tool Use 层面，它被标准化了——但本质没变。</p><p>你完全可以自己定义协议：</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-gdscript3 data-lang=gdscript3><span class=line><span class=cl><span class=o>//</span> <span class=err>不用</span> <span class=n>Action</span><span class=o>/</span><span class=n>Final</span> <span class=n>Answer</span><span class=err>，用</span> <span class=n>XML</span>
+</span></span><span class=line><span class=cl><span class=o>&lt;</span><span class=n>tool_call</span><span class=o>&gt;</span>
+</span></span><span class=line><span class=cl>  <span class=o>&lt;</span><span class=n>name</span><span class=o>&gt;</span><span class=n>search_web</span><span class=o>&lt;/</span><span class=n>name</span><span class=o>&gt;</span>
+</span></span><span class=line><span class=cl>  <span class=o>&lt;</span><span class=n>args</span><span class=o>&gt;</span><span class=p>{</span><span class=s2>&#34;q&#34;</span><span class=p>:</span> <span class=s2>&#34;weather in Beijing&#34;</span><span class=p>}</span><span class=o>&lt;/</span><span class=n>args</span><span class=o>&gt;</span>
+</span></span><span class=line><span class=cl><span class=o>&lt;/</span><span class=n>tool_call</span><span class=o>&gt;</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=o>//</span> <span class=err>或者用</span> <span class=n>JSON</span>
+</span></span><span class=line><span class=cl><span class=p>{</span><span class=s2>&#34;tool&#34;</span><span class=p>:</span> <span class=s2>&#34;search_web&#34;</span><span class=p>,</span> <span class=s2>&#34;params&#34;</span><span class=p>:</span> <span class=p>{</span><span class=s2>&#34;q&#34;</span><span class=p>:</span> <span class=s2>&#34;weather&#34;</span><span class=p>}}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=o>//</span> <span class=err>或者用任意你喜欢的格式</span>
+</span></span><span class=line><span class=cl><span class=err>→</span> <span class=n>SEARCH</span><span class=p>:</span> <span class=n>weather</span> <span class=ow>in</span> <span class=n>Beijing</span> <span class=err>←</span>
+</span></span></code></pre></td></tr></table></div></div><p><strong>协议只是形式，循环才是灵魂。</strong></p><h2 id=六从手写到框架><a href=#%e5%85%ad%e4%bb%8e%e6%89%8b%e5%86%99%e5%88%b0%e6%a1%86%e6%9e%b6 class=header-anchor></a>六、从手写到框架</h2><p>理解了这 300 行代码的顺序，你就理解了所有 Agent 框架：</p><div class=table-wrapper><table><thead><tr><th>框架</th><th>等价于我们做的</th></tr></thead><tbody><tr><td>LangChain</td><td>AgentExecutor + Tool abstractions</td></tr><tr><td>LangGraph</td><td>State machine 化的 ReAct 循环</td></tr><tr><td>OpenAI Assistants</td><td>托管版的 ReAct + 工具管理</td></tr><tr><td>AutoGen / CrewAI</td><td>多 Agent + 消息路由</td></tr><tr><td>MCP</td><td>标准化工具发现和调用协议</td></tr></tbody></table></div><p>框架解决的是工程问题（并发、持久化、多 Agent 编排、错误恢复），但核心逻辑和我们这 300 行代码一模一样。</p><h2 id=七试试看><a href=#%e4%b8%83%e8%af%95%e8%af%95%e7%9c%8b class=header-anchor></a>七、试试看</h2><p>你可以在这个仓库里看到完整代码，跟着步骤运行：</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span><span class=lnt>7
+</span><span class=lnt>8
+</span><span class=lnt>9
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl><span class=c1># 1. 配置 API Key</span>
+</span></span><span class=line><span class=cl>cp .env.example .env
+</span></span><span class=line><span class=cl><span class=c1># 编辑 .env，填入 DEEPSEEK_API_KEY</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1># 2. 安装依赖</span>
+</span></span><span class=line><span class=cl>uv sync
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1># 3. 运行</span>
+</span></span><span class=line><span class=cl>uv run python agent.py
+</span></span></code></pre></td></tr></table></div></div><p>然后试试这些话：</p><ul><li><code>whoami</code> — 最简单的 ReAct 测试</li><li><code>我有哪些 Python 文件？</code> — LLM 会调用 <code>find</code> 或 <code>ls</code></li><li><code>帮我审查一下 agent.py 的代码质量</code> — 加载 code-review skill 再审查</li><li><code>看下系统有多少内存</code> — 会用 <code>free</code> 或 <code>cat /proc/meminfo</code></li></ul><p>每一轮对话你都会看到：</p><ol><li>Agent 发送给 LLM 的<strong>完整消息列表</strong>（上下文怎么积累的）</li><li>LLM 的<strong>原始输出</strong>（它怎么思考的）</li><li><strong>解析结果</strong>（Agent 从文本中提取了什么）</li><li><strong>命令执行输出</strong>（工具调用的结果）</li></ol><p>看完这些日志，你对 Agent 就再也不会有"魔法感"了。</p><h2 id=八写在最后><a href=#%e5%85%ab%e5%86%99%e5%9c%a8%e6%9c%80%e5%90%8e class=header-anchor></a>八、写在最后</h2><p>AI Agent 不是一个产品，而是一种<strong>计算模式</strong>。</p><p>把 LLM 从"对话机器人"变成"自主执行者"，只需要一个循环 + 一个协议。框架会帮你管理复杂度，但不要被框架迷惑——回到原点，它就是一个 <code>while</code> 循环加几个 <code>if</code> 判断。</p><p>如果你看懂了这里的 300 行代码，下次再听到"Agent"这个词，你脑海里浮现的不再是某个框架的黑盒，而是一个清晰的循环：</p><blockquote><p>LLM 说：我要做 X<br>Agent 做 X<br>LLM 看到结果，说：那我该做 Y 了</p></blockquote><p>就这么简单。</p></section><footer class=article-footer><section class=article-tags><a href=/tags/ai/>AI</a>
+<a href=/tags/agent/>Agent</a>
+<a href=/tags/python/>Python</a>
+<a href=/tags/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0/>深度学习</a>
+<a href=/tags/%E5%AE%9E%E6%88%98/>实战</a></section><section class=article-copyright><svg class="icon icon-tabler icon-tabler-copyright" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="12" r="9"/><path d="M14.5 9a3.5 4 0 100 6"/></svg>
+<span>Licensed under CC BY-NC-SA 4.0</span></section></footer><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css integrity=sha384-n8MVd4RsNIU0tAv4ct0nTaAbDJwPJzDEaqSD1odI+WdtXRGWt2kTvGFasHpSy3SV crossorigin=anonymous><script src=https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js integrity=sha384-XjKyOOlGwcjNTAIQHIpgOno0Hl1YQqzUOEleOLALmuqehneUG+vnGctmUb0ZY0l8 crossorigin=anonymous defer></script><script src=https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js integrity=sha384-+VBxd3r6XgURycqtZ117nYw44OOcIax56Z4dCRWbxyPt0Koah1uHoK0o4+/RRE05 crossorigin=anonymous defer></script><script>window.addEventListener("DOMContentLoaded",()=>{const e=document.querySelector(".main-article");renderMathInElement(e,{delimiters:[{left:"$$",right:"$$",display:!0},{left:"$",right:"$",display:!1},{left:"\\(",right:"\\)",display:!1},{left:"\\[",right:"\\]",display:!0}],ignoredClasses:["gist"]})})</script></article><div class=disqus-container></div><style>.disqus-container{background-color:var(--card-background);border-radius:var(--card-border-radius);box-shadow:var(--shadow-l1);padding:var(--card-padding)}</style><script>window.addEventListener("onColorSchemeChange",e=>{typeof DISQUS=="object"&&DISQUS.reset({reload:!0})})</script><footer class=site-footer><section class=copyright>&copy;
+2014 -
+2026 Tech In Sight</section><section class=powerby>使用 <a href=https://gohugo.io/ target=_blank rel=noopener>Hugo</a> 构建<br>主题 <b><a href=https://github.com/CaiJimmy/hugo-theme-stack target=_blank rel=noopener data-version=3.30.0>Stack</a></b> 由 <a href=https://jimmycai.com target=_blank rel=noopener>Jimmy</a> 设计</section></footer><div class=pswp tabindex=-1 role=dialog aria-hidden=true><div class=pswp__bg></div><div class=pswp__scroll-wrap><div class=pswp__container><div class=pswp__item></div><div class=pswp__item></div><div class=pswp__item></div></div><div class="pswp__ui pswp__ui--hidden"><div class=pswp__top-bar><div class=pswp__counter></div><button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+<button class="pswp__button pswp__button--share" title=Share></button>
+<button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+<button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button><div class=pswp__preloader><div class=pswp__preloader__icn><div class=pswp__preloader__cut><div class=pswp__preloader__donut></div></div></div></div></div><div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap"><div class=pswp__share-tooltip></div></div><button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+</button>
+<button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)"></button><div class=pswp__caption><div class=pswp__caption__center></div></div></div></div></div><script src=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js integrity="sha256-ePwmChbbvXbsO02lbM3HoHbSHTHFAeChekF1xKJdleo=" crossorigin=anonymous defer></script><script src=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js integrity="sha256-UKkzOn/w1mBxRmLLGrSeyB4e1xbrp4xylgAWb3M42pU=" crossorigin=anonymous defer></script><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.min.css crossorigin=anonymous><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.css crossorigin=anonymous></main></div><script src=https://cdn.jsdelivr.net/npm/node-vibrant@3.1.6/dist/vibrant.min.js integrity="sha256-awcR2jno4kI5X0zL8ex0vi2z+KMkF24hUW8WePSA9HM=" crossorigin=anonymous></script><script type=text/javascript src=/ts/main.1e9a3bafd846ced4c345d084b355fb8c7bae75701c338f8a1f8a82c780137826.js defer></script><script>(function(){const e=document.createElement("link");e.href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap",e.type="text/css",e.rel="stylesheet",document.head.appendChild(e)})()</script></body></html>

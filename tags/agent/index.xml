@@ -1,0 +1,638 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Agent on Tech In Sight</title><link>https://techinsight.pages.dev/tags/agent/</link><description>Recent content in Agent on Tech In Sight</description><generator>Hugo -- gohugo.io</generator><language>zh-cn</language><lastBuildDate>Sun, 24 May 2026 17:00:00 +0800</lastBuildDate><atom:link href="https://techinsight.pages.dev/tags/agent/index.xml" rel="self" type="application/rss+xml"/><item><title>手写一个 AI Agent：从零理解它的原理和本质</title><link>https://techinsight.pages.dev/p/%E6%89%8B%E5%86%99%E4%B8%80%E4%B8%AA-ai-agent%E4%BB%8E%E9%9B%B6%E7%90%86%E8%A7%A3%E5%AE%83%E7%9A%84%E5%8E%9F%E7%90%86%E5%92%8C%E6%9C%AC%E8%B4%A8/</link><pubDate>Sun, 24 May 2026 17:00:00 +0800</pubDate><guid>https://techinsight.pages.dev/p/%E6%89%8B%E5%86%99%E4%B8%80%E4%B8%AA-ai-agent%E4%BB%8E%E9%9B%B6%E7%90%86%E8%A7%A3%E5%AE%83%E7%9A%84%E5%8E%9F%E7%90%86%E5%92%8C%E6%9C%AC%E8%B4%A8/</guid><description>&lt;h1 id="手写一个-ai-agent从零理解它的原理和本质"&gt;&lt;a href="#%e6%89%8b%e5%86%99%e4%b8%80%e4%b8%aa-ai-agent%e4%bb%8e%e9%9b%b6%e7%90%86%e8%a7%a3%e5%ae%83%e7%9a%84%e5%8e%9f%e7%90%86%e5%92%8c%e6%9c%ac%e8%b4%a8" class="header-anchor"&gt;&lt;/a&gt;手写一个 AI Agent：从零理解它的原理和本质
+&lt;/h1&gt;&lt;blockquote&gt;
+&lt;p&gt;用 300 行代码，让你看穿所有 Agent 框架的底牌&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h2 id="一agent-到底是什么"&gt;&lt;a href="#%e4%b8%80agent-%e5%88%b0%e5%ba%95%e6%98%af%e4%bb%80%e4%b9%88" class="header-anchor"&gt;&lt;/a&gt;一、Agent 到底是什么？
+&lt;/h2&gt;&lt;p&gt;这两年 AI 圈最火的概念之一就是 &lt;strong&gt;Agent&lt;/strong&gt;。LangChain、LangGraph、AutoGen、CrewAI……框架层出不穷，但如果你扒开这些框架的外衣，会发现最核心的东西只有一句话：&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;Agent = LLM + 工具 + 循环&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;把这句话拆开：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;LLM&lt;/strong&gt;：大脑，负责推理和决策&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;工具&lt;/strong&gt;：手脚，让 LLM 能影响外部世界（执行命令、查数据库、发请求）&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;循环&lt;/strong&gt;：把上面两个串起来：思考 → 行动 → 观察结果 → 继续思考&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;这就是 &lt;strong&gt;ReAct (Reasoning + Acting)&lt;/strong&gt; 模式，所有 Agent 框架的最底层原语。&lt;/p&gt;
+&lt;p&gt;本文不教你用框架，而是带你从零手写一个 Agent，让你&lt;strong&gt;亲眼看到&lt;/strong&gt;每一轮对话里 LLM 是怎么思考的、Agent 是怎么解析的、工具是怎么被调用的。&lt;/p&gt;
+&lt;h2 id="二核心流程react-循环"&gt;&lt;a href="#%e4%ba%8c%e6%a0%b8%e5%bf%83%e6%b5%81%e7%a8%8breact-%e5%be%aa%e7%8e%af" class="header-anchor"&gt;&lt;/a&gt;二、核心流程：ReAct 循环
+&lt;/h2&gt;&lt;p&gt;我们先不看代码，先理解这个循环长什么样。&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;div class="chroma"&gt;
+&lt;table class="lntable"&gt;&lt;tr&gt;&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code&gt;&lt;span class="lnt"&gt; 1
+&lt;/span&gt;&lt;span class="lnt"&gt; 2
+&lt;/span&gt;&lt;span class="lnt"&gt; 3
+&lt;/span&gt;&lt;span class="lnt"&gt; 4
+&lt;/span&gt;&lt;span class="lnt"&gt; 5
+&lt;/span&gt;&lt;span class="lnt"&gt; 6
+&lt;/span&gt;&lt;span class="lnt"&gt; 7
+&lt;/span&gt;&lt;span class="lnt"&gt; 8
+&lt;/span&gt;&lt;span class="lnt"&gt; 9
+&lt;/span&gt;&lt;span class="lnt"&gt;10
+&lt;/span&gt;&lt;span class="lnt"&gt;11
+&lt;/span&gt;&lt;span class="lnt"&gt;12
+&lt;/span&gt;&lt;span class="lnt"&gt;13
+&lt;/span&gt;&lt;span class="lnt"&gt;14
+&lt;/span&gt;&lt;span class="lnt"&gt;15
+&lt;/span&gt;&lt;span class="lnt"&gt;16
+&lt;/span&gt;&lt;span class="lnt"&gt;17
+&lt;/span&gt;&lt;span class="lnt"&gt;18
+&lt;/span&gt;&lt;span class="lnt"&gt;19
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code class="language-fallback" data-lang="fallback"&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;你: &amp;#34;我的机器有几个 CPU 核心？&amp;#34;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; │
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; ▼
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;LLM（收到问题，开始推理）:
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &amp;#34;用户想知道 CPU 核心数 -&amp;gt; 用 nproc 命令&amp;#34;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; │
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; ▼
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;Agent（解析 LLM 输出 → 发现 Action）:
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; 执行: nproc
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; │
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; ▼
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;命令行返回: &amp;#34;8&amp;#34;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; │
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; ▼
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;LLM（看到结果，继续推理）:
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &amp;#34;8 个核心 -&amp;gt; 可以回答了&amp;#34;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; │
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; ▼
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;你收到: &amp;#34;你的机器有 8 个 CPU 核心 ✅&amp;#34;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;关键是：&lt;strong&gt;LLM 不是一次输出就完事&lt;/strong&gt;，它在&amp;quot;思考→行动→观察→再思考&amp;quot;这个圈里转，直到它能给出最终答案。&lt;/p&gt;
+&lt;p&gt;这个圈，就是 Agent 的全部秘密。&lt;/p&gt;
+&lt;h2 id="三动手写一个逐行解析"&gt;&lt;a href="#%e4%b8%89%e5%8a%a8%e6%89%8b%e5%86%99%e4%b8%80%e4%b8%aa%e9%80%90%e8%a1%8c%e8%a7%a3%e6%9e%90" class="header-anchor"&gt;&lt;/a&gt;三、动手写一个：逐行解析
+&lt;/h2&gt;&lt;p&gt;我们的实现分四个模块：&lt;/p&gt;
+&lt;h3 id="31-llm-客户端"&gt;&lt;a href="#31-llm-%e5%ae%a2%e6%88%b7%e7%ab%af" class="header-anchor"&gt;&lt;/a&gt;3.1 LLM 客户端
+&lt;/h3&gt;&lt;p&gt;最外层是调用大模型的接口。DeepSeek 兼容 OpenAI 协议，所以我们直接用 &lt;code&gt;openai&lt;/code&gt; SDK：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;div class="chroma"&gt;
+&lt;table class="lntable"&gt;&lt;tr&gt;&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code&gt;&lt;span class="lnt"&gt; 1
+&lt;/span&gt;&lt;span class="lnt"&gt; 2
+&lt;/span&gt;&lt;span class="lnt"&gt; 3
+&lt;/span&gt;&lt;span class="lnt"&gt; 4
+&lt;/span&gt;&lt;span class="lnt"&gt; 5
+&lt;/span&gt;&lt;span class="lnt"&gt; 6
+&lt;/span&gt;&lt;span class="lnt"&gt; 7
+&lt;/span&gt;&lt;span class="lnt"&gt; 8
+&lt;/span&gt;&lt;span class="lnt"&gt; 9
+&lt;/span&gt;&lt;span class="lnt"&gt;10
+&lt;/span&gt;&lt;span class="lnt"&gt;11
+&lt;/span&gt;&lt;span class="lnt"&gt;12
+&lt;/span&gt;&lt;span class="lnt"&gt;13
+&lt;/span&gt;&lt;span class="lnt"&gt;14
+&lt;/span&gt;&lt;span class="lnt"&gt;15
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code class="language-python" data-lang="python"&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="k"&gt;class&lt;/span&gt; &lt;span class="nc"&gt;LLMClient&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="fm"&gt;__init__&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="n"&gt;load_dotenv&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;client&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;OpenAI&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="n"&gt;api_key&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="n"&gt;os&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;getenv&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;&amp;#34;DEEPSEEK_API_KEY&amp;#34;&lt;/span&gt;&lt;span class="p"&gt;),&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="n"&gt;base_url&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="n"&gt;os&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;getenv&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;&amp;#34;DEEPSEEK_BASE_URL&amp;#34;&lt;/span&gt;&lt;span class="p"&gt;),&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="p"&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;chat&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;messages&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="o"&gt;-&amp;gt;&lt;/span&gt; &lt;span class="nb"&gt;str&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="n"&gt;response&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;client&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;chat&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;completions&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;create&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="n"&gt;model&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s2"&gt;&amp;#34;deepseek-v4-flash&amp;#34;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="n"&gt;messages&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="n"&gt;messages&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="n"&gt;temperature&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mf"&gt;0.0&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="p"&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="n"&gt;response&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;choices&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;message&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;content&lt;/span&gt; &lt;span class="ow"&gt;or&lt;/span&gt; &lt;span class="s2"&gt;&amp;#34;&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;这段代码没什么神秘的——就是一个 API 封装。关键在后面。&lt;/p&gt;
+&lt;h3 id="32-cli-执行器"&gt;&lt;a href="#32-cli-%e6%89%a7%e8%a1%8c%e5%99%a8" class="header-anchor"&gt;&lt;/a&gt;3.2 CLI 执行器
+&lt;/h3&gt;&lt;p&gt;Agent 需要&amp;quot;手脚&amp;quot;来做事。我们给它一个能安全执行 CLI 命令的工具：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;div class="chroma"&gt;
+&lt;table class="lntable"&gt;&lt;tr&gt;&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code&gt;&lt;span class="lnt"&gt; 1
+&lt;/span&gt;&lt;span class="lnt"&gt; 2
+&lt;/span&gt;&lt;span class="lnt"&gt; 3
+&lt;/span&gt;&lt;span class="lnt"&gt; 4
+&lt;/span&gt;&lt;span class="lnt"&gt; 5
+&lt;/span&gt;&lt;span class="lnt"&gt; 6
+&lt;/span&gt;&lt;span class="lnt"&gt; 7
+&lt;/span&gt;&lt;span class="lnt"&gt; 8
+&lt;/span&gt;&lt;span class="lnt"&gt; 9
+&lt;/span&gt;&lt;span class="lnt"&gt;10
+&lt;/span&gt;&lt;span class="lnt"&gt;11
+&lt;/span&gt;&lt;span class="lnt"&gt;12
+&lt;/span&gt;&lt;span class="lnt"&gt;13
+&lt;/span&gt;&lt;span class="lnt"&gt;14
+&lt;/span&gt;&lt;span class="lnt"&gt;15
+&lt;/span&gt;&lt;span class="lnt"&gt;16
+&lt;/span&gt;&lt;span class="lnt"&gt;17
+&lt;/span&gt;&lt;span class="lnt"&gt;18
+&lt;/span&gt;&lt;span class="lnt"&gt;19
+&lt;/span&gt;&lt;span class="lnt"&gt;20
+&lt;/span&gt;&lt;span class="lnt"&gt;21
+&lt;/span&gt;&lt;span class="lnt"&gt;22
+&lt;/span&gt;&lt;span class="lnt"&gt;23
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code class="language-python" data-lang="python"&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="k"&gt;class&lt;/span&gt; &lt;span class="nc"&gt;CLIExecutor&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="n"&gt;DANGEROUS_PATTERNS&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="p"&gt;[&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="sa"&gt;r&lt;/span&gt;&lt;span class="s2"&gt;&amp;#34;\bsudo\b&amp;#34;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="sa"&gt;r&lt;/span&gt;&lt;span class="s2"&gt;&amp;#34;\bmkfs\b&amp;#34;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="sa"&gt;r&lt;/span&gt;&lt;span class="s2"&gt;&amp;#34;\brm\s+-rf\s+/$&amp;#34;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="o"&gt;...&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="p"&gt;]&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;run&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;command&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="nb"&gt;str&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="o"&gt;-&amp;gt;&lt;/span&gt; &lt;span class="nb"&gt;str&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="c1"&gt;# 1. 安全检查：拒绝危险命令&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="k"&gt;for&lt;/span&gt; &lt;span class="n"&gt;pattern&lt;/span&gt; &lt;span class="ow"&gt;in&lt;/span&gt; &lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;DANGEROUS_PATTERNS&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="n"&gt;re&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;search&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;pattern&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;command&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;re&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;IGNORECASE&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="sa"&gt;f&lt;/span&gt;&lt;span class="s2"&gt;&amp;#34;[Safety Error] 危险命令被拦截&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="c1"&gt;# 2. 执行命令（带超时）&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="n"&gt;result&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;subprocess&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;run&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="n"&gt;command&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;shell&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="kc"&gt;True&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="n"&gt;capture_output&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="kc"&gt;True&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;text&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="kc"&gt;True&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="n"&gt;timeout&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mi"&gt;30&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="p"&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="c1"&gt;# 3. 处理输出（截断、报错）&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="n"&gt;output&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;result&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;stdout&lt;/span&gt; &lt;span class="o"&gt;+&lt;/span&gt; &lt;span class="n"&gt;result&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;stderr&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="n"&gt;result&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;returncode&lt;/span&gt; &lt;span class="o"&gt;!=&lt;/span&gt; &lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="n"&gt;output&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="sa"&gt;f&lt;/span&gt;&lt;span class="s2"&gt;&amp;#34;[Exit code: &lt;/span&gt;&lt;span class="si"&gt;{&lt;/span&gt;&lt;span class="n"&gt;result&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;returncode&lt;/span&gt;&lt;span class="si"&gt;}&lt;/span&gt;&lt;span class="s2"&gt;]&lt;/span&gt;&lt;span class="se"&gt;\n&lt;/span&gt;&lt;span class="si"&gt;{&lt;/span&gt;&lt;span class="n"&gt;output&lt;/span&gt;&lt;span class="si"&gt;}&lt;/span&gt;&lt;span class="s2"&gt;&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="n"&gt;output&lt;/span&gt;&lt;span class="p"&gt;[:&lt;/span&gt;&lt;span class="mi"&gt;3000&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;这里有个要点：&lt;strong&gt;工具返回的结果会被送回给 LLM&lt;/strong&gt;，让它&amp;quot;看到&amp;quot;自己行动的结果。&lt;/p&gt;
+&lt;h3 id="33-协议llm-怎么告诉-agent-要干什么"&gt;&lt;a href="#33-%e5%8d%8f%e8%ae%aellm-%e6%80%8e%e4%b9%88%e5%91%8a%e8%af%89-agent-%e8%a6%81%e5%b9%b2%e4%bb%80%e4%b9%88" class="header-anchor"&gt;&lt;/a&gt;3.3 协议：LLM 怎么告诉 Agent 要干什么？
+&lt;/h3&gt;&lt;p&gt;这是最精妙的部分。LLM 是一个文本输入/文本输出的模型，Agent 要让它&amp;quot;执行命令&amp;quot;，需要一个&lt;strong&gt;约定的格式&lt;/strong&gt;。&lt;/p&gt;
+&lt;p&gt;我们在 System Prompt 里告诉 LLM：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;div class="chroma"&gt;
+&lt;table class="lntable"&gt;&lt;tr&gt;&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code&gt;&lt;span class="lnt"&gt; 1
+&lt;/span&gt;&lt;span class="lnt"&gt; 2
+&lt;/span&gt;&lt;span class="lnt"&gt; 3
+&lt;/span&gt;&lt;span class="lnt"&gt; 4
+&lt;/span&gt;&lt;span class="lnt"&gt; 5
+&lt;/span&gt;&lt;span class="lnt"&gt; 6
+&lt;/span&gt;&lt;span class="lnt"&gt; 7
+&lt;/span&gt;&lt;span class="lnt"&gt; 8
+&lt;/span&gt;&lt;span class="lnt"&gt; 9
+&lt;/span&gt;&lt;span class="lnt"&gt;10
+&lt;/span&gt;&lt;span class="lnt"&gt;11
+&lt;/span&gt;&lt;span class="lnt"&gt;12
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code class="language-fallback" data-lang="fallback"&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;可用工具:
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;- run_command: 执行 shell 命令
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;输出格式（二选一）:
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;=== 要执行命令 ===
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;Thought: &amp;lt;你的推理&amp;gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;Action: run_command
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;Action Input: &amp;lt;命令&amp;gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;=== 要给出答案 ===
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;Final Answer: &amp;lt;你的回答&amp;gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;Agent 收到 LLM 的输出后，用正则表达式解析：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;div class="chroma"&gt;
+&lt;table class="lntable"&gt;&lt;tr&gt;&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code&gt;&lt;span class="lnt"&gt; 1
+&lt;/span&gt;&lt;span class="lnt"&gt; 2
+&lt;/span&gt;&lt;span class="lnt"&gt; 3
+&lt;/span&gt;&lt;span class="lnt"&gt; 4
+&lt;/span&gt;&lt;span class="lnt"&gt; 5
+&lt;/span&gt;&lt;span class="lnt"&gt; 6
+&lt;/span&gt;&lt;span class="lnt"&gt; 7
+&lt;/span&gt;&lt;span class="lnt"&gt; 8
+&lt;/span&gt;&lt;span class="lnt"&gt; 9
+&lt;/span&gt;&lt;span class="lnt"&gt;10
+&lt;/span&gt;&lt;span class="lnt"&gt;11
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code class="language-python" data-lang="python"&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;parse_response&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;response&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="nb"&gt;str&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="o"&gt;-&amp;gt;&lt;/span&gt; &lt;span class="nb"&gt;dict&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="c1"&gt;# 是 Final Answer 吗？&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="n"&gt;re&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;search&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="sa"&gt;r&lt;/span&gt;&lt;span class="s2"&gt;&amp;#34;Final Answer:\s*(.*)&amp;#34;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;response&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;re&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;DOTALL&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;&lt;span class="s2"&gt;&amp;#34;type&amp;#34;&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="s2"&gt;&amp;#34;final&amp;#34;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s2"&gt;&amp;#34;content&amp;#34;&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="s2"&gt;&amp;#34;...&amp;#34;&lt;/span&gt;&lt;span class="p"&gt;}&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="c1"&gt;# 是 Action 吗？&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="n"&gt;re&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;search&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="sa"&gt;r&lt;/span&gt;&lt;span class="s2"&gt;&amp;#34;Action:\s*run_command\s*Action Input:\s*(.*)&amp;#34;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;response&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;&lt;span class="s2"&gt;&amp;#34;type&amp;#34;&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="s2"&gt;&amp;#34;action&amp;#34;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s2"&gt;&amp;#34;command&amp;#34;&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="s2"&gt;&amp;#34;...&amp;#34;&lt;/span&gt;&lt;span class="p"&gt;}&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="c1"&gt;# 都不是 → 还在思考&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;&lt;span class="s2"&gt;&amp;#34;type&amp;#34;&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="s2"&gt;&amp;#34;thought&amp;#34;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s2"&gt;&amp;#34;content&amp;#34;&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="s2"&gt;&amp;#34;...&amp;#34;&lt;/span&gt;&lt;span class="p"&gt;}&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;&lt;strong&gt;这就是 Agent 的核心协议&lt;/strong&gt;——双方约定好一套文本格式，LLM 输出 Action，Agent 解析后执行，然后把结果喂回去。&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;所有 Agent 框架（LangChain、AutoGen、OpenAI Function Calling）都是在给这套&amp;quot;文本协议&amp;quot;加语法糖。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h3 id="34-react-循环核心中的核心"&gt;&lt;a href="#34-react-%e5%be%aa%e7%8e%af%e6%a0%b8%e5%bf%83%e4%b8%ad%e7%9a%84%e6%a0%b8%e5%bf%83" class="header-anchor"&gt;&lt;/a&gt;3.4 ReAct 循环（核心中的核心）
+&lt;/h3&gt;&lt;p&gt;把上面三块串起来：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;div class="chroma"&gt;
+&lt;table class="lntable"&gt;&lt;tr&gt;&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code&gt;&lt;span class="lnt"&gt; 1
+&lt;/span&gt;&lt;span class="lnt"&gt; 2
+&lt;/span&gt;&lt;span class="lnt"&gt; 3
+&lt;/span&gt;&lt;span class="lnt"&gt; 4
+&lt;/span&gt;&lt;span class="lnt"&gt; 5
+&lt;/span&gt;&lt;span class="lnt"&gt; 6
+&lt;/span&gt;&lt;span class="lnt"&gt; 7
+&lt;/span&gt;&lt;span class="lnt"&gt; 8
+&lt;/span&gt;&lt;span class="lnt"&gt; 9
+&lt;/span&gt;&lt;span class="lnt"&gt;10
+&lt;/span&gt;&lt;span class="lnt"&gt;11
+&lt;/span&gt;&lt;span class="lnt"&gt;12
+&lt;/span&gt;&lt;span class="lnt"&gt;13
+&lt;/span&gt;&lt;span class="lnt"&gt;14
+&lt;/span&gt;&lt;span class="lnt"&gt;15
+&lt;/span&gt;&lt;span class="lnt"&gt;16
+&lt;/span&gt;&lt;span class="lnt"&gt;17
+&lt;/span&gt;&lt;span class="lnt"&gt;18
+&lt;/span&gt;&lt;span class="lnt"&gt;19
+&lt;/span&gt;&lt;span class="lnt"&gt;20
+&lt;/span&gt;&lt;span class="lnt"&gt;21
+&lt;/span&gt;&lt;span class="lnt"&gt;22
+&lt;/span&gt;&lt;span class="lnt"&gt;23
+&lt;/span&gt;&lt;span class="lnt"&gt;24
+&lt;/span&gt;&lt;span class="lnt"&gt;25
+&lt;/span&gt;&lt;span class="lnt"&gt;26
+&lt;/span&gt;&lt;span class="lnt"&gt;27
+&lt;/span&gt;&lt;span class="lnt"&gt;28
+&lt;/span&gt;&lt;span class="lnt"&gt;29
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code class="language-python" data-lang="python"&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;run_agent&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;user_input&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="nb"&gt;str&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="n"&gt;llm&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;LLMClient&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="n"&gt;executor&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;CLIExecutor&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="n"&gt;messages&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="p"&gt;[&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="p"&gt;{&lt;/span&gt;&lt;span class="s2"&gt;&amp;#34;role&amp;#34;&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="s2"&gt;&amp;#34;system&amp;#34;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s2"&gt;&amp;#34;content&amp;#34;&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="n"&gt;SYSTEM_PROMPT&lt;/span&gt;&lt;span class="p"&gt;},&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="p"&gt;{&lt;/span&gt;&lt;span class="s2"&gt;&amp;#34;role&amp;#34;&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="s2"&gt;&amp;#34;user&amp;#34;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s2"&gt;&amp;#34;content&amp;#34;&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="n"&gt;user_input&lt;/span&gt;&lt;span class="p"&gt;},&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="p"&gt;]&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="k"&gt;for&lt;/span&gt; &lt;span class="n"&gt;turn&lt;/span&gt; &lt;span class="ow"&gt;in&lt;/span&gt; &lt;span class="nb"&gt;range&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;11&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt; &lt;span class="c1"&gt;# 最多 10 轮&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="c1"&gt;# 1. 调 LLM&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="n"&gt;response&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;llm&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;chat&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;messages&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="n"&gt;parsed&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;parse_response&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;response&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="c1"&gt;# 2. 根据解析结果做不同的事&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="n"&gt;parsed&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="s2"&gt;&amp;#34;type&amp;#34;&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt; &lt;span class="o"&gt;==&lt;/span&gt; &lt;span class="s2"&gt;&amp;#34;final&amp;#34;&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="nb"&gt;print&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;parsed&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="s2"&gt;&amp;#34;content&amp;#34;&lt;/span&gt;&lt;span class="p"&gt;])&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="k"&gt;return&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="n"&gt;parsed&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="s2"&gt;&amp;#34;type&amp;#34;&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt; &lt;span class="o"&gt;==&lt;/span&gt; &lt;span class="s2"&gt;&amp;#34;action&amp;#34;&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="n"&gt;observation&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;executor&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;run&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;parsed&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="s2"&gt;&amp;#34;command&amp;#34;&lt;/span&gt;&lt;span class="p"&gt;])&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="c1"&gt;# 把&amp;#34;思考&amp;#34;和&amp;#34;观察结果&amp;#34;都追加到消息历史&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="n"&gt;messages&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;append&lt;/span&gt;&lt;span class="p"&gt;({&lt;/span&gt;&lt;span class="s2"&gt;&amp;#34;role&amp;#34;&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="s2"&gt;&amp;#34;assistant&amp;#34;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s2"&gt;&amp;#34;content&amp;#34;&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="n"&gt;response&lt;/span&gt;&lt;span class="p"&gt;})&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="n"&gt;messages&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;append&lt;/span&gt;&lt;span class="p"&gt;({&lt;/span&gt;&lt;span class="s2"&gt;&amp;#34;role&amp;#34;&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="s2"&gt;&amp;#34;user&amp;#34;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s2"&gt;&amp;#34;content&amp;#34;&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="n"&gt;observation&lt;/span&gt;&lt;span class="p"&gt;})&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="c1"&gt;# 继续下一轮循环&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="n"&gt;parsed&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="s2"&gt;&amp;#34;type&amp;#34;&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt; &lt;span class="o"&gt;==&lt;/span&gt; &lt;span class="s2"&gt;&amp;#34;thought&amp;#34;&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="c1"&gt;# 还没给出明确指令，推它一把&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="n"&gt;messages&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;append&lt;/span&gt;&lt;span class="p"&gt;({&lt;/span&gt;&lt;span class="s2"&gt;&amp;#34;role&amp;#34;&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="s2"&gt;&amp;#34;user&amp;#34;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s2"&gt;&amp;#34;content&amp;#34;&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="s2"&gt;&amp;#34;请给出 Action 或 Final Answer。&amp;#34;&lt;/span&gt;&lt;span class="p"&gt;})&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;这个循环就是 Agent 的全部。用流程图看更清楚：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;div class="chroma"&gt;
+&lt;table class="lntable"&gt;&lt;tr&gt;&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code&gt;&lt;span class="lnt"&gt; 1
+&lt;/span&gt;&lt;span class="lnt"&gt; 2
+&lt;/span&gt;&lt;span class="lnt"&gt; 3
+&lt;/span&gt;&lt;span class="lnt"&gt; 4
+&lt;/span&gt;&lt;span class="lnt"&gt; 5
+&lt;/span&gt;&lt;span class="lnt"&gt; 6
+&lt;/span&gt;&lt;span class="lnt"&gt; 7
+&lt;/span&gt;&lt;span class="lnt"&gt; 8
+&lt;/span&gt;&lt;span class="lnt"&gt; 9
+&lt;/span&gt;&lt;span class="lnt"&gt;10
+&lt;/span&gt;&lt;span class="lnt"&gt;11
+&lt;/span&gt;&lt;span class="lnt"&gt;12
+&lt;/span&gt;&lt;span class="lnt"&gt;13
+&lt;/span&gt;&lt;span class="lnt"&gt;14
+&lt;/span&gt;&lt;span class="lnt"&gt;15
+&lt;/span&gt;&lt;span class="lnt"&gt;16
+&lt;/span&gt;&lt;span class="lnt"&gt;17
+&lt;/span&gt;&lt;span class="lnt"&gt;18
+&lt;/span&gt;&lt;span class="lnt"&gt;19
+&lt;/span&gt;&lt;span class="lnt"&gt;20
+&lt;/span&gt;&lt;span class="lnt"&gt;21
+&lt;/span&gt;&lt;span class="lnt"&gt;22
+&lt;/span&gt;&lt;span class="lnt"&gt;23
+&lt;/span&gt;&lt;span class="lnt"&gt;24
+&lt;/span&gt;&lt;span class="lnt"&gt;25
+&lt;/span&gt;&lt;span class="lnt"&gt;26
+&lt;/span&gt;&lt;span class="lnt"&gt;27
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code class="language-fallback" data-lang="fallback"&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;用户输入
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; │
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; ▼
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;┌─────────────────────────────┐
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;│ 给 LLM 发送消息历史 │
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;│ (system + 之前的对话) │
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;└──────────┬──────────────────┘
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; │
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; ▼
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;┌─────────────────────────────┐
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;│ LLM 返回文本 │
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;│ &amp;#34;Thought... Action: xxx&amp;#34; │
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;└──────────┬──────────────────┘
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; │
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; ┌──────┴──────┐
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; ▼ ▼
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; Final? Action?
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; │ │
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; ▼ ▼
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; 输出答案 执行命令 → 拿到结果
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; │
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; ┌──────────┘
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; ▼
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; 追加到消息历史
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; │
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; ▼
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; 回到 LLM（继续循环）
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;h2 id="四skill-系统让-agent-拥有专业技能"&gt;&lt;a href="#%e5%9b%9bskill-%e7%b3%bb%e7%bb%9f%e8%ae%a9-agent-%e6%8b%a5%e6%9c%89%e4%b8%93%e4%b8%9a%e6%8a%80%e8%83%bd" class="header-anchor"&gt;&lt;/a&gt;四、Skill 系统：让 Agent 拥有&amp;quot;专业技能&amp;quot;
+&lt;/h2&gt;&lt;p&gt;基础的 ReAct 循环有了，但 LLM 只知道&amp;quot;执行 CLI 命令&amp;quot;这一种能力。如果想让 Agent 能做更专业的事（比如代码审查、技术写作、调试），怎么办？&lt;/p&gt;
+&lt;p&gt;答案是 &lt;strong&gt;Skill（技能）系统&lt;/strong&gt;。&lt;/p&gt;
+&lt;p&gt;思路很简单：每个 Skill 是一段 &lt;strong&gt;prompt 模板&lt;/strong&gt;，描述了特定的专业能力。Agent 启动时把所有 skill 的名称和描述列在 system prompt 里，LLM 在推理过程中如果发现需要某个技能，就通过 &lt;code&gt;load_skill&lt;/code&gt; action 加载它。&lt;/p&gt;
+&lt;h3 id="skill-文件"&gt;&lt;a href="#skill-%e6%96%87%e4%bb%b6" class="header-anchor"&gt;&lt;/a&gt;Skill 文件
+&lt;/h3&gt;&lt;div class="highlight"&gt;&lt;div class="chroma"&gt;
+&lt;table class="lntable"&gt;&lt;tr&gt;&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code&gt;&lt;span class="lnt"&gt; 1
+&lt;/span&gt;&lt;span class="lnt"&gt; 2
+&lt;/span&gt;&lt;span class="lnt"&gt; 3
+&lt;/span&gt;&lt;span class="lnt"&gt; 4
+&lt;/span&gt;&lt;span class="lnt"&gt; 5
+&lt;/span&gt;&lt;span class="lnt"&gt; 6
+&lt;/span&gt;&lt;span class="lnt"&gt; 7
+&lt;/span&gt;&lt;span class="lnt"&gt; 8
+&lt;/span&gt;&lt;span class="lnt"&gt; 9
+&lt;/span&gt;&lt;span class="lnt"&gt;10
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code class="language-markdown" data-lang="markdown"&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;---
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;name: code-review
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;description: 审查代码质量，检查 bug、安全漏洞和代码风格
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;---
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;你是一个资深代码审查专家。请从以下维度审查用户提供的代码：
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="k"&gt;1.&lt;/span&gt; 逻辑正确性
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="k"&gt;2.&lt;/span&gt; 安全漏洞
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="k"&gt;3.&lt;/span&gt; 代码风格
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="k"&gt;4.&lt;/span&gt; 性能问题
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;h3 id="加载流程"&gt;&lt;a href="#%e5%8a%a0%e8%bd%bd%e6%b5%81%e7%a8%8b" class="header-anchor"&gt;&lt;/a&gt;加载流程
+&lt;/h3&gt;&lt;div class="highlight"&gt;&lt;div class="chroma"&gt;
+&lt;table class="lntable"&gt;&lt;tr&gt;&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code&gt;&lt;span class="lnt"&gt; 1
+&lt;/span&gt;&lt;span class="lnt"&gt; 2
+&lt;/span&gt;&lt;span class="lnt"&gt; 3
+&lt;/span&gt;&lt;span class="lnt"&gt; 4
+&lt;/span&gt;&lt;span class="lnt"&gt; 5
+&lt;/span&gt;&lt;span class="lnt"&gt; 6
+&lt;/span&gt;&lt;span class="lnt"&gt; 7
+&lt;/span&gt;&lt;span class="lnt"&gt; 8
+&lt;/span&gt;&lt;span class="lnt"&gt; 9
+&lt;/span&gt;&lt;span class="lnt"&gt;10
+&lt;/span&gt;&lt;span class="lnt"&gt;11
+&lt;/span&gt;&lt;span class="lnt"&gt;12
+&lt;/span&gt;&lt;span class="lnt"&gt;13
+&lt;/span&gt;&lt;span class="lnt"&gt;14
+&lt;/span&gt;&lt;span class="lnt"&gt;15
+&lt;/span&gt;&lt;span class="lnt"&gt;16
+&lt;/span&gt;&lt;span class="lnt"&gt;17
+&lt;/span&gt;&lt;span class="lnt"&gt;18
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code class="language-gdscript3" data-lang="gdscript3"&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="n"&gt;User&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="s2"&gt;&amp;#34;帮我审查这段代码&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="err"&gt;│&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="err"&gt;▼&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="n"&gt;LLM&lt;/span&gt;&lt;span class="err"&gt;（看到&lt;/span&gt; &lt;span class="n"&gt;system&lt;/span&gt; &lt;span class="n"&gt;prompt&lt;/span&gt; &lt;span class="err"&gt;里的&lt;/span&gt; &lt;span class="n"&gt;skill&lt;/span&gt; &lt;span class="err"&gt;列表）&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="s2"&gt;&amp;#34;这需要 code-review skill&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="n"&gt;Action&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="n"&gt;load_skill&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="n"&gt;Action&lt;/span&gt; &lt;span class="ne"&gt;Input&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="n"&gt;code&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;review&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="err"&gt;│&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="err"&gt;▼&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="n"&gt;Agent&lt;/span&gt;&lt;span class="err"&gt;（加载&lt;/span&gt; &lt;span class="n"&gt;skill&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;md&lt;/span&gt; &lt;span class="err"&gt;文件）&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="err"&gt;把&lt;/span&gt; &lt;span class="n"&gt;skill&lt;/span&gt; &lt;span class="err"&gt;的&lt;/span&gt; &lt;span class="n"&gt;prompt&lt;/span&gt; &lt;span class="err"&gt;追加为&lt;/span&gt; &lt;span class="n"&gt;system&lt;/span&gt; &lt;span class="n"&gt;message&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="err"&gt;│&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="err"&gt;▼&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="n"&gt;LLM&lt;/span&gt;&lt;span class="err"&gt;（现在拥有了审查专家的指令）&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="err"&gt;开始按&lt;/span&gt; &lt;span class="n"&gt;skill&lt;/span&gt; &lt;span class="err"&gt;要求工作&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="n"&gt;Action&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="n"&gt;run_command&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="n"&gt;Action&lt;/span&gt; &lt;span class="ne"&gt;Input&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="n"&gt;cat&lt;/span&gt; &lt;span class="n"&gt;file&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;py&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="o"&gt;...&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;关键要点：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;只把 skill 的&amp;quot;名称+描述&amp;quot;放进 system prompt&lt;/strong&gt;（节省 token）&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;完整 prompt 只在被调用时才加载&lt;/strong&gt;&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;不额外调用 LLM&lt;/strong&gt;（匹配发生在 LLM 的正常推理过程中）&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;这和 MCP（Model Context Protocol）的设计哲学相似：工具/技能的描述轻量挂载，按需加载。&lt;/p&gt;
+&lt;h2 id="五agent-的协议本质"&gt;&lt;a href="#%e4%ba%94agent-%e7%9a%84%e5%8d%8f%e8%ae%ae%e6%9c%ac%e8%b4%a8" class="header-anchor"&gt;&lt;/a&gt;五、Agent 的&amp;quot;协议&amp;quot;本质
+&lt;/h2&gt;&lt;p&gt;回看整个过程，你会发现一个规律：&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;所谓的 Agent，本质上是把 LLM 的&amp;quot;对话接口&amp;quot;扩展成了&amp;quot;指令接口&amp;quot;&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;ul&gt;
+&lt;li&gt;普通对话：用户问 → LLM 答&lt;/li&gt;
+&lt;li&gt;Agent：用户问 → LLM 思考 → LLM 发出指令 → Agent 执行指令 → 结果喂回 → LLM 继续&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;这套&amp;quot;指令协议&amp;quot;是手工约定的（正则解析），到了 OpenAI Function Calling 和 Anthropic Tool Use 层面，它被标准化了——但本质没变。&lt;/p&gt;
+&lt;p&gt;你完全可以自己定义协议：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;div class="chroma"&gt;
+&lt;table class="lntable"&gt;&lt;tr&gt;&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code&gt;&lt;span class="lnt"&gt; 1
+&lt;/span&gt;&lt;span class="lnt"&gt; 2
+&lt;/span&gt;&lt;span class="lnt"&gt; 3
+&lt;/span&gt;&lt;span class="lnt"&gt; 4
+&lt;/span&gt;&lt;span class="lnt"&gt; 5
+&lt;/span&gt;&lt;span class="lnt"&gt; 6
+&lt;/span&gt;&lt;span class="lnt"&gt; 7
+&lt;/span&gt;&lt;span class="lnt"&gt; 8
+&lt;/span&gt;&lt;span class="lnt"&gt; 9
+&lt;/span&gt;&lt;span class="lnt"&gt;10
+&lt;/span&gt;&lt;span class="lnt"&gt;11
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code class="language-gdscript3" data-lang="gdscript3"&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="o"&gt;//&lt;/span&gt; &lt;span class="err"&gt;不用&lt;/span&gt; &lt;span class="n"&gt;Action&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;Final&lt;/span&gt; &lt;span class="n"&gt;Answer&lt;/span&gt;&lt;span class="err"&gt;，用&lt;/span&gt; &lt;span class="n"&gt;XML&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="o"&gt;&amp;lt;&lt;/span&gt;&lt;span class="n"&gt;tool_call&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="o"&gt;&amp;lt;&lt;/span&gt;&lt;span class="n"&gt;name&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt;&lt;span class="n"&gt;search_web&lt;/span&gt;&lt;span class="o"&gt;&amp;lt;/&lt;/span&gt;&lt;span class="n"&gt;name&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="o"&gt;&amp;lt;&lt;/span&gt;&lt;span class="n"&gt;args&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt;&lt;span class="p"&gt;{&lt;/span&gt;&lt;span class="s2"&gt;&amp;#34;q&amp;#34;&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="s2"&gt;&amp;#34;weather in Beijing&amp;#34;&lt;/span&gt;&lt;span class="p"&gt;}&lt;/span&gt;&lt;span class="o"&gt;&amp;lt;/&lt;/span&gt;&lt;span class="n"&gt;args&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="o"&gt;&amp;lt;/&lt;/span&gt;&lt;span class="n"&gt;tool_call&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="o"&gt;//&lt;/span&gt; &lt;span class="err"&gt;或者用&lt;/span&gt; &lt;span class="n"&gt;JSON&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="p"&gt;{&lt;/span&gt;&lt;span class="s2"&gt;&amp;#34;tool&amp;#34;&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="s2"&gt;&amp;#34;search_web&amp;#34;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s2"&gt;&amp;#34;params&amp;#34;&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;&lt;span class="s2"&gt;&amp;#34;q&amp;#34;&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="s2"&gt;&amp;#34;weather&amp;#34;&lt;/span&gt;&lt;span class="p"&gt;}}&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="o"&gt;//&lt;/span&gt; &lt;span class="err"&gt;或者用任意你喜欢的格式&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="err"&gt;→&lt;/span&gt; &lt;span class="n"&gt;SEARCH&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="n"&gt;weather&lt;/span&gt; &lt;span class="ow"&gt;in&lt;/span&gt; &lt;span class="n"&gt;Beijing&lt;/span&gt; &lt;span class="err"&gt;←&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;&lt;strong&gt;协议只是形式，循环才是灵魂。&lt;/strong&gt;&lt;/p&gt;
+&lt;h2 id="六从手写到框架"&gt;&lt;a href="#%e5%85%ad%e4%bb%8e%e6%89%8b%e5%86%99%e5%88%b0%e6%a1%86%e6%9e%b6" class="header-anchor"&gt;&lt;/a&gt;六、从手写到框架
+&lt;/h2&gt;&lt;p&gt;理解了这 300 行代码的顺序，你就理解了所有 Agent 框架：&lt;/p&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;框架&lt;/th&gt;
+&lt;th&gt;等价于我们做的&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;LangChain&lt;/td&gt;
+&lt;td&gt;AgentExecutor + Tool abstractions&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;LangGraph&lt;/td&gt;
+&lt;td&gt;State machine 化的 ReAct 循环&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;OpenAI Assistants&lt;/td&gt;
+&lt;td&gt;托管版的 ReAct + 工具管理&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;AutoGen / CrewAI&lt;/td&gt;
+&lt;td&gt;多 Agent + 消息路由&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;MCP&lt;/td&gt;
+&lt;td&gt;标准化工具发现和调用协议&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;框架解决的是工程问题（并发、持久化、多 Agent 编排、错误恢复），但核心逻辑和我们这 300 行代码一模一样。&lt;/p&gt;
+&lt;h2 id="七试试看"&gt;&lt;a href="#%e4%b8%83%e8%af%95%e8%af%95%e7%9c%8b" class="header-anchor"&gt;&lt;/a&gt;七、试试看
+&lt;/h2&gt;&lt;p&gt;你可以在这个仓库里看到完整代码，跟着步骤运行：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;div class="chroma"&gt;
+&lt;table class="lntable"&gt;&lt;tr&gt;&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code&gt;&lt;span class="lnt"&gt;1
+&lt;/span&gt;&lt;span class="lnt"&gt;2
+&lt;/span&gt;&lt;span class="lnt"&gt;3
+&lt;/span&gt;&lt;span class="lnt"&gt;4
+&lt;/span&gt;&lt;span class="lnt"&gt;5
+&lt;/span&gt;&lt;span class="lnt"&gt;6
+&lt;/span&gt;&lt;span class="lnt"&gt;7
+&lt;/span&gt;&lt;span class="lnt"&gt;8
+&lt;/span&gt;&lt;span class="lnt"&gt;9
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code class="language-bash" data-lang="bash"&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="c1"&gt;# 1. 配置 API Key&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;cp .env.example .env
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="c1"&gt;# 编辑 .env，填入 DEEPSEEK_API_KEY&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="c1"&gt;# 2. 安装依赖&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;uv sync
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="c1"&gt;# 3. 运行&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;uv run python agent.py
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;然后试试这些话：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;whoami&lt;/code&gt; — 最简单的 ReAct 测试&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;我有哪些 Python 文件？&lt;/code&gt; — LLM 会调用 &lt;code&gt;find&lt;/code&gt; 或 &lt;code&gt;ls&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;帮我审查一下 agent.py 的代码质量&lt;/code&gt; — 加载 code-review skill 再审查&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;看下系统有多少内存&lt;/code&gt; — 会用 &lt;code&gt;free&lt;/code&gt; 或 &lt;code&gt;cat /proc/meminfo&lt;/code&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;每一轮对话你都会看到：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;Agent 发送给 LLM 的&lt;strong&gt;完整消息列表&lt;/strong&gt;（上下文怎么积累的）&lt;/li&gt;
+&lt;li&gt;LLM 的&lt;strong&gt;原始输出&lt;/strong&gt;（它怎么思考的）&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;解析结果&lt;/strong&gt;（Agent 从文本中提取了什么）&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;命令执行输出&lt;/strong&gt;（工具调用的结果）&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;看完这些日志，你对 Agent 就再也不会有&amp;quot;魔法感&amp;quot;了。&lt;/p&gt;
+&lt;h2 id="八写在最后"&gt;&lt;a href="#%e5%85%ab%e5%86%99%e5%9c%a8%e6%9c%80%e5%90%8e" class="header-anchor"&gt;&lt;/a&gt;八、写在最后
+&lt;/h2&gt;&lt;p&gt;AI Agent 不是一个产品，而是一种&lt;strong&gt;计算模式&lt;/strong&gt;。&lt;/p&gt;
+&lt;p&gt;把 LLM 从&amp;quot;对话机器人&amp;quot;变成&amp;quot;自主执行者&amp;quot;，只需要一个循环 + 一个协议。框架会帮你管理复杂度，但不要被框架迷惑——回到原点，它就是一个 &lt;code&gt;while&lt;/code&gt; 循环加几个 &lt;code&gt;if&lt;/code&gt; 判断。&lt;/p&gt;
+&lt;p&gt;如果你看懂了这里的 300 行代码，下次再听到&amp;quot;Agent&amp;quot;这个词，你脑海里浮现的不再是某个框架的黑盒，而是一个清晰的循环：&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;LLM 说：我要做 X&lt;br /&gt;
+Agent 做 X&lt;br /&gt;
+LLM 看到结果，说：那我该做 Y 了&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;就这么简单。&lt;/p&gt;</description></item><item><title>AI 辅助编程的三次范式跃迁：从代码补全到 Agent 工程自治</title><link>https://techinsight.pages.dev/p/ai-%E8%BE%85%E5%8A%A9%E7%BC%96%E7%A8%8B%E7%9A%84%E4%B8%89%E6%AC%A1%E8%8C%83%E5%BC%8F%E8%B7%83%E8%BF%81%E4%BB%8E%E4%BB%A3%E7%A0%81%E8%A1%A5%E5%85%A8%E5%88%B0-agent-%E5%B7%A5%E7%A8%8B%E8%87%AA%E6%B2%BB/</link><pubDate>Sun, 01 Dec 2024 10:00:00 +0800</pubDate><guid>https://techinsight.pages.dev/p/ai-%E8%BE%85%E5%8A%A9%E7%BC%96%E7%A8%8B%E7%9A%84%E4%B8%89%E6%AC%A1%E8%8C%83%E5%BC%8F%E8%B7%83%E8%BF%81%E4%BB%8E%E4%BB%A3%E7%A0%81%E8%A1%A5%E5%85%A8%E5%88%B0-agent-%E5%B7%A5%E7%A8%8B%E8%87%AA%E6%B2%BB/</guid><description>&lt;h1 id="ai-辅助编程的三次范式跃迁从代码补全到-agent-工程自治"&gt;&lt;a href="#ai-%e8%be%85%e5%8a%a9%e7%bc%96%e7%a8%8b%e7%9a%84%e4%b8%89%e6%ac%a1%e8%8c%83%e5%bc%8f%e8%b7%83%e8%bf%81%e4%bb%8e%e4%bb%a3%e7%a0%81%e8%a1%a5%e5%85%a8%e5%88%b0-agent-%e5%b7%a5%e7%a8%8b%e8%87%aa%e6%b2%bb" class="header-anchor"&gt;&lt;/a&gt;AI 辅助编程的三次范式跃迁：从代码补全到 Agent 工程自治
+&lt;/h1&gt;&lt;p&gt;近三年，AI 辅助编程技术完成了跨越式迭代，彻底重构了软件开发的工作范式。从最初简单的代码片段补全，到人机对话协同开发，再到如今 AI 自主完成全流程工程任务，整个行业经历了三次清晰且不可逆的范式转移。&lt;/p&gt;
+&lt;p&gt;很多开发者的直观感受高度统一：&lt;strong&gt;2024 年是 AI 编程全民普及的元年&lt;/strong&gt;。在此之前，AI 编程仅为小众工具能力；在此之后，AI 从辅助工具逐步进化为工程协作主体。本文将以严谨的行业时间线、技术特征与产品迭代为依据，完整梳理 AI 辅助编程的三代演进脉络，清晰拆解每一轮范式升级的核心逻辑与能力边界。&lt;/p&gt;
+&lt;hr /&gt;
+&lt;h2 id="第一阶段行内代码补全时代2022-下半年--2024-上半年"&gt;&lt;a href="#%e7%ac%ac%e4%b8%80%e9%98%b6%e6%ae%b5%e8%a1%8c%e5%86%85%e4%bb%a3%e7%a0%81%e8%a1%a5%e5%85%a8%e6%97%b6%e4%bb%a32022-%e4%b8%8b%e5%8d%8a%e5%b9%b4--2024-%e4%b8%8a%e5%8d%8a%e5%b9%b4" class="header-anchor"&gt;&lt;/a&gt;第一阶段：行内代码补全时代（2022 下半年 — 2024 上半年）
+&lt;/h2&gt;&lt;h3 id="时代背景"&gt;&lt;a href="#%e6%97%b6%e4%bb%a3%e8%83%8c%e6%99%af" class="header-anchor"&gt;&lt;/a&gt;时代背景
+&lt;/h3&gt;&lt;p&gt;2021 年，OpenAI 发布 Codex 模型与相关技术原型，首次验证了大模型代码生成的可行性，但该阶段仅停留在实验室研究与极客内测阶段，无规模化商用能力，并未走入大众开发者视野。&lt;/p&gt;
+&lt;p&gt;真正的行业起点为 &lt;strong&gt;2022 年 6 月 GitHub Copilot 正式商用上线&lt;/strong&gt;，这标志着大模型驱动的 AI 编程工具正式落地产业。2023 年至 2024 上半年，代码补全工具逐步渗透主流开发场景，成为开发者标配辅助工具，开启了 AI 辅助编程的第一个正式时代。&lt;/p&gt;
+&lt;h3 id="核心范式特征"&gt;&lt;a href="#%e6%a0%b8%e5%bf%83%e8%8c%83%e5%bc%8f%e7%89%b9%e5%be%81" class="header-anchor"&gt;&lt;/a&gt;核心范式特征
+&lt;/h3&gt;&lt;p&gt;本阶段的核心定位是&lt;strong&gt;被动式代码辅助&lt;/strong&gt;，AI 的核心价值是“替开发者节省打字时间”，整体交互模式与技术能力具备极强的局限性。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;交互形态&lt;/strong&gt;：依托 IDE 编辑器内置能力，以“幽灵文本”的形式实时展示单行、短代码片段补全建议，无主动交互入口&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;触发逻辑&lt;/strong&gt;：完全被动触发，仅根据当前编辑文件、相邻代码上下文生成内容，依赖开发者手动判断、接受或拒绝建议&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;能力边界&lt;/strong&gt;：仅擅长单函数、短片段代码生成，不支持跨文件理解、逻辑重构、问题解释，无复杂推理能力&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;人机关系&lt;/strong&gt;：AI 是“键盘后的辅助写手”，开发者主导所有逻辑设计与代码编写，AI 仅承担机械录入工作&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id="标志性产品与底层能力"&gt;&lt;a href="#%e6%a0%87%e5%bf%97%e6%80%a7%e4%ba%a7%e5%93%81%e4%b8%8e%e5%ba%95%e5%b1%82%e8%83%bd%e5%8a%9b" class="header-anchor"&gt;&lt;/a&gt;标志性产品与底层能力
+&lt;/h3&gt;&lt;p&gt;本阶段主流产品均以代码补全为核心能力，包括 GitHub Copilot、Amazon CodeWhisperer、早期版本 Cursor、Roo Code、TabNine 等。&lt;/p&gt;
+&lt;p&gt;底层依托初代 Codex、GPT-3 衍生模型，模型上下文窗口较小，指令遵循能力弱，仅能适配简单、碎片化的代码生成场景，无法支撑完整的工程任务。&lt;/p&gt;
+&lt;hr /&gt;
+&lt;h2 id="第二阶段对话式编程协作时代2024-上半年--2024-年底"&gt;&lt;a href="#%e7%ac%ac%e4%ba%8c%e9%98%b6%e6%ae%b5%e5%af%b9%e8%af%9d%e5%bc%8f%e7%bc%96%e7%a8%8b%e5%8d%8f%e4%bd%9c%e6%97%b6%e4%bb%a32024-%e4%b8%8a%e5%8d%8a%e5%b9%b4--2024-%e5%b9%b4%e5%ba%95" class="header-anchor"&gt;&lt;/a&gt;第二阶段：对话式编程协作时代（2024 上半年 — 2024 年底）
+&lt;/h2&gt;&lt;h3 id="时代背景-1"&gt;&lt;a href="#%e6%97%b6%e4%bb%a3%e8%83%8c%e6%99%af-1" class="header-anchor"&gt;&lt;/a&gt;时代背景
+&lt;/h3&gt;&lt;p&gt;2024 年是 AI 编程的&lt;strong&gt;全民普及拐点&lt;/strong&gt;。随着 GPT-4、Claude 3.5 Sonnet 等高精度大模型成熟，长上下文理解、复杂指令遵循、多文件关联分析能力大幅提升，彻底打破了初代代码补全工具的能力瓶颈。&lt;/p&gt;
+&lt;p&gt;主流 IDE 厂商快速跟进，全线内置 AI 对话功能，独立 AI 编程工具完成能力升级，对话式人机协作模式正式取代传统补全，成为行业主流，这也是绝大多数开发者深度接触 AI 编程的开端。&lt;/p&gt;
+&lt;h3 id="核心范式特征-1"&gt;&lt;a href="#%e6%a0%b8%e5%bf%83%e8%8c%83%e5%bc%8f%e7%89%b9%e5%be%81-1" class="header-anchor"&gt;&lt;/a&gt;核心范式特征
+&lt;/h3&gt;&lt;p&gt;本阶段的核心升级是&lt;strong&gt;从“单向补全”变为“双向协作”&lt;/strong&gt;，AI 从机械工具升级为开发者的结对协作伙伴。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;交互形态&lt;/strong&gt;：以 IDE 侧边栏、独立对话窗口为核心载体，支持完整的多轮对话、问题追问、需求细化&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;能力拓展&lt;/strong&gt;：不再局限于代码补全，可实现代码解释、逻辑重构、bug 修复、单元测试生成、代码优化等全场景辅助能力&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;落地方式&lt;/strong&gt;：对话生成的代码可一键插入编辑器、局部替换或增量修改，大幅降低代码落地成本&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;人机关系&lt;/strong&gt;：开发者负责定义需求、把控架构与核心逻辑，AI 负责落地细节、优化代码、解决常规问题，形成高效结对编程模式&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id="标志性产品与底层能力-1"&gt;&lt;a href="#%e6%a0%87%e5%bf%97%e6%80%a7%e4%ba%a7%e5%93%81%e4%b8%8e%e5%ba%95%e5%b1%82%e8%83%bd%e5%8a%9b-1" class="header-anchor"&gt;&lt;/a&gt;标志性产品与底层能力
+&lt;/h3&gt;&lt;p&gt;本阶段代表性产品包括 GitHub Copilot Chat、JetBrains AI Assistant、Amazon Q Developer、Cursor Composer 等 IDE 原生对话工具，同时 ChatGPT、Claude 等通用大模型也成为开发者高频使用的编程辅助渠道。&lt;/p&gt;
+&lt;p&gt;底层模型具备超长上下文、强指令理解与基础逻辑推理能力，支持单项目多文件关联分析，可完成中等复杂度的编程任务，但仍依赖开发者拆分任务、把控流程，无法自主完成全链路工程落地。&lt;/p&gt;
+&lt;hr /&gt;
+&lt;h2 id="第三阶段cli-与-agent-工程自治时代2024-年底--至今"&gt;&lt;a href="#%e7%ac%ac%e4%b8%89%e9%98%b6%e6%ae%b5cli-%e4%b8%8e-agent-%e5%b7%a5%e7%a8%8b%e8%87%aa%e6%b2%bb%e6%97%b6%e4%bb%a32024-%e5%b9%b4%e5%ba%95--%e8%87%b3%e4%bb%8a" class="header-anchor"&gt;&lt;/a&gt;第三阶段：CLI 与 Agent 工程自治时代（2024 年底 — 至今）
+&lt;/h2&gt;&lt;h3 id="时代背景-2"&gt;&lt;a href="#%e6%97%b6%e4%bb%a3%e8%83%8c%e6%99%af-2" class="header-anchor"&gt;&lt;/a&gt;时代背景
+&lt;/h3&gt;&lt;p&gt;2024 年末开始，AI 编程正式迈入前沿范式阶段。随着大模型工具调用、长链规划、自主纠错能力的成熟，AI 不再局限于 IDE 界面内的被动协作，开始具备独立工程执行能力。&lt;/p&gt;
+&lt;p&gt;行业逐步兴起 &lt;strong&gt;Harness Engineering（驾驭式工程）&lt;/strong&gt; 与 &lt;strong&gt;Vibe Coding（自然语言全项目生成）&lt;/strong&gt; 理念，标志着人机开发关系再次重构，AI 正式从“协作伙伴”升级为“自主工程执行者”，目前该模式仍处于快速迭代、逐步普及的阶段。&lt;/p&gt;
+&lt;h3 id="核心范式特征-2"&gt;&lt;a href="#%e6%a0%b8%e5%bf%83%e8%8c%83%e5%bc%8f%e7%89%b9%e5%be%81-2" class="header-anchor"&gt;&lt;/a&gt;核心范式特征
+&lt;/h3&gt;&lt;p&gt;本阶段的核心变革是&lt;strong&gt;从“人机对话协作”变为“AI 自主工程自治”&lt;/strong&gt;，交互载体与工作逻辑发生根本性颠覆。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;交互迁移&lt;/strong&gt;：核心操作界面从传统 IDE 编辑器、侧边栏，回归终端（CLI），AI 直接对接本地工程环境&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;全权限执行&lt;/strong&gt;：AI 可自主完成文件读写、代码修改、命令执行、测试运行、Git 版本管理、依赖安装等全流程工程操作&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;Agent 核心能力&lt;/strong&gt;：具备自主任务拆解、分步规划、工具调用、运行校验、错误回滚、自我迭代的完整闭环能力，无需开发者逐步骤指导&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;人机关系重构&lt;/strong&gt;：开发者不再聚焦具体代码编写，核心工作变为定义项目目标、制定规范、把控工程质量、驾驭 AI 执行流程，实现“目标驱动、AI 落地”&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id="标志性产品与底层能力-2"&gt;&lt;a href="#%e6%a0%87%e5%bf%97%e6%80%a7%e4%ba%a7%e5%93%81%e4%b8%8e%e5%ba%95%e5%b1%82%e8%83%bd%e5%8a%9b-2" class="header-anchor"&gt;&lt;/a&gt;标志性产品与底层能力
+&lt;/h3&gt;&lt;p&gt;本阶段主流工具均为 Agent 终端编程工具，代表性产品包括 Claude Code、OpenAI Codex CLI、Gemini CLI、Cursor Agent 模式，以及 aider、open-interpreter 等优质社区开源项目。&lt;/p&gt;
+&lt;p&gt;底层依托新一代高阶大模型，具备超长代码库上下文承载能力、强逻辑推理、结构化输出、多工具联动与故障自愈能力，首次让“自然语言定义需求、AI 独立完成全项目开发”的工程模式具备落地可行性。&lt;/p&gt;
+&lt;hr /&gt;
+&lt;h2 id="三代演进核心总结看似倒退实则是能力的极致进化"&gt;&lt;a href="#%e4%b8%89%e4%bb%a3%e6%bc%94%e8%bf%9b%e6%a0%b8%e5%bf%83%e6%80%bb%e7%bb%93%e7%9c%8b%e4%bc%bc%e5%80%92%e9%80%80%e5%ae%9e%e5%88%99%e6%98%af%e8%83%bd%e5%8a%9b%e7%9a%84%e6%9e%81%e8%87%b4%e8%bf%9b%e5%8c%96" class="header-anchor"&gt;&lt;/a&gt;三代演进核心总结：看似倒退，实则是能力的极致进化
+&lt;/h2&gt;&lt;p&gt;复盘 AI 辅助编程的完整演进路径，三次范式跃迁的本质清晰可见：&lt;strong&gt;AI 从“键盘后面的文字幽灵”，迭代为“并肩协作的结对程序员”，最终进化为“可被驾驭的自主工程执行体”&lt;/strong&gt;。&lt;/p&gt;
+&lt;p&gt;从界面形态来看，演进路径是「IDE 行内补全 → IDE 侧边对话 → 终端 CLI 指令」，看似是交互界面的简化与“后退”，实则是 AI 能力质变的必然结果：早期 AI 能力不足，需要依托编辑器辅助约束；如今 AI 具备独立工程决策与执行能力，无需依赖 IDE 界面束缚，可直接对接底层工程环境，实现最高效的开发闭环。&lt;/p&gt;
+&lt;p&gt;站在开发者视角，工作模式也完成了彻底升级：从最初的**“逐行码字、AI 补全”&lt;strong&gt;，到&lt;/strong&gt;“提出需求、AI 协作”&lt;strong&gt;，再到如今的&lt;/strong&gt;“定义目标、AI 自治”**。这不仅是工具的迭代，更是整个软件开发行业生产方式的颠覆性变革。&lt;/p&gt;</description></item></channel></rss>

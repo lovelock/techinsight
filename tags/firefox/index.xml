@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Firefox on Tech In Sight</title><link>https://techinsight.pages.dev/tags/firefox/</link><description>Recent content in Firefox on Tech In Sight</description><generator>Hugo -- gohugo.io</generator><language>zh-cn</language><lastBuildDate>Sat, 16 May 2020 00:49:00 +0800</lastBuildDate><atom:link href="https://techinsight.pages.dev/tags/firefox/index.xml" rel="self" type="application/rss+xml"/><item><title>关闭Firefox浏览器中使用鼠标缩放网页的功能</title><link>https://techinsight.pages.dev/p/%E5%85%B3%E9%97%ADfirefox%E6%B5%8F%E8%A7%88%E5%99%A8%E4%B8%AD%E4%BD%BF%E7%94%A8%E9%BC%A0%E6%A0%87%E7%BC%A9%E6%94%BE%E7%BD%91%E9%A1%B5%E7%9A%84%E5%8A%9F%E8%83%BD/</link><pubDate>Sat, 16 May 2020 00:49:00 +0800</pubDate><guid>https://techinsight.pages.dev/p/%E5%85%B3%E9%97%ADfirefox%E6%B5%8F%E8%A7%88%E5%99%A8%E4%B8%AD%E4%BD%BF%E7%94%A8%E9%BC%A0%E6%A0%87%E7%BC%A9%E6%94%BE%E7%BD%91%E9%A1%B5%E7%9A%84%E5%8A%9F%E8%83%BD/</guid><description>&lt;p&gt;火狐浏览器有个很奇怪的设定，在Windows下按住Ctrl（macOS下按住Cmd）加上鼠标滚轮会缩放网页。&lt;/p&gt;
+&lt;p&gt;有些人可能觉得是个很有用的功能，但我觉得这个功能让我很烦恼，有时候有不自觉的放在Cmd上，鼠标滚动一下网页就变成了200%，原来是可以通过配置修改关闭这项功能的&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;在地址栏输入&lt;code&gt;about:config&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;搜索&lt;code&gt;mousewheel.with_meta.action&lt;/code&gt;，把3改成0&lt;/li&gt;
+&lt;li&gt;如果是windows，则搜索&lt;code&gt;mousewheel.with_control.action&lt;/code&gt;，同样把3改成0&lt;/li&gt;
+&lt;li&gt;改完立即生效，不需要重启浏览器&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;&lt;img src="https://techinsight.pages.dev/images/2020-05-16-00-52-12.png"
+loading="lazy"
+&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://techinsight.pages.dev/images/2020-05-16-00-53-02.png"
+loading="lazy"
+&gt;&lt;/p&gt;</description></item></channel></rss>

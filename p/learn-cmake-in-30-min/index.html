@@ -1,0 +1,281 @@
+<!doctype html><html lang=zh-cn dir=ltr><head><meta charset=utf-8><meta name=viewport content='width=device-width,initial-scale=1'><meta name=description content="什么是 CMake？它能干什么？ CMake 是一个开源的跨平台自动化构建系统，它使用平台和编译器独立的配置文件来生成标准的构建文件，这使得开发者可以使用统一的方法来管理项目的构建过程。CMake的配置文件通常命名为 CMakeLists.txt，在这个文件中，开发者可以定义项目的源码文件、依赖关系、目标（如可执行文件和库）、编译选项以及其他构建参数。\n"><title>Learn Cmake in 30 Min</title><link rel=canonical href=https://techinsight.pages.dev/p/learn-cmake-in-30-min/><link rel=stylesheet href=/scss/style.min.3c33722a11bfa97f07308377e860d658770fe60627a4c2b1b7d46497ac9c35c3.css><meta property='og:title' content="Learn Cmake in 30 Min"><meta property='og:description' content="什么是 CMake？它能干什么？ CMake 是一个开源的跨平台自动化构建系统，它使用平台和编译器独立的配置文件来生成标准的构建文件，这使得开发者可以使用统一的方法来管理项目的构建过程。CMake的配置文件通常命名为 CMakeLists.txt，在这个文件中，开发者可以定义项目的源码文件、依赖关系、目标（如可执行文件和库）、编译选项以及其他构建参数。\n"><meta property='og:url' content='https://techinsight.pages.dev/p/learn-cmake-in-30-min/'><meta property='og:site_name' content='Tech In Sight'><meta property='og:type' content='article'><meta property='article:section' content='Post'><meta property='article:tag' content='linux'><meta property='article:tag' content='cmake'><meta property='article:tag' content='c'><meta property='article:tag' content='cxx'><meta property='article:published_time' content='2023-01-06T22:17:27+08:00'><meta property='article:modified_time' content='2023-01-06T22:17:27+08:00'><meta property='og:image' content='https://techinsight.pages.dev/p/learn-cmake-in-30-min/cover.png'><meta name=twitter:title content="Learn Cmake in 30 Min"><meta name=twitter:description content="什么是 CMake？它能干什么？ CMake 是一个开源的跨平台自动化构建系统，它使用平台和编译器独立的配置文件来生成标准的构建文件，这使得开发者可以使用统一的方法来管理项目的构建过程。CMake的配置文件通常命名为 CMakeLists.txt，在这个文件中，开发者可以定义项目的源码文件、依赖关系、目标（如可执行文件和库）、编译选项以及其他构建参数。\n"><meta name=twitter:card content="summary_large_image"><meta name=twitter:image content='https://techinsight.pages.dev/p/learn-cmake-in-30-min/cover.png'><link rel="shortcut icon" href=/favicon.ico></head><body class=article-page><script>(function(){const e="StackColorScheme";localStorage.getItem(e)||localStorage.setItem(e,"auto")})()</script><script>(function(){const t="StackColorScheme",e=localStorage.getItem(t),n=window.matchMedia("(prefers-color-scheme: dark)").matches===!0;e=="dark"||e==="auto"&&n?document.documentElement.dataset.scheme="dark":document.documentElement.dataset.scheme="light"})()</script><div class="container main-container flex on-phone--column extended"><aside class="sidebar left-sidebar sticky"><button class="hamburger hamburger--spin" type=button id=toggle-menu aria-label=切换菜单>
+<span class=hamburger-box><span class=hamburger-inner></span></span></button><header><figure class=site-avatar><a href=/><img src=/img/avatar_hu_31786b9867641d1c.png width=300 height=280 class=site-logo loading=lazy alt=Avatar></a></figure><div class=site-meta><h1 class=site-name><a href=/>Tech In Sight</a></h1><h2 class=site-description>聊聊技术，聊聊人生</h2></div></header><ol class=menu-social><li><a href=https://github.com/lovelock target=_blank title=GitHub rel=me><svg class="icon icon-tabler icon-tabler-brand-github" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M9 19c-4.3 1.4-4.3-2.5-6-3m12 5v-3.5c0-1 .1-1.4-.5-2 2.8-.3 5.5-1.4 5.5-6a4.6 4.6.0 00-1.3-3.2 4.2 4.2.0 00-.1-3.2s-1.1-.3-3.5 1.3a12.3 12.3.0 00-6.2.0C6.5 2.8 5.4 3.1 5.4 3.1a4.2 4.2.0 00-.1 3.2A4.6 4.6.0 004 9.5c0 4.6 2.7 5.7 5.5 6-.6.6-.6 1.2-.5 2V21"/></svg></a></li><li><a href=https://twitter.com target=_blank title=Twitter rel=me><svg class="icon icon-tabler icon-tabler-brand-twitter" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M22 4.01c-1 .49-1.98.689-3 .99-1.121-1.265-2.783-1.335-4.38-.737S11.977 6.323 12 8v1c-3.245.083-6.135-1.395-8-4 0 0-4.182 7.433 4 11-1.872 1.247-3.739 2.088-6 2 3.308 1.803 6.913 2.423 10.034 1.517 3.58-1.04 6.522-3.723 7.651-7.742a13.84 13.84.0 00.497-3.753C20.18 7.773 21.692 5.25 22 4.009z"/></svg></a></li></ol><ol class=menu id=main-menu><li><a href=/><svg class="icon icon-tabler icon-tabler-home" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><polyline points="5 12 3 12 12 3 21 12 19 12"/><path d="M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7"/><path d="M9 21v-6a2 2 0 012-2h2a2 2 0 012 2v6"/></svg>
+<span>Home</span></a></li><li><a href=/archives/><svg class="icon icon-tabler icon-tabler-archive" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><rect x="3" y="4" width="18" height="4" rx="2"/><path d="M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8"/><line x1="10" y1="12" x2="14" y2="12"/></svg>
+<span>Archives</span></a></li><li><a href=/search/><svg class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="10" cy="10" r="7"/><line x1="21" y1="21" x2="15" y2="15"/></svg>
+<span>Search</span></a></li><li><a href=/links/><svg class="icon icon-tabler icon-tabler-link" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><path d="M10 14a3.5 3.5.0 005 0l4-4a3.5 3.5.0 00-5-5l-.5.5"/><path d="M14 10a3.5 3.5.0 00-5 0l-4 4a3.5 3.5.0 005 5l.5-.5"/></svg>
+<span>Links</span></a></li><li class=menu-bottom-section><ol class=menu><li id=dark-mode-toggle><svg class="icon icon-tabler icon-tabler-toggle-left" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="8" cy="12" r="2"/><rect x="2" y="6" width="20" height="12" rx="6"/></svg>
+<svg class="icon icon-tabler icon-tabler-toggle-right" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="16" cy="12" r="2"/><rect x="2" y="6" width="20" height="12" rx="6"/></svg>
+<span>暗色模式</span></li></ol></li></ol></aside><aside class="sidebar right-sidebar sticky"><section class="widget archives"><div class=widget-icon><svg class="icon icon-tabler icon-tabler-hash" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><line x1="5" y1="9" x2="19" y2="9"/><line x1="5" y1="15" x2="19" y2="15"/><line x1="11" y1="4" x2="7" y2="20"/><line x1="17" y1="4" x2="13" y2="20"/></svg></div><h2 class="widget-title section-title">目录</h2><div class=widget--toc><nav id=TableOfContents><ol><li><a href=#什么是-cmake它能干什么>什么是 CMake？它能干什么？</a></li><li><a href=#一个最简单的-cmake-项目>一个最简单的 CMake 项目</a><ol><li><a href=#只包含必要元素的-cmakeliststxt>只包含必要元素的 <code>CMakeLists.txt</code></a></li><li><a href=#最简单的-helloworld>最简单的 HelloWorld</a></li><li><a href=#构建这个项目>构建这个项目</a><ol><li><a href=#创建-build-目录>创建 build 目录</a></li><li><a href=#生成对应当前系统的构建文件>生成对应当前系统的构建文件</a></li><li><a href=#生成最终的可执行文件或库文件>生成最终的可执行文件或库文件</a></li></ol></li></ol></li><li><a href=#管理一个库项目>管理一个库项目</a><ol><li><a href=#只包含必要元素的-cmakeliststxt-1>只包含必要元素的 <code>CMakeLists.txt</code></a><ol><li><a href=#一个简单的库的实现>一个简单的库的实现</a></li><li><a href=#构建这个项目-1>构建这个项目</a></li></ol></li></ol></li><li><a href=#管理依赖>管理依赖</a><ol><li><a href=#最简单的依赖>最简单的依赖</a></li><li><a href=#嵌套的依赖>嵌套的依赖</a></li></ol></li><li><a href=#单元测试>单元测试</a></li></ol></nav></div></section></aside><main class="main full-width"><article class="has-image main-article"><header class=article-header><div class=article-image><a href=/p/learn-cmake-in-30-min/><img src=/p/learn-cmake-in-30-min/cover_hu_30dcb8ec27e1ba86.png srcset="/p/learn-cmake-in-30-min/cover_hu_30dcb8ec27e1ba86.png 800w, /p/learn-cmake-in-30-min/cover_hu_faa149046ca1d432.png 1600w" width=800 height=327 loading=lazy alt="Featured image of post Learn Cmake in 30 Min"></a></div><div class=article-details><header class=article-category><a href=/categories/in-action/>In-Action</a></header><div class=article-title-wrapper><h2 class=article-title><a href=/p/learn-cmake-in-30-min/>Learn Cmake in 30 Min</a></h2></div><footer class=article-time><div><svg class="icon icon-tabler icon-tabler-calendar-time" width="56" height="56" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><path d="M11.795 21H5a2 2 0 01-2-2V7a2 2 0 012-2h12a2 2 0 012 2v4"/><circle cx="18" cy="18" r="4"/><path d="M15 3v4"/><path d="M7 3v4"/><path d="M3 11h16"/><path d="M18 16.496V18l1 1"/></svg>
+<time class=article-time--published>Jan 06, 2023</time></div><div><svg class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 15"/></svg>
+<time class=article-time--reading>阅读时长: 10 分钟</time></div></footer></div></header><section class=article-content><h2 id=什么是-cmake它能干什么><a href=#%e4%bb%80%e4%b9%88%e6%98%af-cmake%e5%ae%83%e8%83%bd%e5%b9%b2%e4%bb%80%e4%b9%88 class=header-anchor></a>什么是 CMake？它能干什么？</h2><p>CMake 是一个开源的跨平台自动化构建系统，它使用平台和编译器独立的配置文件来生成标准的构建文件，这使得开发者可以使用统一的方法来管理项目的构建过程。CMake的配置文件通常命名为 <code>CMakeLists.txt</code>，在这个文件中，开发者可以定义项目的源码文件、依赖关系、目标（如可执行文件和库）、编译选项以及其他构建参数。</p><p>CMake的主要优势在于它的跨平台能力：它可以生成适用于多种平台和IDE的构建配置，包括Unix的Makefiles、Microsoft Visual Studio的解决方案文件、Apple的Xcode项目等。这样，使用CMake的项目可以轻松地在不同的开发环境中编译和运行，无需修改构建配置。</p><p>简单来说，CMake让复杂的构建过程变得简单化，提供一种高效、可扩展的方式来自动化构建过程，支持大型项目和多平台编译。</p><h2 id=一个最简单的-cmake-项目><a href=#%e4%b8%80%e4%b8%aa%e6%9c%80%e7%ae%80%e5%8d%95%e7%9a%84-cmake-%e9%a1%b9%e7%9b%ae class=header-anchor></a>一个最简单的 CMake 项目</h2><h3 id=只包含必要元素的-cmakeliststxt><a href=#%e5%8f%aa%e5%8c%85%e5%90%ab%e5%bf%85%e8%a6%81%e5%85%83%e7%b4%a0%e7%9a%84-cmakeliststxt class=header-anchor></a>只包含必要元素的 <code>CMakeLists.txt</code></h3><p>一个最简单的<code>CMakeLists.txt</code>文件通常包含以下几个基本元素：</p><ol><li><strong>cmake_minimum_required</strong>: 指定运行此项目所需的最低版本的CMake。</li><li><strong>project</strong>: 定义了项目的名称和可选的版本号。</li><li><strong>add_executable</strong> 或 <strong>add_library</strong>: 添加一个可执行文件或者库到项目中，并指定它的源文件。</li></ol><p>下面是一个最简单的示例：</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-c data-lang=c><span class=line><span class=cl><span class=nf>cmake_minimum_required</span><span class=p>(</span><span class=n>VERSION</span> <span class=mf>3.0</span><span class=p>)</span>  <span class=err>#</span> <span class=err>设置</span><span class=n>CMake的最低版本要求</span>
+</span></span><span class=line><span class=cl><span class=nf>project</span><span class=p>(</span><span class=n>HelloWorld</span><span class=p>)</span>                   <span class=err>#</span> <span class=err>定义项目名称</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=nf>add_executable</span><span class=p>(</span><span class=n>HelloWorld</span> <span class=n>main</span><span class=p>.</span><span class=n>c</span><span class=p>)</span>     <span class=err>#</span> <span class=err>添加一个可执行文件</span> <span class=s>&#34;HelloWorld&#34;</span><span class=err>，源文件是</span> <span class=s>&#34;main.c&#34;</span>
+</span></span></code></pre></td></tr></table></div></div><p>这个 <code>CMakeLists.txt</code> 文件定义了一个简单的项目，其中包含一个可执行文件 <code>HelloWorld</code>，它是由单个源文件 <code>main.c</code> 编译而成的。当你运行CMake时，它会根据这个配置文件生成适合你系统的构建文件（比如Unix的Makefile或者Visual Studio的项目文件）。然后你可以使用相应的构建系统来编译和链接你的程序。</p><h3 id=最简单的-helloworld><a href=#%e6%9c%80%e7%ae%80%e5%8d%95%e7%9a%84-helloworld class=header-anchor></a>最简单的 HelloWorld</h3><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-c data-lang=c><span class=line><span class=cl><span class=cp>#include</span> <span class=cpf>&lt;stdio.h&gt;</span><span class=cp>
+</span></span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=kt>int</span> <span class=nf>main</span><span class=p>()</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>  <span class=nf>printf</span><span class=p>(</span><span class=s>&#34;hello world!</span><span class=se>\n</span><span class=s>&#34;</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>  <span class=k>return</span> <span class=mi>0</span><span class=p>;</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span></code></pre></td></tr></table></div></div><h3 id=构建这个项目><a href=#%e6%9e%84%e5%bb%ba%e8%bf%99%e4%b8%aa%e9%a1%b9%e7%9b%ae class=header-anchor></a>构建这个项目</h3><h4 id=创建-build-目录><a href=#%e5%88%9b%e5%bb%ba-build-%e7%9b%ae%e5%bd%95 class=header-anchor></a>创建 build 目录</h4><p>在 <code>CMakeLists.txt</code> 所在的目录下，创建一个 <code>build</code> 目录。</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl>mkdir build <span class=o>&amp;&amp;</span> <span class=nb>cd</span> build
+</span></span></code></pre></td></tr></table></div></div><h4 id=生成对应当前系统的构建文件><a href=#%e7%94%9f%e6%88%90%e5%af%b9%e5%ba%94%e5%bd%93%e5%89%8d%e7%b3%bb%e7%bb%9f%e7%9a%84%e6%9e%84%e5%bb%ba%e6%96%87%e4%bb%b6 class=header-anchor></a>生成对应当前系统的构建文件</h4><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl>cmake ..
+</span></span></code></pre></td></tr></table></div></div><p><div class="callout callout-info"><h5>为什么要费这劲呢？</h5></div><br>你可能已经看到了，我们先创建了 <code>build</code> 目录，然后在它里面执行的是 <code>cmake ..</code>，也就是说 <code>cmake</code> 需要的文件在 <code>build</code> 的上层目录，那是不是直接在它的上层目录执行 <code>cmake .</code> 也是可以的呢？<br>是的，但是这样做其实是个最佳实践，好处在于在必要时可以直接删除 <code>build</code> 目录，而不会对项目产生影响，否则 CMake 生成的文件散落在你的代码中，一定不是你想看到的结果。</p><p>这个命令通常在一个空的构建目录（通常是项目根目录的子目录，如 <code>build</code>）中执行。这是一种被推荐的外部构建方法，可以避免在源代码目录中生成构建文件。<code>.</code> 表示当前目录，而 <code>..</code> 表示当前目录的父目录，通常这个父目录包含顶层的 <code>CMakeLists.txt</code> 文件。</p><p>执行 <code>cmake ..</code> 会：</p><ul><li>检查系统环境。</li><li>根据顶层 <code>CMakeLists.txt</code> 文件来确定如何编译项目的源代码。</li><li>生成对应于当前系统的构建文件（如Makefiles或者Visual Studio解决方案等）。</li></ul><div class="callout callout-info"><h5>CMake 怎么知道要生成什么平台的文件呢？</h5></div><p>CMake 确定使用哪种具体构建工具（如 Make 或 Visual Studio）的过程是在初次配置构建系统时发生的，也就是在你运行 <code>cmake</code> 命令来生成构建文件时。这个决定基于两个主要因素：</p><ol><li><strong>可用的构建工具</strong>：CMake 会检测你的系统上安装了哪些构建工具。例如，如果你在 Windows 上且安装了 Visual Studio，CMake 默认会生成 Visual Studio 解决方案文件。如果你在 Linux 或 macOS 上，通常默认生成 Makefile。</li><li><strong>用户指定的生成器</strong>：用户可以通过 <code>-G</code> 选项显式指定使用哪个生成器，也就是构建系统类型。例如，即使在 Windows 上，你也可以通过 <code>-G "Unix Makefiles"</code> 选项告诉 CMake 生成 Makefile，使用 Make 工具进行构建，而不是使用 Visual Studio。类似地，如果你想要使用其他类型的构建系统，如 Ninja，你也可以通过 <code>-G "Ninja"</code> 来指定。</li></ol><p>当运行 <code>cmake</code> 命令没有指定 <code>-G</code> 选项时，CMake 会根据它检测到的环境和默认优先顺序选择一个生成器。一旦构建文件被生成，运行 <code>cmake --build .</code> 命令时，CMake 会使用相应的构建工具来编译项目，而不需要用户关心具体是使用 Make、Visual Studio 还是其他工具。这种抽象化的好处是，你可以用相同的命令在不同的平台和环境下构建你的项目。</p><h4 id=生成最终的可执行文件或库文件><a href=#%e7%94%9f%e6%88%90%e6%9c%80%e7%bb%88%e7%9a%84%e5%8f%af%e6%89%a7%e8%a1%8c%e6%96%87%e4%bb%b6%e6%88%96%e5%ba%93%e6%96%87%e4%bb%b6 class=header-anchor></a>生成最终的可执行文件或库文件</h4><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl>cmake --build .
+</span></span></code></pre></td></tr></table></div></div><p>这个命令是用来实际编译和链接程序的。在你已经生成了构建系统文件后（例如，使用 <code>cmake ..</code>），可以使用此命令来启动构建过程。</p><p>执行 <code>cmake --build .</code> 会：</p><ul><li>根据当前目录中的构建系统文件（Makefile、Visual Studio解决方案文件等）来编译源代码。</li><li>生成最终的可执行文件或库文件。</li></ul><p><code>.</code> 在这里也表示当前目录，它应该是包含了构建系统文件的目录。这条命令的优点是它抽象了具体的构建工具（make、ninja、msbuild等），使得构建过程与构建系统无关。</p><p>执行完这一步，就生成了最终的可执行文件（或库文件，如果你写的是一个库的话）。在这个例子里可执行文件的文件名是 <code>HelloWorld</code>，因为 <code>CMakeLists.txt</code> 文件的第二行 <code>project(HelloWorld)</code> 里已经定义了。</p><p>如果只是这么简单，就没必要使用 CMake 了，直接 <code>gcc</code> 都能满足了，所以下面我们来看如何用 CMake 来管理依赖。</p><h2 id=管理一个库项目><a href=#%e7%ae%a1%e7%90%86%e4%b8%80%e4%b8%aa%e5%ba%93%e9%a1%b9%e7%9b%ae class=header-anchor></a>管理一个库项目</h2><p>有时候我们需要写的项目是一个让其他项目依赖的库，就不能像上面生成一个可执行文件，而是生成一个 <code>.a</code> 或 <code>.so</code> 文件，下面是一个最简单的例子。完成这个例子之后我们会对两种情况做一个简单的对比。</p><h3 id=只包含必要元素的-cmakeliststxt-1><a href=#%e5%8f%aa%e5%8c%85%e5%90%ab%e5%bf%85%e8%a6%81%e5%85%83%e7%b4%a0%e7%9a%84-cmakeliststxt-1 class=header-anchor></a>只包含必要元素的 <code>CMakeLists.txt</code></h3><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span><span class=lnt>7
+</span><span class=lnt>8
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback><span class=line><span class=cl>cmake_minimum_required(VERSION 3.27)
+</span></span><span class=line><span class=cl>project(my_math)
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl># 创建一个明为my_math的静态库
+</span></span><span class=line><span class=cl>add_library(my_math include/my_math/my_math.h src/my_math.c)
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl># 指定库的头文件搜索路径
+</span></span><span class=line><span class=cl>target_include_directories(my_math PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
+</span></span></code></pre></td></tr></table></div></div><blockquote><p>[!QUESTION] 什么是静态库？是不是还有动态库？<br>在CMake中，当你使用 <code>add_library</code> 命令创建一个库时，<code>SHARED</code> 和 <code>STATIC</code> 关键字用来指定库是动态链接的还是静态链接的：</p><p><code>STATIC</code>：创建一个静态库。静态库通常是一个包含多个对象文件的单一归档文件（在Windows上通常是 <code>.lib</code> 文件，在Unix-like系统上是 <code>.a</code> 文件）。当静态库被链接到一个可执行文件时，库中的代码会被复制到最终的可执行文件中。静态链接发生在编译时，一旦完成，可执行文件不再需要静态库文件。静态库的优点是最终的可执行文件是自包含的，不依赖外部的动态库。缺点是如果多个程序都使用同一个静态库，它们各自都会包含一份库代码的副本，这会导致冗余和更大的程序体积。</p><p><code>SHARED</code>：创建一个动态链接库（在Windows上是 <code>.dll</code> 文件，在Unix-like系统上是 <code>.so</code> 文件）。当动态库被链接到一个可执行文件时，并不是将代码复制到可执行文件中，而是在程序运行时由操作系统动态地加载和链接。这意味着程序在运行时需要能够找到这个动态库文件。动态库的优点是多个程序可以共享同一份库代码，节省空间，并可以在不重新编译程序的情况下更新库代码（只要接口没有改变）。缺点是可能会遇到库版本不匹配或找不到库文件的运行时错误。</p><p>在实际应用中，这两种类型的库各有用处：</p><ul><li>如果你希望你的程序易于部署，不想处理动态库可能带来的复杂性，你可能会选择静态链接。这样你的程序可以在没有额外依赖的情况下运行。</li><li>如果你希望你的应用程序能够共享公共代码并且轻量级，或者希望能够独立于应用程序更新你的库，那么你可能会选择动态链接。</li></ul><p>在 CMake 中，你可以根据需要选择使用 <code>STATIC</code> 或 <code>SHARED</code> 关键字来构建你的库，或者使用 <code>add_library</code> 命令不带任何关键字来创建类型取决于构建类型的库（默认情况下可能是静态的，但可以通过 CMake 变量来控制）。</p></blockquote><h4 id=一个简单的库的实现><a href=#%e4%b8%80%e4%b8%aa%e7%ae%80%e5%8d%95%e7%9a%84%e5%ba%93%e7%9a%84%e5%ae%9e%e7%8e%b0 class=header-anchor></a>一个简单的库的实现</h4><p><code>include/my_math/my_math.h</code></p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-c data-lang=c><span class=line><span class=cl><span class=cp>#ifndef MY_MATH_HEADER
+</span></span></span><span class=line><span class=cl><span class=cp>#define MY_MATH_HEADER
+</span></span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=kt>int</span> <span class=nf>max</span><span class=p>(</span><span class=kt>int</span><span class=p>,</span> <span class=kt>int</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=cp>#endif </span><span class=c1>// !MY_MATH_HEADER
+</span></span></span></code></pre></td></tr></table></div></div><p><div class="callout callout-info"><h5>为什么要有 `#Ifndef`、`#define`、`#endif` 这些？</h5></div><br>简单讲就是为了避免重复引用。<br>先判断 <code>#ifndef</code> 也就是如果没有定义过这个 HEADER，那反过来讲如果定义过这个 HEADER 呢？是不是就执行后面所有的语句了？<br>然后如果进入了，说明就是还没有引入过这个文件，就定义这个常量，这也帮助了第一步的判断<br>最后是 <code>#endif</code>，说明整个 <code>#ifndef</code> 结束了</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span><span class=lnt>7
+</span><span class=lnt>8
+</span><span class=lnt>9
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-c data-lang=c><span class=line><span class=cl><span class=cp>#include</span> <span class=cpf>&#34;my_math/my_math.h&#34;</span><span class=cp>
+</span></span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=kt>int</span> <span class=nf>max</span><span class=p>(</span><span class=kt>int</span> <span class=n>a</span><span class=p>,</span> <span class=kt>int</span> <span class=n>b</span><span class=p>)</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>  <span class=k>if</span> <span class=p>(</span><span class=n>a</span> <span class=o>&gt;</span> <span class=n>b</span><span class=p>)</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>    <span class=k>return</span> <span class=n>a</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>  <span class=p>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>  <span class=k>return</span> <span class=n>b</span><span class=p>;</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span></code></pre></td></tr></table></div></div><p>这是整个项目的所有文件，读者可以对照一下</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span><span class=lnt>7
+</span><span class=lnt>8
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback><span class=line><span class=cl>├── CMakeLists.txt
+</span></span><span class=line><span class=cl>├── include
+</span></span><span class=line><span class=cl>│   └── my_math
+</span></span><span class=line><span class=cl>│       └── my_math.h
+</span></span><span class=line><span class=cl>└── src
+</span></span><span class=line><span class=cl>    └── my_math.c
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>4 directories, 3 files
+</span></span></code></pre></td></tr></table></div></div><h4 id=构建这个项目-1><a href=#%e6%9e%84%e5%bb%ba%e8%bf%99%e4%b8%aa%e9%a1%b9%e7%9b%ae-1 class=header-anchor></a>构建这个项目</h4><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback><span class=line><span class=cl>mkdir build &amp;&amp; cd build &amp;&amp; cmake .. &amp;&amp; cmake --build .
+</span></span></code></pre></td></tr></table></div></div><p>执行上述命令之后会生成很多文件，但目前我们需要关注的只有 <code>libmy_math.a</code>，这就是其他项目需要依赖的<strong>库</strong>了。</p><h2 id=管理依赖><a href=#%e7%ae%a1%e7%90%86%e4%be%9d%e8%b5%96 class=header-anchor></a>管理依赖</h2><p>下面看如何让 HelloWorld 项目依赖 my_math 项目。</p><p>首先要明确的是，CMake 并不能像 Maven/Cargo 那样直接从互联网下载你需要的包，而是需要你自己下载了包之后放在项目依赖的目录下，然后编辑 <code>CMakeLists.txt</code>，让你的项目能够识别到这个依赖。这更像早期使用 Ant 编译 Java 的时代吧。</p><h3 id=最简单的依赖><a href=#%e6%9c%80%e7%ae%80%e5%8d%95%e7%9a%84%e4%be%9d%e8%b5%96 class=header-anchor></a>最简单的依赖</h3><p>HelloWorld 的结构暂时不变，但需要创建一个 include 目录来存放依赖，先把 lib-demo 的所有代码放在 HelloWorld 的 include 目录下。</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span><span class=lnt>7
+</span><span class=lnt>8
+</span><span class=lnt>9
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-c data-lang=c><span class=line><span class=cl><span class=nf>cmake_minimum_required</span><span class=p>(</span><span class=n>VERSION</span> <span class=mf>3.27</span><span class=p>)</span>
+</span></span><span class=line><span class=cl><span class=nf>project</span><span class=p>(</span><span class=n>HelloWorld</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=nf>add_executable</span><span class=p>(</span><span class=n>HelloWorld</span> <span class=n>src</span><span class=o>/</span><span class=n>main</span><span class=p>.</span><span class=n>c</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=nf>add_subdirectory</span><span class=p>(</span><span class=err>$</span><span class=p>{</span><span class=n>CMAKE_CURRENT_SOURCE_DIR</span><span class=p>}</span><span class=o>/</span><span class=n>include</span><span class=o>/</span><span class=n>my_math</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=nf>target_link_libraries</span><span class=p>(</span><span class=n>HelloWorld</span> <span class=n>my_math</span><span class=p>)</span>
+</span></span><span class=line><span class=cl><span class=nf>target_include_directories</span><span class=p>(</span><span class=n>HelloWorld</span> <span class=n>PRIVATE</span> <span class=n>include</span><span class=o>/</span><span class=n>my_math</span><span class=o>/</span><span class=n>include</span><span class=p>)</span>
+</span></span></code></pre></td></tr></table></div></div><p><div class="callout callout-info"><h5>`Target_include_directories` 的第二个参数 `PRIVATE` 是什么意思？</h5></div><br>这个命令为目标（可执行文件或库）指定包含目录，第二个参数可选值有 3 个：<code>PUBLIC</code>、<code>PRIVATE</code> 和 <code>INTERFACE</code>，这决定了包含目录的范围和传播行为：</p><p><code>PRIVATE</code>：指定的包含目录仅用于这个目标的构建，并且不会传递给依赖这个目标的其他目标。如果你有一个目标（如一个库或可执行文件），而这个目标的头文件仅在源文件中内部使用，没有在任何对外的头文件中使用，则应该将这些内部使用的头文件目录标记为 <code>PRIVATE</code>。</p><p><code>PUBLIC</code>：指定的包含目录既用于这个目标的构建，也会传递给依赖这个目标的其他目标。使用 <code>PUBLIC</code> 意味着连接到这个库的任何目标也将自动添加这些包含目录到它们的包含目录列表中。如果你的库的公共头文件需要某些路径才能被找到，那么这些路径应该被标记为 <code>PUBLIC</code>。</p><p><code>INTERFACE</code>：指定的包含目录不用于这个目标的构建，但会传递给依赖这个目标的其他目标。这通常用在只包含头文件的接口库上，这种情况下构建目标本身并不需要这些包含目录，但是使用该目标的其他目标需要。</p><p>简而言之，<code>PRIVATE</code> 意味着仅用于构建当前目标，<code>PUBLIC</code> 意味着既用于构建当前目标也用于依赖它的目标，而 <code>INTERFACE</code> 意味着仅用于依赖当前目标的其他目标。</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-c data-lang=c><span class=line><span class=cl><span class=cp>#include</span> <span class=cpf>&#34;my_math/my_math.h&#34;</span><span class=cp>
+</span></span></span><span class=line><span class=cl><span class=cp>#include</span> <span class=cpf>&lt;stdio.h&gt;</span><span class=cp>
+</span></span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=kt>int</span> <span class=nf>main</span><span class=p>()</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>  <span class=kt>int</span> <span class=n>a</span> <span class=o>=</span> <span class=mi>10</span><span class=p>,</span> <span class=n>b</span> <span class=o>=</span> <span class=mi>5</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>  <span class=kt>int</span> <span class=n>c</span> <span class=o>=</span> <span class=nf>max</span><span class=p>(</span><span class=n>a</span><span class=p>,</span> <span class=n>b</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>  <span class=k>if</span> <span class=p>(</span><span class=n>c</span> <span class=o>!=</span> <span class=mi>10</span><span class=p>)</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>    <span class=nf>printf</span><span class=p>(</span><span class=s>&#34;max is not correct</span><span class=se>\n</span><span class=s>&#34;</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>  <span class=p>}</span> <span class=k>else</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>    <span class=nf>printf</span><span class=p>(</span><span class=s>&#34;c is %d, and max is included</span><span class=se>\n</span><span class=s>&#34;</span><span class=p>,</span> <span class=n>c</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>  <span class=p>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>  <span class=nf>printf</span><span class=p>(</span><span class=s>&#34;hello world!</span><span class=se>\n</span><span class=s>&#34;</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>  <span class=k>return</span> <span class=mi>0</span><span class=p>;</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span></code></pre></td></tr></table></div></div><p>接下来怎么让这个代码运行起来，这里就不再赘述了。</p><h3 id=嵌套的依赖><a href=#%e5%b5%8c%e5%a5%97%e7%9a%84%e4%be%9d%e8%b5%96 class=header-anchor></a>嵌套的依赖</h3><p>前面其实已经完整讲述了一个项目和它的依赖应该如何组织了，其实更深层的依赖管理和上面描述的也没有什么区别，比如上面的 <code>my_math</code> 库又依赖了别的库比如 <code>his_math</code>，这时你有两个选择：</p><ol><li>如果 <code>HelloWorld</code> 也使用到了 <code>his_math</code>，那你应该把它放在 <code>HelloWorld</code> 项目的 <code>include</code> 里，这样两个项目都可以使用它。</li><li>如果只有 <code>my_math</code> 用它，那就可以把它放在 <code>my_math</code> 的 <code>include</code> 里，具体的做法和上面的并无其他不同。</li></ol><h2 id=单元测试><a href=#%e5%8d%95%e5%85%83%e6%b5%8b%e8%af%95 class=header-anchor></a>单元测试</h2><p>没错，CMake 还能做单元测试。</p><p>在 my_math 项目里添加一个 <code>tests</code> 目录，把 <code>CMakeLists.txt</code> 改一下，判断是否存在 <code>tests</code> 目录，如下</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-c data-lang=c><span class=line><span class=cl><span class=nf>cmake_minimum_required</span><span class=p>(</span><span class=n>VERSION</span> <span class=mf>3.27</span><span class=p>)</span>
+</span></span><span class=line><span class=cl><span class=nf>project</span><span class=p>(</span><span class=n>my_math</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=cp># 设置C标准
+</span></span></span><span class=line><span class=cl><span class=nf>set</span><span class=p>(</span><span class=n>CMAKE_C_STANDARD</span> <span class=mi>11</span><span class=p>)</span>
+</span></span><span class=line><span class=cl><span class=nf>set</span><span class=p>(</span><span class=n>CMAKE_C_STANDARD_REQUIRED</span> <span class=n>True</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=cp># 创建一个明为my_math的静态库
+</span></span></span><span class=line><span class=cl><span class=nf>add_library</span><span class=p>(</span><span class=err>$</span><span class=p>{</span><span class=n>PROJECT_NAME</span><span class=p>}</span> <span class=n>include</span><span class=o>/</span><span class=n>my_math</span><span class=o>/</span><span class=n>my_math</span><span class=p>.</span><span class=n>h</span> <span class=n>src</span><span class=o>/</span><span class=n>my_math</span><span class=p>.</span><span class=n>c</span><span class=p>)</span>
+</span></span><span class=line><span class=cl><span class=nf>add_subdirectory</span><span class=p>(</span><span class=n>third_party</span><span class=o>/</span><span class=n>his_math</span><span class=p>)</span>
+</span></span><span class=line><span class=cl><span class=nf>target_link_libraries</span><span class=p>(</span><span class=err>$</span><span class=p>{</span><span class=n>PROJECT_NAME</span><span class=p>}</span> <span class=n>his_math</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=k>if</span><span class=p>(</span><span class=n>EXISTS</span> <span class=err>$</span><span class=p>{</span><span class=n>CMAKE_CURRENT_SOURCE_DIR</span><span class=p>}</span><span class=o>/</span><span class=n>tests</span><span class=o>/</span><span class=n>CMakeLists</span><span class=p>.</span><span class=n>txt</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>  <span class=nf>enable_testing</span><span class=p>()</span>
+</span></span><span class=line><span class=cl>  <span class=nf>add_subdirectory</span><span class=p>(</span><span class=n>tests</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>  <span class=nf>include</span><span class=p>(</span><span class=n>CTest</span><span class=p>)</span>
+</span></span><span class=line><span class=cl><span class=nf>endif</span><span class=p>()</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=cp># 指定库的头文件搜索路径
+</span></span></span><span class=line><span class=cl><span class=nf>target_include_directories</span><span class=p>(</span><span class=err>$</span><span class=p>{</span><span class=n>PROJECT_NAME</span><span class=p>}</span> <span class=n>PUBLIC</span> <span class=err>$</span><span class=p>{</span><span class=n>CMAKE_CURRENT_SOURCE_DIR</span><span class=p>}</span><span class=o>/</span><span class=n>include</span><span class=p>)</span>
+</span></span></code></pre></td></tr></table></div></div><p>这里我把检测到 <code>tests/CMakeLists.txt</code> 之后的操作全部写在一个 <code>if</code> 里了。</p><p>然后 <code>tests</code> 目录本身也需要一个 <code>CMakeLists.txt</code>，如下</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-c data-lang=c><span class=line><span class=cl><span class=nf>cmake_minimum_required</span><span class=p>(</span><span class=n>VERSION</span> <span class=mf>3.27</span><span class=p>)</span>
+</span></span><span class=line><span class=cl><span class=nf>project</span><span class=p>(</span><span class=n>my_math_tests</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=cp># 设置C标准
+</span></span></span><span class=line><span class=cl><span class=nf>set</span><span class=p>(</span><span class=n>CMAKE_C_STANDARD</span> <span class=mi>11</span><span class=p>)</span>
+</span></span><span class=line><span class=cl><span class=nf>set</span><span class=p>(</span><span class=n>CMAKE_C_STANDARD_REQUIRED</span> <span class=n>True</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=nf>enable_testing</span><span class=p>()</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=nf>add_executable</span><span class=p>(</span><span class=err>$</span><span class=p>{</span><span class=n>PROJECT_NAME</span><span class=p>}</span> <span class=n>test_my_math</span><span class=p>.</span><span class=n>c</span><span class=p>)</span>
+</span></span><span class=line><span class=cl><span class=cp># 指定库的头文件搜索路径
+</span></span></span><span class=line><span class=cl><span class=nf>target_include_directories</span><span class=p>(</span><span class=err>$</span><span class=p>{</span><span class=n>PROJECT_NAME</span><span class=p>}</span> <span class=n>PUBLIC</span> <span class=err>$</span><span class=p>{</span><span class=n>CMAKE_SOURCE_DIR</span><span class=p>}</span><span class=o>/</span><span class=n>include</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=nf>target_link_libraries</span><span class=p>(</span><span class=err>$</span><span class=p>{</span><span class=n>PROJECT_NAME</span><span class=p>}</span> <span class=n>his_math</span> <span class=n>my_math</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=nf>add_test</span><span class=p>(</span><span class=n>NAME</span> <span class=n>my_math_tests</span> <span class=n>COMMAND</span> <span class=err>$</span><span class=p>{</span><span class=n>PROJECT_NAME</span><span class=p>})</span>
+</span></span></code></pre></td></tr></table></div></div><p>这里要注意的点还是挺多的，比如前面写的都是 <code>${CMAKE_CURRENT_SOURCE_DIR}/include</code>，这里却是 <code>${CMAKE_SOURCE_DIR}/include</code>。</p><p>其实这个单元测试就是一个的 executable，加了一个通过 <code>ctest</code> 命令启动的入口。</p><p>然后写一个 <code>test_my_math.c</code>，如下</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-c data-lang=c><span class=line><span class=cl><span class=cp>#include</span> <span class=cpf>&#34;my_math/my_math.h&#34;</span><span class=cp>
+</span></span></span><span class=line><span class=cl><span class=cp>#include</span> <span class=cpf>&lt;stdio.h&gt;</span><span class=cp>
+</span></span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=kt>void</span> <span class=nf>test_max</span><span class=p>()</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>  <span class=kt>int</span> <span class=n>result</span> <span class=o>=</span> <span class=nf>max</span><span class=p>(</span><span class=mi>1</span><span class=p>,</span> <span class=mi>2</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>  <span class=k>if</span> <span class=p>(</span><span class=n>result</span> <span class=o>==</span> <span class=mi>2</span><span class=p>)</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>    <span class=nf>printf</span><span class=p>(</span><span class=s>&#34;test_max passed.</span><span class=se>\n</span><span class=s>&#34;</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>  <span class=p>}</span> <span class=k>else</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>    <span class=nf>printf</span><span class=p>(</span><span class=s>&#34;test_max failed. Expected 2 but got %d.</span><span class=se>\n</span><span class=s>&#34;</span><span class=p>,</span> <span class=n>result</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>  <span class=p>}</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=kt>int</span> <span class=nf>main</span><span class=p>()</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>  <span class=nf>test_max</span><span class=p>();</span>
+</span></span><span class=line><span class=cl>  <span class=c1>// 这里可以添加更多的测试
+</span></span></span><span class=line><span class=cl>  <span class=k>return</span> <span class=mi>0</span><span class=p>;</span> <span class=c1>// 如果有测试失败，你可能想要返回非零值
+</span></span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span></code></pre></td></tr></table></div></div><p>这时候去 <code>my_math</code> 的 <code>build</code> 目录里执行 <code>cmake .. && cmake --build . && ctest</code> ，就会发现单元测试已经可以执行了。</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span><span class=lnt>7
+</span><span class=lnt>8
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback><span class=line><span class=cl>❯ ctest
+</span></span><span class=line><span class=cl>Test project /Users/frost/workspace/private/cmake-tutorial/simple-demo/third_party/my_math/build
+</span></span><span class=line><span class=cl>    Start 1: my_math_tests
+</span></span><span class=line><span class=cl>1/1 Test #1: my_math_tests ....................   Passed    0.39 sec
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>100% tests passed, 0 tests failed out of 1
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>Total Test time (real) =   0.39 sec
+</span></span></code></pre></td></tr></table></div></div></section><footer class=article-footer><section class=article-tags><a href=/tags/linux/>Linux</a>
+<a href=/tags/cmake/>Cmake</a>
+<a href=/tags/c/>C</a>
+<a href=/tags/cxx/>Cxx</a></section><section class=article-copyright><svg class="icon icon-tabler icon-tabler-copyright" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="12" r="9"/><path d="M14.5 9a3.5 4 0 100 6"/></svg>
+<span>Licensed under CC BY-NC-SA 4.0</span></section></footer><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css integrity=sha384-n8MVd4RsNIU0tAv4ct0nTaAbDJwPJzDEaqSD1odI+WdtXRGWt2kTvGFasHpSy3SV crossorigin=anonymous><script src=https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js integrity=sha384-XjKyOOlGwcjNTAIQHIpgOno0Hl1YQqzUOEleOLALmuqehneUG+vnGctmUb0ZY0l8 crossorigin=anonymous defer></script><script src=https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js integrity=sha384-+VBxd3r6XgURycqtZ117nYw44OOcIax56Z4dCRWbxyPt0Koah1uHoK0o4+/RRE05 crossorigin=anonymous defer></script><script>window.addEventListener("DOMContentLoaded",()=>{const e=document.querySelector(".main-article");renderMathInElement(e,{delimiters:[{left:"$$",right:"$$",display:!0},{left:"$",right:"$",display:!1},{left:"\\(",right:"\\)",display:!1},{left:"\\[",right:"\\]",display:!0}],ignoredClasses:["gist"]})})</script></article><aside class=related-content--wrapper><h2 class=section-title>相关文章</h2><div class=related-content><div class="flex article-list--tile"><article class=has-image><a href=/p/%E4%BD%BF%E7%94%A8ninja%E4%BD%9C%E4%B8%BAcmake%E7%9A%84%E5%90%8E%E7%AB%AF/><div class=article-image><img src=/images/covers/CMake-with-Ninja-cover.png loading=lazy data-key data-hash=/images/covers/CMake-with-Ninja-cover.png></div><div class=article-details><h2 class=article-title>使用Ninja作为CMake的后端</h2></div></a></article><article><a href=/p/filebeat-%E8%87%AA%E5%8A%A8%E5%88%A0%E9%99%A4%E5%B7%B2%E7%BB%8F%E6%94%B6%E9%9B%86%E5%AE%8C%E7%9A%84%E6%96%87%E4%BB%B6/><div class=article-details><h2 class=article-title>Filebeat 自动删除已经收集完的文件</h2></div></a></article><article><a href=/p/springboot%E4%BD%BF%E7%94%A8shardingsphere%E9%85%8D%E7%BD%AE%E6%95%B0%E6%8D%AE%E5%BA%93/><div class=article-details><h2 class=article-title>Springboot使用Shardingsphere配置数据库</h2></div></a></article><article><a href=/p/%E9%85%8D%E7%BD%AEspymemcached%E7%9A%84%E6%97%A5%E5%BF%97%E7%BA%A7%E5%88%AB/><div class=article-details><h2 class=article-title>配置Spymemcached的日志级别</h2></div></a></article><article><a href=/p/%E5%88%9B%E5%BB%BA%E4%B8%80%E4%B8%AA%E8%87%AA%E5%AE%9A%E4%B9%89%E7%9A%84archetype/><div class=article-details><h2 class=article-title>创建一个自定义的Archetype</h2></div></a></article></div></div></aside><div class=disqus-container></div><style>.disqus-container{background-color:var(--card-background);border-radius:var(--card-border-radius);box-shadow:var(--shadow-l1);padding:var(--card-padding)}</style><script>window.addEventListener("onColorSchemeChange",e=>{typeof DISQUS=="object"&&DISQUS.reset({reload:!0})})</script><footer class=site-footer><section class=copyright>&copy;
+2014 -
+2026 Tech In Sight</section><section class=powerby>使用 <a href=https://gohugo.io/ target=_blank rel=noopener>Hugo</a> 构建<br>主题 <b><a href=https://github.com/CaiJimmy/hugo-theme-stack target=_blank rel=noopener data-version=3.30.0>Stack</a></b> 由 <a href=https://jimmycai.com target=_blank rel=noopener>Jimmy</a> 设计</section></footer><div class=pswp tabindex=-1 role=dialog aria-hidden=true><div class=pswp__bg></div><div class=pswp__scroll-wrap><div class=pswp__container><div class=pswp__item></div><div class=pswp__item></div><div class=pswp__item></div></div><div class="pswp__ui pswp__ui--hidden"><div class=pswp__top-bar><div class=pswp__counter></div><button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+<button class="pswp__button pswp__button--share" title=Share></button>
+<button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+<button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button><div class=pswp__preloader><div class=pswp__preloader__icn><div class=pswp__preloader__cut><div class=pswp__preloader__donut></div></div></div></div></div><div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap"><div class=pswp__share-tooltip></div></div><button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+</button>
+<button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)"></button><div class=pswp__caption><div class=pswp__caption__center></div></div></div></div></div><script src=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js integrity="sha256-ePwmChbbvXbsO02lbM3HoHbSHTHFAeChekF1xKJdleo=" crossorigin=anonymous defer></script><script src=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js integrity="sha256-UKkzOn/w1mBxRmLLGrSeyB4e1xbrp4xylgAWb3M42pU=" crossorigin=anonymous defer></script><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.min.css crossorigin=anonymous><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.css crossorigin=anonymous></main></div><script src=https://cdn.jsdelivr.net/npm/node-vibrant@3.1.6/dist/vibrant.min.js integrity="sha256-awcR2jno4kI5X0zL8ex0vi2z+KMkF24hUW8WePSA9HM=" crossorigin=anonymous></script><script type=text/javascript src=/ts/main.1e9a3bafd846ced4c345d084b355fb8c7bae75701c338f8a1f8a82c780137826.js defer></script><script>(function(){const e=document.createElement("link");e.href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap",e.type="text/css",e.rel="stylesheet",document.head.appendChild(e)})()</script></body></html>

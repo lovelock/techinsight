@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Tips on Tech In Sight</title><link>https://techinsight.pages.dev/tags/tips/</link><description>Recent content in Tips on Tech In Sight</description><generator>Hugo -- gohugo.io</generator><language>zh-cn</language><lastBuildDate>Wed, 10 Jun 2020 10:52:37 +0800</lastBuildDate><atom:link href="https://techinsight.pages.dev/tags/tips/index.xml" rel="self" type="application/rss+xml"/><item><title>彻底关闭macOS系统升级提示</title><link>https://techinsight.pages.dev/p/%E5%BD%BB%E5%BA%95%E5%85%B3%E9%97%ADmacos%E7%B3%BB%E7%BB%9F%E5%8D%87%E7%BA%A7%E6%8F%90%E7%A4%BA/</link><pubDate>Wed, 10 Jun 2020 10:52:37 +0800</pubDate><guid>https://techinsight.pages.dev/p/%E5%BD%BB%E5%BA%95%E5%85%B3%E9%97%ADmacos%E7%B3%BB%E7%BB%9F%E5%8D%87%E7%BA%A7%E6%8F%90%E7%A4%BA/</guid><description>&lt;p&gt;作为黑苹果用户，不知道直接更新系统会发生什么不可预知的问题，所以还是尽量避免升级。&lt;/p&gt;
+&lt;h2 id="设置方法"&gt;&lt;a href="#%e8%ae%be%e7%bd%ae%e6%96%b9%e6%b3%95" class="header-anchor"&gt;&lt;/a&gt;设置方法
+&lt;/h2&gt;&lt;h3 id="1-在系统偏好设置中关闭自动更新"&gt;&lt;a href="#1-%e5%9c%a8%e7%b3%bb%e7%bb%9f%e5%81%8f%e5%a5%bd%e8%ae%be%e7%bd%ae%e4%b8%ad%e5%85%b3%e9%97%ad%e8%87%aa%e5%8a%a8%e6%9b%b4%e6%96%b0" class="header-anchor"&gt;&lt;/a&gt;1. 在系统偏好设置中关闭自动更新
+&lt;/h3&gt;&lt;p&gt;&lt;img src="https://techinsight.pages.dev/images/2020-06-10-10-55-42.png"
+loading="lazy"
+&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://techinsight.pages.dev/images/2020-06-10-11-03-03.png"
+loading="lazy"
+&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://techinsight.pages.dev/images/2020-06-10-11-04-06.png"
+loading="lazy"
+&gt;&lt;/p&gt;
+&lt;h3 id="2-在终端执行以下命令"&gt;&lt;a href="#2-%e5%9c%a8%e7%bb%88%e7%ab%af%e6%89%a7%e8%a1%8c%e4%bb%a5%e4%b8%8b%e5%91%bd%e4%bb%a4" class="header-anchor"&gt;&lt;/a&gt;2. 在终端执行以下命令
+&lt;/h3&gt;&lt;div class="highlight"&gt;&lt;div class="chroma"&gt;
+&lt;table class="lntable"&gt;&lt;tr&gt;&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code&gt;&lt;span class="lnt"&gt;1
+&lt;/span&gt;&lt;span class="lnt"&gt;2
+&lt;/span&gt;&lt;span class="lnt"&gt;3
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code class="language-fallback" data-lang="fallback"&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;sudo softwareupdate --ignore &amp;#34;macOS Catalina&amp;#34;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;defaults write com.apple.systempreferences AttentionPrefBundleIDs 0
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;killall Dock
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;h3 id="3-补充"&gt;&lt;a href="#3-%e8%a1%a5%e5%85%85" class="header-anchor"&gt;&lt;/a&gt;3. 补充
+&lt;/h3&gt;&lt;p&gt;最近的不知道哪次更新又带来了一个问题，执行上面的命令的时候会报&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;div class="chroma"&gt;
+&lt;table class="lntable"&gt;&lt;tr&gt;&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code&gt;&lt;span class="lnt"&gt; 1
+&lt;/span&gt;&lt;span class="lnt"&gt; 2
+&lt;/span&gt;&lt;span class="lnt"&gt; 3
+&lt;/span&gt;&lt;span class="lnt"&gt; 4
+&lt;/span&gt;&lt;span class="lnt"&gt; 5
+&lt;/span&gt;&lt;span class="lnt"&gt; 6
+&lt;/span&gt;&lt;span class="lnt"&gt; 7
+&lt;/span&gt;&lt;span class="lnt"&gt; 8
+&lt;/span&gt;&lt;span class="lnt"&gt; 9
+&lt;/span&gt;&lt;span class="lnt"&gt;10
+&lt;/span&gt;&lt;span class="lnt"&gt;11
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code class="language-text" data-lang="text"&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;Password:
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;Ignored updates:
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;(
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;Software Update can only ignore updates that are eligible for installation.
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;If the label provided to ignore is not in the above list, it is not eligible
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;to be ignored.
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;Ignoring software updates is deprecated.
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;The ability to ignore individual updates will be removed in a future release of macOS.
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;也就是说苹果以后要把这个选项去掉了，可以参考一下这个文章&lt;a class="link" href="https://www.idownloadblog.com/2020/05/28/apple-removes-ignoring-macos-updates/" target="_blank" rel="noopener"
+&gt;Apple’s has brought back the nagging — you can no longer ignore major macOS updates&lt;/a&gt;，看起来不光是我反感这个事儿，全世界都觉得苹果一点都不在乎用户的感受啊，和微信有点像。&lt;/p&gt;
+&lt;h2 id="总结"&gt;&lt;a href="#%e6%80%bb%e7%bb%93" class="header-anchor"&gt;&lt;/a&gt;总结
+&lt;/h2&gt;&lt;p&gt;macOS和iPhone的升级速度快（指最新版本的更新率高）的原因就是这么不停提醒吧，太讨厌了。这种方法亲测有效。&lt;/p&gt;</description></item><item><title>避免Springboot应用启动前5秒的等待</title><link>https://techinsight.pages.dev/p/%E9%81%BF%E5%85%8Dspringboot%E5%BA%94%E7%94%A8%E5%90%AF%E5%8A%A8%E5%89%8D5%E7%A7%92%E7%9A%84%E7%AD%89%E5%BE%85/</link><pubDate>Thu, 21 May 2020 10:41:26 +0800</pubDate><guid>https://techinsight.pages.dev/p/%E9%81%BF%E5%85%8Dspringboot%E5%BA%94%E7%94%A8%E5%90%AF%E5%8A%A8%E5%89%8D5%E7%A7%92%E7%9A%84%E7%AD%89%E5%BE%85/</guid><description>&lt;p&gt;在macOS上开发Springboot应用时发现应用启动前总是等待5秒钟，体现在应用启动的很慢。&lt;/p&gt;
+&lt;p&gt;具体的提示信息因为改完之后找不到了，就是一句提示，说使用了5000 milliseconds，建议macOS用户修改/etc/hosts。但具体改什么就没有提到。&lt;/p&gt;
+&lt;p&gt;其实是因为应用启动时会查询域名&lt;code&gt;${hostname}&lt;/code&gt;，而macOS上默认是没有配置这个域名的，所以就要等到超时（5秒）才能继续了。知道了问题的原因也就清楚如何解决了，在&lt;code&gt;/etc/hosts&lt;/code&gt;中添加以下两行&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;div class="chroma"&gt;
+&lt;table class="lntable"&gt;&lt;tr&gt;&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code&gt;&lt;span class="lnt"&gt;1
+&lt;/span&gt;&lt;span class="lnt"&gt;2
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code class="language-fallback" data-lang="fallback"&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;127.0.0.1 ${hostname}
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;::1 ${hostname}
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;其中&lt;code&gt;${hostname}&lt;/code&gt;要替换成你机器的hostname，要得到它只需要执行&lt;code&gt;hostname&lt;/code&gt;命令即可，一般是一个以&lt;code&gt;.local&lt;/code&gt;结尾的字符串。&lt;/p&gt;</description></item></channel></rss>

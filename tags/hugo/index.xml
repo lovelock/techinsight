@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Hugo on Tech In Sight</title><link>https://techinsight.pages.dev/tags/hugo/</link><description>Recent content in Hugo on Tech In Sight</description><generator>Hugo -- gohugo.io</generator><language>zh-cn</language><lastBuildDate>Tue, 16 Apr 2024 21:50:49 +0800</lastBuildDate><atom:link href="https://techinsight.pages.dev/tags/hugo/index.xml" rel="self" type="application/rss+xml"/><item><title>在Hugo中嵌入视频</title><link>https://techinsight.pages.dev/p/%E5%9C%A8hugo%E4%B8%AD%E5%B5%8C%E5%85%A5%E8%A7%86%E9%A2%91/</link><pubDate>Tue, 16 Apr 2024 21:50:49 +0800</pubDate><guid>https://techinsight.pages.dev/p/%E5%9C%A8hugo%E4%B8%AD%E5%B5%8C%E5%85%A5%E8%A7%86%E9%A2%91/</guid><description>&lt;img src="https://techinsight.pages.dev/images/covers/embed-video-in-hugo.png" alt="Featured image of post 在Hugo中嵌入视频" /&gt;&lt;p&gt;仅半年在B站也发了不少视频，想着在博客上也能引用一下，但国内的视频网站嘛，海外的产品支持可能没有那么好，加上也想看看&lt;a class="link" href="https://gohugo.io/content-management/shortcodes/" target="_blank" rel="noopener"
+&gt;Hugo的shortcode&lt;/a&gt;到底是怎么工作的，所以就有了这篇文章。&lt;/p&gt;
+&lt;h2 id="找到要引用的视频地址"&gt;&lt;a href="#%e6%89%be%e5%88%b0%e8%a6%81%e5%bc%95%e7%94%a8%e7%9a%84%e8%a7%86%e9%a2%91%e5%9c%b0%e5%9d%80" class="header-anchor"&gt;&lt;/a&gt;找到要引用的视频地址
+&lt;/h2&gt;&lt;p&gt;这并不是直接点开视频的播放地址，而是要使用嵌入地址，俗称落地页。在B站是这样的&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://techinsight.pages.dev/images/B%e7%ab%99%e5%b5%8c%e5%85%a5%e4%bb%a3%e7%a0%81.png"
+loading="lazy"
+alt="B站嵌入代码"
+&gt;&lt;/p&gt;
+&lt;p&gt;具体的内容是这样&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;div class="chroma"&gt;
+&lt;table class="lntable"&gt;&lt;tr&gt;&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code&gt;&lt;span class="lnt"&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code class="language-html" data-lang="html"&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="p"&gt;&amp;lt;&lt;/span&gt;&lt;span class="nt"&gt;iframe&lt;/span&gt; &lt;span class="na"&gt;src&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;&amp;#34;//player.bilibili.com/player.html?aid=1302993488&amp;amp;bvid=BV1DM4m1Q71a&amp;amp;cid=1499653065&amp;amp;p=1&amp;#34;&lt;/span&gt; &lt;span class="na"&gt;scrolling&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;&amp;#34;no&amp;#34;&lt;/span&gt; &lt;span class="na"&gt;border&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;&amp;#34;0&amp;#34;&lt;/span&gt; &lt;span class="na"&gt;frameborder&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;&amp;#34;no&amp;#34;&lt;/span&gt; &lt;span class="na"&gt;framespacing&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;&amp;#34;0&amp;#34;&lt;/span&gt; &lt;span class="na"&gt;allowfullscreen&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;&amp;#34;true&amp;#34;&lt;/span&gt;&lt;span class="p"&gt;&amp;gt;&lt;/span&gt; &lt;span class="p"&gt;&amp;lt;/&lt;/span&gt;&lt;span class="nt"&gt;iframe&lt;/span&gt;&lt;span class="p"&gt;&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;就是一段HTML片段。&lt;/p&gt;
+&lt;h2 id="优化引用地址"&gt;&lt;a href="#%e4%bc%98%e5%8c%96%e5%bc%95%e7%94%a8%e5%9c%b0%e5%9d%80" class="header-anchor"&gt;&lt;/a&gt;优化引用地址
+&lt;/h2&gt;&lt;p&gt;无意间搜到这篇文章&lt;a class="link" href="https://leimao.github.io/blog/Embed-Bilibili-Video/" target="_blank" rel="noopener"
+&gt;Embed Bilibili Video To HTML&lt;/a&gt;，博主指出B站的这个片段不是响应式的，对移动端的支持不好，提供了一种新的方式&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;div class="chroma"&gt;
+&lt;table class="lntable"&gt;&lt;tr&gt;&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code&gt;&lt;span class="lnt"&gt;1
+&lt;/span&gt;&lt;span class="lnt"&gt;2
+&lt;/span&gt;&lt;span class="lnt"&gt;3
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code class="language-html" data-lang="html"&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="p"&gt;&amp;lt;&lt;/span&gt;&lt;span class="nt"&gt;div&lt;/span&gt; &lt;span class="na"&gt;style&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;&amp;#34;position: relative; padding: 30% 45%;&amp;#34;&lt;/span&gt;&lt;span class="p"&gt;&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="p"&gt;&amp;lt;&lt;/span&gt;&lt;span class="nt"&gt;iframe&lt;/span&gt; &lt;span class="na"&gt;style&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;&amp;#34;position: absolute; width: 100%; height: 100%; left: 0; top: 0;&amp;#34;&lt;/span&gt; &lt;span class="na"&gt;src&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;&amp;#34;//player.bilibili.com/player.html?aid=1302993488&amp;amp;bvid=BV1DM4m1Q71a&amp;amp;cid=1499653065&amp;amp;p=1&amp;#34;&lt;/span&gt; &lt;span class="na"&gt;frameborder&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;&amp;#34;no&amp;#34;&lt;/span&gt; &lt;span class="na"&gt;scrolling&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;&amp;#34;no&amp;#34;&lt;/span&gt; &lt;span class="na"&gt;allowfullscreen&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;&amp;#34;true&amp;#34;&lt;/span&gt;&lt;span class="p"&gt;&amp;gt;&amp;lt;/&lt;/span&gt;&lt;span class="nt"&gt;iframe&lt;/span&gt;&lt;span class="p"&gt;&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="p"&gt;&amp;lt;/&lt;/span&gt;&lt;span class="nt"&gt;div&lt;/span&gt;&lt;span class="p"&gt;&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;简单对比一下就能发现其实是在外层嵌套了一些支持Responsive的样式，妙！&lt;/p&gt;
+&lt;h2 id="hugo的shortcode"&gt;&lt;a href="#hugo%e7%9a%84shortcode" class="header-anchor"&gt;&lt;/a&gt;Hugo的shortcode
+&lt;/h2&gt;&lt;p&gt;没有仔细研读，看了一个例子基本就理解了，几个基本的规则&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;基于新版本的目录结构，应该放在&lt;code&gt;layouts/shortcodes/name-of-short-code.html&lt;/code&gt;中，其中&lt;code&gt;name-of-short-code&lt;/code&gt;就是在文章中插入的名字，比如这里新建的文件名叫&lt;code&gt;bilibili&lt;/code&gt;，那么就应该放在&lt;code&gt;layouts/shortcodes/bilibili.html&lt;/code&gt;，而且具体的shortcode应该这么写&lt;code&gt;{{&amp;lt; bilibili &amp;gt;}}&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;shortcode中除了写名字之外还有一些其他东西，这里就涉及到模板引擎了，写在shortcode名字后面的东西，可以通过&lt;code&gt;{{ .Get 0 }}&lt;/code&gt;这种语法来获取，比如这个例子就是获取第一个参数&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;根据上面的例子，具体的shortcode内容是这样的&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;div class="chroma"&gt;
+&lt;table class="lntable"&gt;&lt;tr&gt;&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code&gt;&lt;span class="lnt"&gt;1
+&lt;/span&gt;&lt;span class="lnt"&gt;2
+&lt;/span&gt;&lt;span class="lnt"&gt;3
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code class="language-html" data-lang="html"&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="p"&gt;&amp;lt;&lt;/span&gt;&lt;span class="nt"&gt;div&lt;/span&gt; &lt;span class="na"&gt;style&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;&amp;#34;position: relative; padding: 30% 45%;&amp;#34;&lt;/span&gt;&lt;span class="p"&gt;&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="p"&gt;&amp;lt;&lt;/span&gt;&lt;span class="nt"&gt;iframe&lt;/span&gt; &lt;span class="na"&gt;style&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;&amp;#34;position: absolute; width: 100%; height: 100%; left: 0; top: 0;&amp;#34;&lt;/span&gt; &lt;span class="na"&gt;src&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;&amp;#34;{{ .Get 0 }}&amp;#34;&lt;/span&gt; &lt;span class="na"&gt;frameborder&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;&amp;#34;no&amp;#34;&lt;/span&gt; &lt;span class="na"&gt;scrolling&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;&amp;#34;no&amp;#34;&lt;/span&gt; &lt;span class="na"&gt;allowfullscreen&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;&amp;#34;true&amp;#34;&lt;/span&gt;&lt;span class="p"&gt;&amp;gt;&amp;lt;/&lt;/span&gt;&lt;span class="nt"&gt;iframe&lt;/span&gt;&lt;span class="p"&gt;&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="p"&gt;&amp;lt;/&lt;/span&gt;&lt;span class="nt"&gt;div&lt;/span&gt;&lt;span class="p"&gt;&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;在需要引用它的地方这么写&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;div class="chroma"&gt;
+&lt;table class="lntable"&gt;&lt;tr&gt;&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code&gt;&lt;span class="lnt"&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code class="language-markdown" data-lang="markdown"&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;{{&amp;lt; bilibili &amp;#34;//player.bilibili.com/player.html?aid=1302993488&amp;amp;bvid=BV1DM4m1Q71a&amp;amp;cid=1499653065&amp;amp;p=1&amp;#34; &amp;gt;}}
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;搞定收工！如果要引用别的视频网站，可以根据需求写相应的shortcode。&lt;/p&gt;</description></item><item><title>配置Hugo的图片路径</title><link>https://techinsight.pages.dev/p/%E9%85%8D%E7%BD%AEhugo%E7%9A%84%E5%9B%BE%E7%89%87%E8%B7%AF%E5%BE%84/</link><pubDate>Sat, 28 Mar 2020 23:44:36 +0800</pubDate><guid>https://techinsight.pages.dev/p/%E9%85%8D%E7%BD%AEhugo%E7%9A%84%E5%9B%BE%E7%89%87%E8%B7%AF%E5%BE%84/</guid><description>&lt;p&gt;不得不说Hugo的图片路径支持有些不友好，网上也有很多吐槽。简单说就是即便神级的Markdown编辑器Typora都无法适应Hugo的图片路径。由于Typora需要做日常的工作记录，所以就配置了一下VSCode来支持Hugo。&lt;/p&gt;
+&lt;h2 id="hugo支持两种放置本地图片的方式"&gt;&lt;a href="#hugo%e6%94%af%e6%8c%81%e4%b8%a4%e7%a7%8d%e6%94%be%e7%bd%ae%e6%9c%ac%e5%9c%b0%e5%9b%be%e7%89%87%e7%9a%84%e6%96%b9%e5%bc%8f" class="header-anchor"&gt;&lt;/a&gt;Hugo支持两种放置本地图片的方式
+&lt;/h2&gt;&lt;p&gt;本地图片是相对网络图片而言，如果你有图床也就无所谓是否相对路径了&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;&lt;code&gt;content&lt;/code&gt;目录下&lt;br /&gt;
+例如图片&lt;code&gt;content/a.png&lt;/code&gt;，在文章&lt;code&gt;content/post/a.md&lt;/code&gt;中引用就需要是&lt;code&gt;![](/../a.png)&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;static&lt;/code&gt;目录下&lt;br /&gt;
+例如图片&lt;code&gt;static/images/a.png&lt;/code&gt;，在文章&lt;code&gt;content/post/a.md&lt;/code&gt;中引用就需要是&lt;code&gt;![](/images/a.png)&lt;/code&gt;&lt;/li&gt;
+&lt;/ol&gt;
+&lt;blockquote&gt;
+&lt;p&gt;这里还是想吐槽一下，主要是第一种方式，既然在文章中是这样的写法，其实就已经默认是从【当前文章所在目录】向前查找了，那为什么不能放在当前文章目录下？&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h2 id="配置vscode支持两种方式"&gt;&lt;a href="#%e9%85%8d%e7%bd%aevscode%e6%94%af%e6%8c%81%e4%b8%a4%e7%a7%8d%e6%96%b9%e5%bc%8f" class="header-anchor"&gt;&lt;/a&gt;配置VSCode支持两种方式
+&lt;/h2&gt;&lt;p&gt;我还是比较倾向于内容和图片分离，所以就使用上述的第二种方式，方法确定了其实配置方式差别不大。&lt;/p&gt;
+&lt;h3 id="依赖工具"&gt;&lt;a href="#%e4%be%9d%e8%b5%96%e5%b7%a5%e5%85%b7" class="header-anchor"&gt;&lt;/a&gt;依赖工具
+&lt;/h3&gt;&lt;ol&gt;
+&lt;li&gt;VSCode&lt;/li&gt;
+&lt;li&gt;扩展Paste Image (作者 mushan）&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h3 id="配置步骤"&gt;&lt;a href="#%e9%85%8d%e7%bd%ae%e6%ad%a5%e9%aa%a4" class="header-anchor"&gt;&lt;/a&gt;配置步骤
+&lt;/h3&gt;&lt;ol&gt;
+&lt;li&gt;配置图片文件存放路径&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;&lt;code&gt;Paste Image: Path&lt;/code&gt;中配置 &lt;code&gt;${projectRoot}/static/images/&lt;/code&gt;&lt;br /&gt;
+&lt;img src="https://techinsight.pages.dev/images/2020-03-28-23-55-33.png"
+loading="lazy"
+&gt;&lt;/p&gt;
+&lt;ol start="2"&gt;
+&lt;li&gt;配置粘贴到文章中的文本&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;&lt;code&gt;Paste Image: Insert Pattern&lt;/code&gt;中配置 &lt;code&gt;${imageSyntaxPrefix}/images/${imageFileName}${imageSyntaxSuffix}&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://techinsight.pages.dev/images/2020-03-28-23-58-31.png"
+loading="lazy"
+&gt;&lt;/p&gt;
+&lt;p&gt;这一点我没有仔细看文档，花费了一些时间。&lt;/p&gt;
+&lt;p&gt;效果图如下&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://techinsight.pages.dev/images/2020-03-29-00-01-58.png"
+loading="lazy"
+&gt;&lt;/p&gt;
+&lt;h2 id="存在的问题"&gt;&lt;a href="#%e5%ad%98%e5%9c%a8%e7%9a%84%e9%97%ae%e9%a2%98" class="header-anchor"&gt;&lt;/a&gt;存在的问题
+&lt;/h2&gt;&lt;p&gt;当然这样配置还是解决不了【正常的Markdown】编辑器无法识别图片路径从而导致图片无法渲染的问题。但好在Hugo有一个不错的实时预览功能，弥补了这一点。&lt;/p&gt;</description></item></channel></rss>

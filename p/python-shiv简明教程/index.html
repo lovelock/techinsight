@@ -1,0 +1,221 @@
+<!doctype html><html lang=zh-cn dir=ltr><head><meta charset=utf-8><meta name=viewport content='width=device-width,initial-scale=1'><meta name=description content="引用一下Flutter中的章节，说明需要用到shiv的地方。\n我们知道，用Go语言写出来的程序是平台有关的二进制文件，随便复制到相同的平台下都可以运行，但Python很多时候不是，因为用PyPI（pip）安装的包并不会打到Python脚本里去，直接拿一个引用了很多其他包的脚本放在其他机器上是无法执行的，所以需要一个把整个运行环境都复制出来可随处移动的工具，而Shiv就是干这个用的。\n"><title>Python shiv简明教程</title><link rel=canonical href=https://techinsight.pages.dev/p/python-shiv%E7%AE%80%E6%98%8E%E6%95%99%E7%A8%8B/><link rel=stylesheet href=/scss/style.min.3c33722a11bfa97f07308377e860d658770fe60627a4c2b1b7d46497ac9c35c3.css><meta property='og:title' content="Python shiv简明教程"><meta property='og:description' content="引用一下Flutter中的章节，说明需要用到shiv的地方。\n我们知道，用Go语言写出来的程序是平台有关的二进制文件，随便复制到相同的平台下都可以运行，但Python很多时候不是，因为用PyPI（pip）安装的包并不会打到Python脚本里去，直接拿一个引用了很多其他包的脚本放在其他机器上是无法执行的，所以需要一个把整个运行环境都复制出来可随处移动的工具，而Shiv就是干这个用的。\n"><meta property='og:url' content='https://techinsight.pages.dev/p/python-shiv%E7%AE%80%E6%98%8E%E6%95%99%E7%A8%8B/'><meta property='og:site_name' content='Tech In Sight'><meta property='og:type' content='article'><meta property='article:section' content='Post'><meta property='article:tag' content='Python'><meta property='article:tag' content='shiv'><meta property='article:published_time' content='2024-07-08T08:49:34+08:00'><meta property='article:modified_time' content='2024-07-08T08:49:34+08:00'><meta property='og:image' content='https://techinsight.pages.dev/images/covers/python-shiv.png'><meta name=twitter:title content="Python shiv简明教程"><meta name=twitter:description content="引用一下Flutter中的章节，说明需要用到shiv的地方。\n我们知道，用Go语言写出来的程序是平台有关的二进制文件，随便复制到相同的平台下都可以运行，但Python很多时候不是，因为用PyPI（pip）安装的包并不会打到Python脚本里去，直接拿一个引用了很多其他包的脚本放在其他机器上是无法执行的，所以需要一个把整个运行环境都复制出来可随处移动的工具，而Shiv就是干这个用的。\n"><meta name=twitter:card content="summary_large_image"><meta name=twitter:image content='https://techinsight.pages.dev/images/covers/python-shiv.png'><link rel="shortcut icon" href=/favicon.ico></head><body class=article-page><script>(function(){const e="StackColorScheme";localStorage.getItem(e)||localStorage.setItem(e,"auto")})()</script><script>(function(){const t="StackColorScheme",e=localStorage.getItem(t),n=window.matchMedia("(prefers-color-scheme: dark)").matches===!0;e=="dark"||e==="auto"&&n?document.documentElement.dataset.scheme="dark":document.documentElement.dataset.scheme="light"})()</script><div class="container main-container flex on-phone--column extended"><aside class="sidebar left-sidebar sticky"><button class="hamburger hamburger--spin" type=button id=toggle-menu aria-label=切换菜单>
+<span class=hamburger-box><span class=hamburger-inner></span></span></button><header><figure class=site-avatar><a href=/><img src=/img/avatar_hu_31786b9867641d1c.png width=300 height=280 class=site-logo loading=lazy alt=Avatar></a></figure><div class=site-meta><h1 class=site-name><a href=/>Tech In Sight</a></h1><h2 class=site-description>聊聊技术，聊聊人生</h2></div></header><ol class=menu-social><li><a href=https://github.com/lovelock target=_blank title=GitHub rel=me><svg class="icon icon-tabler icon-tabler-brand-github" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M9 19c-4.3 1.4-4.3-2.5-6-3m12 5v-3.5c0-1 .1-1.4-.5-2 2.8-.3 5.5-1.4 5.5-6a4.6 4.6.0 00-1.3-3.2 4.2 4.2.0 00-.1-3.2s-1.1-.3-3.5 1.3a12.3 12.3.0 00-6.2.0C6.5 2.8 5.4 3.1 5.4 3.1a4.2 4.2.0 00-.1 3.2A4.6 4.6.0 004 9.5c0 4.6 2.7 5.7 5.5 6-.6.6-.6 1.2-.5 2V21"/></svg></a></li><li><a href=https://twitter.com target=_blank title=Twitter rel=me><svg class="icon icon-tabler icon-tabler-brand-twitter" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M22 4.01c-1 .49-1.98.689-3 .99-1.121-1.265-2.783-1.335-4.38-.737S11.977 6.323 12 8v1c-3.245.083-6.135-1.395-8-4 0 0-4.182 7.433 4 11-1.872 1.247-3.739 2.088-6 2 3.308 1.803 6.913 2.423 10.034 1.517 3.58-1.04 6.522-3.723 7.651-7.742a13.84 13.84.0 00.497-3.753C20.18 7.773 21.692 5.25 22 4.009z"/></svg></a></li></ol><ol class=menu id=main-menu><li><a href=/><svg class="icon icon-tabler icon-tabler-home" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><polyline points="5 12 3 12 12 3 21 12 19 12"/><path d="M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7"/><path d="M9 21v-6a2 2 0 012-2h2a2 2 0 012 2v6"/></svg>
+<span>Home</span></a></li><li><a href=/archives/><svg class="icon icon-tabler icon-tabler-archive" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><rect x="3" y="4" width="18" height="4" rx="2"/><path d="M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8"/><line x1="10" y1="12" x2="14" y2="12"/></svg>
+<span>Archives</span></a></li><li><a href=/search/><svg class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="10" cy="10" r="7"/><line x1="21" y1="21" x2="15" y2="15"/></svg>
+<span>Search</span></a></li><li><a href=/links/><svg class="icon icon-tabler icon-tabler-link" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><path d="M10 14a3.5 3.5.0 005 0l4-4a3.5 3.5.0 00-5-5l-.5.5"/><path d="M14 10a3.5 3.5.0 00-5 0l-4 4a3.5 3.5.0 005 5l.5-.5"/></svg>
+<span>Links</span></a></li><li class=menu-bottom-section><ol class=menu><li id=dark-mode-toggle><svg class="icon icon-tabler icon-tabler-toggle-left" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="8" cy="12" r="2"/><rect x="2" y="6" width="20" height="12" rx="6"/></svg>
+<svg class="icon icon-tabler icon-tabler-toggle-right" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="16" cy="12" r="2"/><rect x="2" y="6" width="20" height="12" rx="6"/></svg>
+<span>暗色模式</span></li></ol></li></ol></aside><aside class="sidebar right-sidebar sticky"><section class="widget archives"><div class=widget-icon><svg class="icon icon-tabler icon-tabler-hash" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><line x1="5" y1="9" x2="19" y2="9"/><line x1="5" y1="15" x2="19" y2="15"/><line x1="11" y1="4" x2="7" y2="20"/><line x1="17" y1="4" x2="13" y2="20"/></svg></div><h2 class="widget-title section-title">目录</h2><div class=widget--toc><nav id=TableOfContents><ol><li><a href=#python-项目管理方式介绍>Python 项目管理方式介绍</a><ol><li><a href=#setuppy><code>setup.py</code></a></li><li><a href=#其他方式>其他方式</a><ol><li><a href=#setupcfg><code>setup.cfg</code></a></li><li><a href=#pyprojecttoml><code>pyproject.toml</code></a></li></ol></li></ol></li><li><a href=#shiv解决了什么问题>shiv解决了什么问题？</a><ol><li><a href=#简单的例子>简单的例子</a></li></ol></li><li><a href=#总结>总结</a></li></ol></nav></div></section></aside><main class="main full-width"><article class="has-image main-article"><header class=article-header><div class=article-image><a href=/p/python-shiv%E7%AE%80%E6%98%8E%E6%95%99%E7%A8%8B/><img src=/images/covers/python-shiv.png loading=lazy alt="Featured image of post Python shiv简明教程"></a></div><div class=article-details><div class=article-title-wrapper><h2 class=article-title><a href=/p/python-shiv%E7%AE%80%E6%98%8E%E6%95%99%E7%A8%8B/>Python shiv简明教程</a></h2></div><footer class=article-time><div><svg class="icon icon-tabler icon-tabler-calendar-time" width="56" height="56" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><path d="M11.795 21H5a2 2 0 01-2-2V7a2 2 0 012-2h12a2 2 0 012 2v4"/><circle cx="18" cy="18" r="4"/><path d="M15 3v4"/><path d="M7 3v4"/><path d="M3 11h16"/><path d="M18 16.496V18l1 1"/></svg>
+<time class=article-time--published>Jul 08, 2024</time></div><div><svg class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 15"/></svg>
+<time class=article-time--reading>阅读时长: 5 分钟</time></div></footer></div></header><section class=article-content><p>引用一下Flutter中的章节，说明需要用到shiv的地方。</p><p>我们知道，用Go语言写出来的程序是平台<strong>有关</strong>的二进制文件，随便复制到相同的平台下都可以运行，但Python很多时候不是，因为用PyPI（pip）安装的包并不会打到Python脚本里去，直接拿一个引用了很多其他包的脚本放在其他机器上是无法执行的，所以需要一个把整个运行环境都复制出来可随处移动的工具，而Shiv就是干这个用的。</p><h2 id=python-项目管理方式介绍><a href=#python-%e9%a1%b9%e7%9b%ae%e7%ae%a1%e7%90%86%e6%96%b9%e5%bc%8f%e4%bb%8b%e7%bb%8d class=header-anchor></a>Python 项目管理方式介绍</h2><p>这是理解shiv的工作原理的重点，希望能仔细理解。</p><h3 id=setuppy><a href=#setuppy class=header-anchor></a><code>setup.py</code></h3><p>这应该是最传统的方式了，把基础信息和包的信息都写在一个py脚本里，基本的样式如下</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-python data-lang=python><span class=line><span class=cl><span class=c1># setup.py</span>
+</span></span><span class=line><span class=cl><span class=kn>from</span> <span class=nn>setuptools</span> <span class=kn>import</span> <span class=n>setup</span><span class=p>,</span> <span class=n>find_packages</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=n>setup</span><span class=p>(</span>
+</span></span><span class=line><span class=cl>    <span class=n>name</span><span class=o>=</span><span class=s1>&#39;example&#39;</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>    <span class=n>version</span><span class=o>=</span><span class=s1>&#39;0.1&#39;</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>    <span class=n>packages</span><span class=o>=</span><span class=n>find_packages</span><span class=p>(),</span>
+</span></span><span class=line><span class=cl>    <span class=n>entry_points</span><span class=o>=</span><span class=p>{</span>
+</span></span><span class=line><span class=cl>        <span class=s1>&#39;console_scripts&#39;</span><span class=p>:</span> <span class=p>[</span>
+</span></span><span class=line><span class=cl>            <span class=s1>&#39;example-cli=example.main:main&#39;</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>        <span class=p>],</span>
+</span></span><span class=line><span class=cl>    <span class=p>},</span>
+</span></span><span class=line><span class=cl><span class=p>)</span>
+</span></span></code></pre></td></tr></table></div></div><p>简单介绍一下这些字段的含义。</p><p><code>name</code>就是项目名了，注意是项目名，而不是最终生成的可执行文件的名字，<code>version</code>是版本号，不再过多解释。</p><p><code>packages=find_packages()</code> 值得解释一下。正常来说这里是要手写一些包的，但这里使用了一个方法来动态查找这些包。</p><p>那么问题来了，什么是包呢？</p><p>在其他语言里，通常一级目录就是一个包了，但Python里并不是，还需要一个通常为空的文件 <code>__init__.py</code>，可以查一下为什么要有这个文件。当存在这个文件的时候才认为这是一个包，比如说我们有一个包 <code>example</code>，就需要是这样的结构</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback><span class=line><span class=cl>-- example_project
+</span></span><span class=line><span class=cl>	-- setup.py
+</span></span><span class=line><span class=cl>	-- example
+</span></span><span class=line><span class=cl>		-- __init__.py
+</span></span><span class=line><span class=cl>		-- main.py
+</span></span></code></pre></td></tr></table></div></div><p>正常来说，这时候在 <code>packages</code>处应该填写的是 <code>['example']</code>，但由于这个规则的存在，可以使用 <code>find_packages</code>方法查找整个目录下所有存在 <code>__init__.py</code>的目录，把它们的名字放在 <code>packages</code>里。当然这个方法还有别的参数，这里就不再赘述。</p><p>下面就是程序的<strong>可执行文件</strong>了。顾名思义，<code>console_scripts</code>就是在终端能直接使用的脚本名，作为脚本语言，Python有两种写法</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-python data-lang=python><span class=line><span class=cl><span class=nb>print</span><span class=p>(</span><span class=s1>&#39;hello world&#39;</span><span class=p>)</span>
+</span></span></code></pre></td></tr></table></div></div><p>这时候直接 <code>python main.py</code>是可以的，但在标准化的项目里，通常是像下面这样的写法</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-python data-lang=python><span class=line><span class=cl><span class=k>def</span> <span class=nf>main</span><span class=p>():</span>
+</span></span><span class=line><span class=cl>	<span class=nb>print</span><span class=p>(</span><span class=s1>&#39;hello world&#39;</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=k>if</span> <span class=vm>__name__</span> <span class=o>==</span> <span class=s1>&#39;__main__&#39;</span><span class=p>:</span>
+</span></span><span class=line><span class=cl>	<span class=n>main</span><span class=p>()</span>
+</span></span></code></pre></td></tr></table></div></div><p>这里就定义了一个 <code>main</code>方法，其实就类似于C系列语言中的main函数了。</p><p>问题讨论到这里就已经很清晰了，我们有了包名 <code>example</code>，里面有一个 <code>hello</code>模块，其实就是 <code>hello.py</code>，现在又有了方法名 <code>main</code>，其实已经可以引用它了，没错就是 <code>example.hello:main</code></p><p>搞清楚了这些问题，就可以看看Python包的安装和使用了。</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl>pip install setuptools
+</span></span><span class=line><span class=cl>python setup.py
+</span></span><span class=line><span class=cl>pip install .
+</span></span></code></pre></td></tr></table></div></div><p>如果当前使用的Python环境是用virtualenv安装的，这时候就会在 <code>venv/bin/</code>下生成相应的可执行文件，对应上面的例子，就是 <code>example-cli</code>。执行 <code>venv/bin/example-cli</code>就能运行上面的代码了。</p><p>到这里终于把前置的问题都说清楚了，现在可以讨论shiv的问题了。</p><h3 id=其他方式><a href=#%e5%85%b6%e4%bb%96%e6%96%b9%e5%bc%8f class=header-anchor></a>其他方式</h3><h4 id=setupcfg><a href=#setupcfg class=header-anchor></a><code>setup.cfg</code></h4><p>后面又发展除了 <code>setup.cfg</code>，用ini的语法来写一些静态的内容，没有解决什么核心的问题。</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-ini data-lang=ini><span class=line><span class=cl><span class=c1># setup.cfg</span>
+</span></span><span class=line><span class=cl><span class=k>[metadata]</span>
+</span></span><span class=line><span class=cl><span class=na>name</span> <span class=o>=</span> <span class=s>example</span>
+</span></span><span class=line><span class=cl><span class=na>version</span> <span class=o>=</span> <span class=s>0.1</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=k>[options]</span>
+</span></span><span class=line><span class=cl><span class=na>packages</span> <span class=o>=</span> <span class=s>find:</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=k>[options.entry_points]</span>
+</span></span><span class=line><span class=cl><span class=na>console_scripts</span> <span class=o>=</span><span class=s>
+</span></span></span><span class=line><span class=cl><span class=s>    example-cli = example.main:main</span>
+</span></span></code></pre></td></tr></table></div></div><h4 id=pyprojecttoml><a href=#pyprojecttoml class=header-anchor></a><code>pyproject.toml</code></h4><p>pyproject.toml是一个新的标准，用于定义构建系统的要求。它使用TOML格式，并且旨在取代setup.py和setup.cfg。pyproject.toml文件可以包含构建工具的配置，如setuptools、wheel、flit等。</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-toml data-lang=toml><span class=line><span class=cl><span class=c># pyproject.toml</span>
+</span></span><span class=line><span class=cl><span class=p>[</span><span class=nx>build-system</span><span class=p>]</span>
+</span></span><span class=line><span class=cl><span class=nx>requires</span> <span class=p>=</span> <span class=p>[</span><span class=s2>&#34;setuptools&#34;</span><span class=p>,</span> <span class=s2>&#34;wheel&#34;</span><span class=p>]</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=p>[</span><span class=nx>project</span><span class=p>]</span>
+</span></span><span class=line><span class=cl><span class=nx>name</span> <span class=p>=</span> <span class=s2>&#34;example&#34;</span>
+</span></span><span class=line><span class=cl><span class=nx>version</span> <span class=p>=</span> <span class=s2>&#34;0.1&#34;</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=p>[</span><span class=nx>project</span><span class=p>.</span><span class=nx>scripts</span><span class=p>]</span>
+</span></span><span class=line><span class=cl><span class=nx>example-cli</span> <span class=p>=</span> <span class=s2>&#34;example:main&#34;</span>
+</span></span></code></pre></td></tr></table></div></div><p>这个看起来就有点Cargo.toml的味道了。</p><h2 id=shiv解决了什么问题><a href=#shiv%e8%a7%a3%e5%86%b3%e4%ba%86%e4%bb%80%e4%b9%88%e9%97%ae%e9%a2%98 class=header-anchor></a>shiv解决了什么问题？</h2><p>简单来讲，就是把当前程序和它的所有依赖打成一个包，让它成为一个<strong>相对独立</strong>的发行版本。有点类似Java的fatjar。</p><p>注意这里说的是相对独立，因为Python的很多包其实是一个Wrapper，也就是对其他可执行文件/库的Python<strong>封装</strong>，而不是实现，所以如果你引用的包是一个Wrapper，那么用shiv也不能解决这个问题。</p><h3 id=简单的例子><a href=#%e7%ae%80%e5%8d%95%e7%9a%84%e4%be%8b%e5%ad%90 class=header-anchor></a>简单的例子</h3><p>新建一个目录叫 <code>shiv_demo</code>，写一个脚本叫 <code>hello.py</code>，内容如下</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span><span class=lnt>7
+</span><span class=lnt>8
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-python data-lang=python><span class=line><span class=cl><span class=kn>import</span> <span class=nn>simplejson</span> <span class=k>as</span> <span class=nn>json</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=k>def</span> <span class=nf>main</span><span class=p>():</span>
+</span></span><span class=line><span class=cl>    <span class=n>r</span> <span class=o>=</span> <span class=n>json</span><span class=o>.</span><span class=n>dumps</span><span class=p>([</span><span class=s1>&#39;foo&#39;</span><span class=p>,</span> <span class=p>{</span><span class=s1>&#39;bar&#39;</span><span class=p>:</span> <span class=p>(</span><span class=s1>&#39;baz&#39;</span><span class=p>,</span> <span class=kc>None</span><span class=p>,</span> <span class=mf>1.0</span><span class=p>,</span> <span class=mi>2</span><span class=p>)}])</span>
+</span></span><span class=line><span class=cl>    <span class=nb>print</span><span class=p>(</span><span class=n>r</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=k>if</span> <span class=vm>__name__</span> <span class=o>==</span> <span class=s1>&#39;__main__&#39;</span><span class=p>:</span>
+</span></span><span class=line><span class=cl>    <span class=n>main</span><span class=p>()</span>
+</span></span></code></pre></td></tr></table></div></div><p>可以看到依赖 <code>simplejson</code>，安装它</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-python data-lang=python><span class=line><span class=cl><span class=n>pip</span> <span class=n>install</span> <span class=n>simplejson</span> <span class=n>shiv</span>
+</span></span></code></pre></td></tr></table></div></div><p>配置一个 <code>setup.py</code></p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-python data-lang=python><span class=line><span class=cl><span class=kn>from</span> <span class=nn>setuptools</span> <span class=kn>import</span> <span class=n>setup</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=n>setup</span><span class=p>(</span>
+</span></span><span class=line><span class=cl>    <span class=n>name</span><span class=o>=</span><span class=s2>&#34;hello-world&#34;</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>    <span class=n>version</span><span class=o>=</span><span class=s2>&#34;0.0.1&#34;</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>    <span class=n>description</span><span class=o>=</span><span class=s2>&#34;Greet the world.&#34;</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>    <span class=n>py_modules</span><span class=o>=</span><span class=p>[</span><span class=s2>&#34;hello&#34;</span><span class=p>],</span>
+</span></span><span class=line><span class=cl>    <span class=n>entry_points</span><span class=o>=</span><span class=p>{</span>
+</span></span><span class=line><span class=cl>        <span class=s2>&#34;console_scripts&#34;</span><span class=p>:</span> <span class=p>[</span><span class=s2>&#34;hello=hello:main&#34;</span><span class=p>],</span>
+</span></span><span class=line><span class=cl>    <span class=p>},</span>
+</span></span><span class=line><span class=cl><span class=p>)</span>
+</span></span></code></pre></td></tr></table></div></div><p>这时候就可以给它打包了</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-python data-lang=python><span class=line><span class=cl><span class=n>shiv</span> <span class=o>-</span><span class=n>c</span> <span class=n>hello</span> <span class=o>-</span><span class=n>o</span> <span class=n>hello</span><span class=o>.</span><span class=n>pyz</span> <span class=o>.</span>
+</span></span></code></pre></td></tr></table></div></div><p>这时候打包生成了一个 <code>hello.pyz</code>文件，就可以把这个文件拿到别处去执行了，然后你就会发现报错。。。</p><p>到这里验证的时候我才发现，其实shiv解决的问题非常有限，参考这里<a class=link href=../shiv%e8%a7%a3%e5%86%b3%e4%ba%86%e4%bb%80%e4%b9%88%e9%97%ae%e9%a2%98>shiv解决了什么问题</a>，但起码它可以让你的程序在安装了相同的Python执行器的机器之间移植。下面测试一下，在另外一个目录里再执行</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-python data-lang=python><span class=line><span class=cl><span class=n>virtualenv</span> <span class=n>venv</span> <span class=o>--</span><span class=n>python</span><span class=o>=</span><span class=mf>3.12</span>
+</span></span><span class=line><span class=cl><span class=n>source</span> <span class=n>venv</span><span class=o>/</span><span class=nb>bin</span><span class=o>/</span><span class=n>activate</span>
+</span></span></code></pre></td></tr></table></div></div><p>然后执行刚刚打包生成的 <code>hello.pyz</code>，结果还是报错</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span><span class=lnt>22
+</span><span class=lnt>23
+</span><span class=lnt>24
+</span><span class=lnt>25
+</span><span class=lnt>26
+</span><span class=lnt>27
+</span><span class=lnt>28
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-gdscript3 data-lang=gdscript3><span class=line><span class=cl><span class=err>❯</span> <span class=o>./</span><span class=n>hello</span>
+</span></span><span class=line><span class=cl><span class=n>Traceback</span> <span class=p>(</span><span class=n>most</span> <span class=n>recent</span> <span class=n>call</span> <span class=n>last</span><span class=p>):</span>
+</span></span><span class=line><span class=cl>  <span class=ne>File</span> <span class=s2>&#34;/private/tmp/shiv3/./hello/_bootstrap/__init__.py&#34;</span><span class=p>,</span> <span class=n>line</span> <span class=mi>76</span><span class=p>,</span> <span class=ow>in</span> <span class=n>import_string</span>
+</span></span><span class=line><span class=cl>  <span class=ne>File</span> <span class=s2>&#34;/Users/qingchun3/.shiv/hello_e90513a0cebd72cf33c783fbb6faeb3783e9e41fd501901ce8b27f69a16aef65/site-packages/hello.py&#34;</span><span class=p>,</span> <span class=n>line</span> <span class=mi>1</span><span class=p>,</span> <span class=ow>in</span> <span class=o>&lt;</span><span class=n>module</span><span class=o>&gt;</span>
+</span></span><span class=line><span class=cl>    <span class=n>import</span> <span class=n>simplejson</span> <span class=n>as</span> <span class=n>json</span>
+</span></span><span class=line><span class=cl><span class=n>ModuleNotFoundError</span><span class=p>:</span> <span class=n>No</span> <span class=n>module</span> <span class=n>named</span> <span class=s1>&#39;simplejson&#39;</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=n>During</span> <span class=n>handling</span> <span class=n>of</span> <span class=n>the</span> <span class=n>above</span> <span class=n>exception</span><span class=p>,</span> <span class=n>another</span> <span class=n>exception</span> <span class=n>occurred</span><span class=p>:</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=n>Traceback</span> <span class=p>(</span><span class=n>most</span> <span class=n>recent</span> <span class=n>call</span> <span class=n>last</span><span class=p>):</span>
+</span></span><span class=line><span class=cl>  <span class=ne>File</span> <span class=s2>&#34;&lt;frozen runpy&gt;&#34;</span><span class=p>,</span> <span class=n>line</span> <span class=mi>198</span><span class=p>,</span> <span class=ow>in</span> <span class=n>_run_module_as_main</span>
+</span></span><span class=line><span class=cl>  <span class=ne>File</span> <span class=s2>&#34;&lt;frozen runpy&gt;&#34;</span><span class=p>,</span> <span class=n>line</span> <span class=mi>88</span><span class=p>,</span> <span class=ow>in</span> <span class=n>_run_code</span>
+</span></span><span class=line><span class=cl>  <span class=ne>File</span> <span class=s2>&#34;/private/tmp/shiv3/./hello/__main__.py&#34;</span><span class=p>,</span> <span class=n>line</span> <span class=mi>3</span><span class=p>,</span> <span class=ow>in</span> <span class=o>&lt;</span><span class=n>module</span><span class=o>&gt;</span>
+</span></span><span class=line><span class=cl>  <span class=ne>File</span> <span class=s2>&#34;/private/tmp/shiv3/./hello/_bootstrap/__init__.py&#34;</span><span class=p>,</span> <span class=n>line</span> <span class=mi>253</span><span class=p>,</span> <span class=ow>in</span> <span class=n>bootstrap</span>
+</span></span><span class=line><span class=cl>  <span class=ne>File</span> <span class=s2>&#34;/private/tmp/shiv3/./hello/_bootstrap/__init__.py&#34;</span><span class=p>,</span> <span class=n>line</span> <span class=mi>81</span><span class=p>,</span> <span class=ow>in</span> <span class=n>import_string</span>
+</span></span><span class=line><span class=cl>  <span class=ne>File</span> <span class=s2>&#34;/private/tmp/shiv3/./hello/_bootstrap/__init__.py&#34;</span><span class=p>,</span> <span class=n>line</span> <span class=mi>59</span><span class=p>,</span> <span class=ow>in</span> <span class=n>import_string</span>
+</span></span><span class=line><span class=cl>  <span class=ne>File</span> <span class=s2>&#34;/opt/homebrew/Cellar/python@3.12/3.12.4/Frameworks/Python.framework/Versions/3.12/lib/python3.12/importlib/__init__.py&#34;</span><span class=p>,</span> <span class=n>line</span> <span class=mi>90</span><span class=p>,</span> <span class=ow>in</span> <span class=n>import_module</span>
+</span></span><span class=line><span class=cl>    <span class=k>return</span> <span class=n>_bootstrap</span><span class=o>.</span><span class=n>_gcd_import</span><span class=p>(</span><span class=n>name</span><span class=p>[</span><span class=n>level</span><span class=p>:],</span> <span class=n>package</span><span class=p>,</span> <span class=n>level</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>           <span class=o>^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^</span>
+</span></span><span class=line><span class=cl>  <span class=ne>File</span> <span class=s2>&#34;&lt;frozen importlib._bootstrap&gt;&#34;</span><span class=p>,</span> <span class=n>line</span> <span class=mi>1387</span><span class=p>,</span> <span class=ow>in</span> <span class=n>_gcd_import</span>
+</span></span><span class=line><span class=cl>  <span class=ne>File</span> <span class=s2>&#34;&lt;frozen importlib._bootstrap&gt;&#34;</span><span class=p>,</span> <span class=n>line</span> <span class=mi>1360</span><span class=p>,</span> <span class=ow>in</span> <span class=n>_find_and_load</span>
+</span></span><span class=line><span class=cl>  <span class=ne>File</span> <span class=s2>&#34;&lt;frozen importlib._bootstrap&gt;&#34;</span><span class=p>,</span> <span class=n>line</span> <span class=mi>1331</span><span class=p>,</span> <span class=ow>in</span> <span class=n>_find_and_load_unlocked</span>
+</span></span><span class=line><span class=cl>  <span class=ne>File</span> <span class=s2>&#34;&lt;frozen importlib._bootstrap&gt;&#34;</span><span class=p>,</span> <span class=n>line</span> <span class=mi>935</span><span class=p>,</span> <span class=ow>in</span> <span class=n>_load_unlocked</span>
+</span></span><span class=line><span class=cl>  <span class=ne>File</span> <span class=s2>&#34;&lt;frozen importlib._bootstrap_external&gt;&#34;</span><span class=p>,</span> <span class=n>line</span> <span class=mi>995</span><span class=p>,</span> <span class=ow>in</span> <span class=n>exec_module</span>
+</span></span><span class=line><span class=cl>  <span class=ne>File</span> <span class=s2>&#34;&lt;frozen importlib._bootstrap&gt;&#34;</span><span class=p>,</span> <span class=n>line</span> <span class=mi>488</span><span class=p>,</span> <span class=ow>in</span> <span class=n>_call_with_frames_removed</span>
+</span></span><span class=line><span class=cl>  <span class=ne>File</span> <span class=s2>&#34;/Users/qingchun3/.shiv/hello_e90513a0cebd72cf33c783fbb6faeb3783e9e41fd501901ce8b27f69a16aef65/site-packages/hello.py&#34;</span><span class=p>,</span> <span class=n>line</span> <span class=mi>1</span><span class=p>,</span> <span class=ow>in</span> <span class=o>&lt;</span><span class=n>module</span><span class=o>&gt;</span>
+</span></span><span class=line><span class=cl>    <span class=n>import</span> <span class=n>simplejson</span> <span class=n>as</span> <span class=n>json</span>
+</span></span><span class=line><span class=cl><span class=n>ModuleNotFoundError</span><span class=p>:</span> <span class=n>No</span> <span class=n>module</span> <span class=n>named</span> <span class=s1>&#39;simplejson&#39;</span>
+</span></span></code></pre></td></tr></table></div></div><p>唉？不是说好的会把依赖也打包进来吗？为什么没有？原来是因为没有添加</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback><span class=line><span class=cl>-r requirements.txt
+</span></span></code></pre></td></tr></table></div></div><p>选项，那么这个文件从哪里来呢？如果你已经通过pip安装了所有依赖，通过执行 <code>pip freeze > requirements.txt</code>就可以了。</p><p>完整命令就是</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback><span class=line><span class=cl>shiv -c hello -o hello.pyz -r requirements.txt .
+</span></span></code></pre></td></tr></table></div></div><p>再测试就通过了。</p><h2 id=总结><a href=#%e6%80%bb%e7%bb%93 class=header-anchor></a>总结</h2><p>其实到最后我是很失望的，因为一开始并没有完全搞清楚shiv到底解决了什么问题，我想做的是完全的可移植性，在一台机器上将环境配置好之后拿到同平台的其他机器上直接可以执行的那种，但明显shiv并不符合我的要求，这时候我突然就发现了Java和Golang的厉害之处了，Java可以一个jar包走天下，只要有JRE就能运行，而Golang更厉害了，甚至什么都不需要，直接就是一个包含所有依赖的二进制文件。</p><p>但是，问题还是要解决，再问问GPT，继续踏上征程吧。</p></section><footer class=article-footer><section class=article-tags><a href=/tags/python/>Python</a>
+<a href=/tags/shiv/>Shiv</a></section><section class=article-copyright><svg class="icon icon-tabler icon-tabler-copyright" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="12" r="9"/><path d="M14.5 9a3.5 4 0 100 6"/></svg>
+<span>Licensed under CC BY-NC-SA 4.0</span></section></footer><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css integrity=sha384-n8MVd4RsNIU0tAv4ct0nTaAbDJwPJzDEaqSD1odI+WdtXRGWt2kTvGFasHpSy3SV crossorigin=anonymous><script src=https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js integrity=sha384-XjKyOOlGwcjNTAIQHIpgOno0Hl1YQqzUOEleOLALmuqehneUG+vnGctmUb0ZY0l8 crossorigin=anonymous defer></script><script src=https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js integrity=sha384-+VBxd3r6XgURycqtZ117nYw44OOcIax56Z4dCRWbxyPt0Koah1uHoK0o4+/RRE05 crossorigin=anonymous defer></script><script>window.addEventListener("DOMContentLoaded",()=>{const e=document.querySelector(".main-article");renderMathInElement(e,{delimiters:[{left:"$$",right:"$$",display:!0},{left:"$",right:"$",display:!1},{left:"\\(",right:"\\)",display:!1},{left:"\\[",right:"\\]",display:!0}],ignoredClasses:["gist"]})})</script></article><aside class=related-content--wrapper><h2 class=section-title>相关文章</h2><div class=related-content><div class="flex article-list--tile"><article class=has-image><a href=/p/shiv%E8%A7%A3%E5%86%B3%E4%BA%86%E4%BB%80%E4%B9%88%E9%97%AE%E9%A2%98/><div class=article-image><img src=/images/covers/python-growing.webp loading=lazy data-key data-hash=/images/covers/python-growing.webp></div><div class=article-details><h2 class=article-title>shiv解决了什么问题</h2></div></a></article></div></div></aside><div class=disqus-container></div><style>.disqus-container{background-color:var(--card-background);border-radius:var(--card-border-radius);box-shadow:var(--shadow-l1);padding:var(--card-padding)}</style><script>window.addEventListener("onColorSchemeChange",e=>{typeof DISQUS=="object"&&DISQUS.reset({reload:!0})})</script><footer class=site-footer><section class=copyright>&copy;
+2014 -
+2026 Tech In Sight</section><section class=powerby>使用 <a href=https://gohugo.io/ target=_blank rel=noopener>Hugo</a> 构建<br>主题 <b><a href=https://github.com/CaiJimmy/hugo-theme-stack target=_blank rel=noopener data-version=3.30.0>Stack</a></b> 由 <a href=https://jimmycai.com target=_blank rel=noopener>Jimmy</a> 设计</section></footer><div class=pswp tabindex=-1 role=dialog aria-hidden=true><div class=pswp__bg></div><div class=pswp__scroll-wrap><div class=pswp__container><div class=pswp__item></div><div class=pswp__item></div><div class=pswp__item></div></div><div class="pswp__ui pswp__ui--hidden"><div class=pswp__top-bar><div class=pswp__counter></div><button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+<button class="pswp__button pswp__button--share" title=Share></button>
+<button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+<button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button><div class=pswp__preloader><div class=pswp__preloader__icn><div class=pswp__preloader__cut><div class=pswp__preloader__donut></div></div></div></div></div><div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap"><div class=pswp__share-tooltip></div></div><button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+</button>
+<button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)"></button><div class=pswp__caption><div class=pswp__caption__center></div></div></div></div></div><script src=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js integrity="sha256-ePwmChbbvXbsO02lbM3HoHbSHTHFAeChekF1xKJdleo=" crossorigin=anonymous defer></script><script src=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js integrity="sha256-UKkzOn/w1mBxRmLLGrSeyB4e1xbrp4xylgAWb3M42pU=" crossorigin=anonymous defer></script><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.min.css crossorigin=anonymous><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.css crossorigin=anonymous></main></div><script src=https://cdn.jsdelivr.net/npm/node-vibrant@3.1.6/dist/vibrant.min.js integrity="sha256-awcR2jno4kI5X0zL8ex0vi2z+KMkF24hUW8WePSA9HM=" crossorigin=anonymous></script><script type=text/javascript src=/ts/main.1e9a3bafd846ced4c345d084b355fb8c7bae75701c338f8a1f8a82c780137826.js defer></script><script>(function(){const e=document.createElement("link");e.href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap",e.type="text/css",e.rel="stylesheet",document.head.appendChild(e)})()</script></body></html>

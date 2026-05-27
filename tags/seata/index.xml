@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Seata on Tech In Sight</title><link>https://techinsight.pages.dev/tags/seata/</link><description>Recent content in Seata on Tech In Sight</description><generator>Hugo -- gohugo.io</generator><language>zh-cn</language><lastBuildDate>Sat, 14 Mar 2026 12:00:00 +0900</lastBuildDate><atom:link href="https://techinsight.pages.dev/tags/seata/index.xml" rel="self" type="application/rss+xml"/><item><title>从单机代理到分布式博弈：彻底吃透 Spring 事务与 Seata 架构演进</title><link>https://techinsight.pages.dev/p/%E4%BB%8E%E5%8D%95%E6%9C%BA%E4%BB%A3%E7%90%86%E5%88%B0%E5%88%86%E5%B8%83%E5%BC%8F%E5%8D%9A%E5%BC%88%E5%BD%BB%E5%BA%95%E5%90%83%E9%80%8F-spring-%E4%BA%8B%E5%8A%A1%E4%B8%8E-seata-%E6%9E%B6%E6%9E%84%E6%BC%94%E8%BF%9B/</link><pubDate>Sat, 14 Mar 2026 12:00:00 +0900</pubDate><guid>https://techinsight.pages.dev/p/%E4%BB%8E%E5%8D%95%E6%9C%BA%E4%BB%A3%E7%90%86%E5%88%B0%E5%88%86%E5%B8%83%E5%BC%8F%E5%8D%9A%E5%BC%88%E5%BD%BB%E5%BA%95%E5%90%83%E9%80%8F-spring-%E4%BA%8B%E5%8A%A1%E4%B8%8E-seata-%E6%9E%B6%E6%9E%84%E6%BC%94%E8%BF%9B/</guid><description>&lt;p&gt;在 Java 后端开发中，处理数据库事务往往是业务逻辑的重中之重。在单体应用时代，Spring 提供的 &lt;code&gt;@Transactional&lt;/code&gt; 注解仿佛拥有黑魔法，只需轻轻一点，繁琐的提交与回滚便迎刃而解。然而，当系统迈入微服务与多数据源时代，这层魔法瞬间失效，开发者被迫直面分布式系统中最残酷的 CAP 定理。&lt;/p&gt;
+&lt;p&gt;本文将从 &lt;code&gt;@Transactional&lt;/code&gt; 的底层代理机制切入，剖析其致命的使用陷阱，并顺着架构演进的脉络，深度解构跨库场景下的分布式事务解决方案及其背后的妥协哲学。&lt;/p&gt;
+&lt;h2 id="一-transactional-的底层真相代理模式的完美演出"&gt;&lt;a href="#%e4%b8%80-transactional-%e7%9a%84%e5%ba%95%e5%b1%82%e7%9c%9f%e7%9b%b8%e4%bb%a3%e7%90%86%e6%a8%a1%e5%bc%8f%e7%9a%84%e5%ae%8c%e7%be%8e%e6%bc%94%e5%87%ba" class="header-anchor"&gt;&lt;/a&gt;一、 @Transactional 的底层真相：代理模式的完美演出
+&lt;/h2&gt;&lt;p&gt;在纯 JDBC 时代，一段包含事务的业务代码充斥着获取连接、关闭自动提交、手动 Commit 以及 Catch 异常后 Rollback 的模板代码。&lt;code&gt;@Transactional&lt;/code&gt; 的核心价值，就是用声明式的方式将这些非业务关注点彻底剥离。&lt;/p&gt;
+&lt;p&gt;这种剥离的底层支撑，正是基于 CGLIB 或 JDK 动态代理的 AOP 技术。当 Spring 扫描到类或方法上的 &lt;code&gt;@Transactional&lt;/code&gt; 注解时，它并不会将真实的业务对象暴露给 IoC 容器，而是生成一个包含 &lt;code&gt;TransactionInterceptor&lt;/code&gt;（事务拦截器）的代理子类。&lt;/p&gt;
+&lt;p&gt;真正的执行流如下：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;&lt;strong&gt;拦截接管&lt;/strong&gt;：外部请求打在代理对象上，拦截器向数据库连接池申请 &lt;code&gt;Connection&lt;/code&gt;，并执行 &lt;code&gt;setAutoCommit(false)&lt;/code&gt;。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;线程绑定&lt;/strong&gt;：Spring 将该连接放入基于 &lt;code&gt;ThreadLocal&lt;/code&gt; 的同步管理器中。这保证了业务方法内部触发的所有 MyBatis 或 Hibernate 操作，都能从当前线程拿到同一个物理连接，从而处于同一个事务上下文中。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;执行与收尾&lt;/strong&gt;：拦截器调用真实业务方法。若正常返回则取出连接执行 &lt;code&gt;commit()&lt;/code&gt;；若捕获到未处理的 &lt;code&gt;RuntimeException&lt;/code&gt;，则执行 &lt;code&gt;rollback()&lt;/code&gt;。最后归还连接，清理现场。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;没有任何黑魔法，&lt;code&gt;@Transactional&lt;/code&gt; 仅仅是一段被代理类包裹起来的、硬编码的 JDBC try-catch 逻辑。&lt;/p&gt;
+&lt;h2 id="二-致命陷阱为何-this-调用会让事务裸奔"&gt;&lt;a href="#%e4%ba%8c-%e8%87%b4%e5%91%bd%e9%99%b7%e9%98%b1%e4%b8%ba%e4%bd%95-this-%e8%b0%83%e7%94%a8%e4%bc%9a%e8%ae%a9%e4%ba%8b%e5%8a%a1%e8%a3%b8%e5%a5%94" class="header-anchor"&gt;&lt;/a&gt;二、 致命陷阱：为何 this 调用会让事务裸奔？
+&lt;/h2&gt;&lt;p&gt;理解了代理机制，就能看穿 Spring 事务中最令人抓狂的陷阱：&lt;strong&gt;类内部方法自调用（Self-Invocation）导致事务失效&lt;/strong&gt;。&lt;/p&gt;
+&lt;p&gt;假设 &lt;code&gt;OrderService&lt;/code&gt; 中有一个未加事务的 &lt;code&gt;createOrder()&lt;/code&gt; 方法，它在内部调用了同类中被 &lt;code&gt;@Transactional&lt;/code&gt; 修饰的 &lt;code&gt;pay()&lt;/code&gt; 方法。此时，事务将绝对不会生效。&lt;/p&gt;
+&lt;p&gt;在 Spring 容器中，此时存在两个对象：一个是真实的业务对象（老板），另一个是包裹在外的代理对象（保安）。外部调用 &lt;code&gt;createOrder()&lt;/code&gt; 时，由于没有事务注解，代理对象（保安）直接放行，请求进入了真实对象（老板）。在真实对象内部执行 &lt;code&gt;this.pay()&lt;/code&gt; 时，&lt;code&gt;this&lt;/code&gt; 指针永远指向当前内存中的真实对象本身。这意味着它根本不会绕回大门口让代理对象重新拦截。这是一次极其纯粹的“裸奔”调用，自然没有人为其开启和提交事务。&lt;/p&gt;
+&lt;p&gt;破解这一困局的架构思路有三：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;正统解法&lt;/strong&gt;：将 &lt;code&gt;@Transactional&lt;/code&gt; 移至外层的统一入口方法上，让整个业务链路处于外层大事务的庇护之下。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;架构解耦&lt;/strong&gt;：将扣款逻辑剥离至独立的 &lt;code&gt;PaymentService&lt;/code&gt;，将内部自调用转化为跨类的外部调用，从而重新触发代理拦截。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;自我注入&lt;/strong&gt;：在类内部通过 &lt;code&gt;@Autowired&lt;/code&gt; 注入自身的代理对象，替代 &lt;code&gt;this&lt;/code&gt; 进行调用。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id="三-跨越单库边界分布式事务的深水区"&gt;&lt;a href="#%e4%b8%89-%e8%b7%a8%e8%b6%8a%e5%8d%95%e5%ba%93%e8%be%b9%e7%95%8c%e5%88%86%e5%b8%83%e5%bc%8f%e4%ba%8b%e5%8a%a1%e7%9a%84%e6%b7%b1%e6%b0%b4%e5%8c%ba" class="header-anchor"&gt;&lt;/a&gt;三、 跨越单库边界：分布式事务的深水区
+&lt;/h2&gt;&lt;p&gt;当业务复杂度提升，一个请求需要同时操作订单库（DB1）和库存库（DB2）时，基于单机 &lt;code&gt;ThreadLocal&lt;/code&gt; 绑定的 &lt;code&gt;@Transactional&lt;/code&gt; 彻底宣告破产。若操作 DB1 成功而操作 DB2 崩溃，DB1 的数据已永久落盘，无法撤销。&lt;/p&gt;
+&lt;p&gt;为了解决跨库数据一致性，业界演进出了不同的分布式事务架构：&lt;/p&gt;
+&lt;h3 id="1-强一致性的噩梦xa--2pc-协议"&gt;&lt;a href="#1-%e5%bc%ba%e4%b8%80%e8%87%b4%e6%80%a7%e7%9a%84%e5%99%a9%e6%a2%a6xa--2pc-%e5%8d%8f%e8%ae%ae" class="header-anchor"&gt;&lt;/a&gt;1. 强一致性的噩梦：XA / 2PC 协议
+&lt;/h3&gt;&lt;p&gt;这是关系型数据库原生的两阶段提交方案。事务协调者（TM）在第一阶段要求所有数据库执行 SQL 但不提交。若全员就绪，第二阶段才统一下达 Commit 指令。其致命缺陷在于：整个两阶段期间，相关数据行被死死锁住。在互联网高并发场景下，这种长事务锁会导致系统吞吐量断崖式下跌，目前几乎已被全面弃用。&lt;/p&gt;
+&lt;h3 id="2-现代微服务标配seata-at-模式"&gt;&lt;a href="#2-%e7%8e%b0%e4%bb%a3%e5%be%ae%e6%9c%8d%e5%8a%a1%e6%a0%87%e9%85%8dseata-at-%e6%a8%a1%e5%bc%8f" class="header-anchor"&gt;&lt;/a&gt;2. 现代微服务标配：Seata AT 模式
+&lt;/h3&gt;&lt;p&gt;阿里开源的 Seata 通过代理数据源（DataSource Proxy）给出了一种极其精妙的妥协方案。&lt;/p&gt;
+&lt;p&gt;在 AT 模式下，当向 DB1 执行 update 语句时，Seata 会在执行前后查询数据镜像，生成补偿日志（&lt;code&gt;undo_log&lt;/code&gt;）。&lt;strong&gt;最关键的一步是：Seata 会毫不犹豫地立刻提交 DB1 的本地事务并释放行锁。&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;若全局事务顺利，协调器只需异步通知各节点清理 &lt;code&gt;undo_log&lt;/code&gt;；若发生异常，协调器则指令 DB1 节点读取 &lt;code&gt;undo_log&lt;/code&gt; 中的前置镜像，反向生成补偿 SQL 恢复数据。&lt;/p&gt;
+&lt;h3 id="3-高并发的终极答案mq-与最终一致性"&gt;&lt;a href="#3-%e9%ab%98%e5%b9%b6%e5%8f%91%e7%9a%84%e7%bb%88%e6%9e%81%e7%ad%94%e6%a1%88mq-%e4%b8%8e%e6%9c%80%e7%bb%88%e4%b8%80%e8%87%b4%e6%80%a7" class="header-anchor"&gt;&lt;/a&gt;3. 高并发的终极答案：MQ 与最终一致性
+&lt;/h3&gt;&lt;p&gt;在双 11 扣减库存等极端并发场景下，即使是 Seata 也会显得过重。系统通常会放弃 ACID，转向 BASE 理论。通过本地消息表与 RocketMQ/Kafka 等消息队列，将同步的分布式事务降级为异步的事件通知。只要依靠 MQ 的重试机制以及下游服务的幂等性设计，就能保证数据在经历短暂的延迟后，达到最终一致性。&lt;/p&gt;
+&lt;h2 id="四-架构的妥协容忍脏读严防脏写"&gt;&lt;a href="#%e5%9b%9b-%e6%9e%b6%e6%9e%84%e7%9a%84%e5%a6%a5%e5%8d%8f%e5%ae%b9%e5%bf%8d%e8%84%8f%e8%af%bb%e4%b8%a5%e9%98%b2%e8%84%8f%e5%86%99" class="header-anchor"&gt;&lt;/a&gt;四、 架构的妥协：容忍脏读，严防脏写
+&lt;/h2&gt;&lt;p&gt;敏锐的开发者会发现 Seata AT 模式的代价：当 DB1 的本地事务在第一阶段提交后，不仅是应用，任何直接连接到 DB1 的客户端，都能立刻查询到这条刚刚写入的新数据。若随后全局事务回滚，这段时间差内暴露的数据，就是不折不扣的&lt;strong&gt;全局脏读（Read Uncommitted）&lt;/strong&gt;。&lt;/p&gt;
+&lt;p&gt;这是框架为了释放底层行锁、换取高吞吐量所必须付出的隔离性降级代价。在大多数业务场景下，短暂的脏读是可以容忍的（如视为网络延迟）。但框架绝对不能容忍的是&lt;strong&gt;全局脏写&lt;/strong&gt;。&lt;/p&gt;
+&lt;p&gt;如果全局事务 A 在等待全局决议时，全局事务 B 试图修改 DB1 的同一行数据，一旦 A 决定回滚并应用 &lt;code&gt;undo_log&lt;/code&gt;，就会将 B 合法写入的数据抹除。为了防止脏写，Seata 引入了&lt;strong&gt;全局锁（Global Lock）&lt;/strong&gt;。在第一阶段本地提交前，事务必须成功向协调器申请并持有该数据行的全局锁。这强行保证了在读未提交的隔离级别下，依然维持着严格的 Write Committed（写已提交）底线。&lt;/p&gt;
+&lt;h2 id="五-结语"&gt;&lt;a href="#%e4%ba%94-%e7%bb%93%e8%af%ad" class="header-anchor"&gt;&lt;/a&gt;五、 结语
+&lt;/h2&gt;&lt;p&gt;从 &lt;code&gt;@Transactional&lt;/code&gt; 的单机 AOP 魔法，到 Seata AT 模式“本地提交+反向补偿”的架构智慧，再到 MQ 异步解耦的最终一致性。我们清晰地看到：分布式系统没有银弹，所有的技术方案都是在 CAP 定理的边界内进行取舍。用隔离性换取可用性，用复杂的补偿逻辑换取底层的性能释放，正是现代后端架构演进的核心旋律。&lt;/p&gt;</description></item></channel></rss>

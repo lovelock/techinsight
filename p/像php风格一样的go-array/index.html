@@ -1,0 +1,804 @@
+<!doctype html><html lang=zh-cn dir=ltr><head><meta charset=utf-8><meta name=viewport content='width=device-width,initial-scale=1'><meta name=description content="Why? The first programming language I&rsquo;ve learnt is PHP and I love it today though I don&rsquo;t write it so frequently.\nThe most charming part of PHP is the design of array. It combines the concept of dict list in Python, someone would say it&rsquo;s not so clear but a man who has writen PHP for a long time would say that&rsquo;s a fucking good design.\nRecently I&rsquo;ve fallen in love with Golang because of its simplicity and readability. But there would be some awful times when it comes to retriet a value from a map. This project is designed for this.\n"><title>像PHP风格一样的Go Array</title><link rel=canonical href=https://techinsight.pages.dev/p/%E5%83%8Fphp%E9%A3%8E%E6%A0%BC%E4%B8%80%E6%A0%B7%E7%9A%84go-array/><link rel=stylesheet href=/scss/style.min.3c33722a11bfa97f07308377e860d658770fe60627a4c2b1b7d46497ac9c35c3.css><meta property='og:title' content="像PHP风格一样的Go Array"><meta property='og:description' content="Why? The first programming language I&rsquo;ve learnt is PHP and I love it today though I don&rsquo;t write it so frequently.\nThe most charming part of PHP is the design of array. It combines the concept of dict list in Python, someone would say it&rsquo;s not so clear but a man who has writen PHP for a long time would say that&rsquo;s a fucking good design.\nRecently I&rsquo;ve fallen in love with Golang because of its simplicity and readability. But there would be some awful times when it comes to retriet a value from a map. This project is designed for this.\n"><meta property='og:url' content='https://techinsight.pages.dev/p/%E5%83%8Fphp%E9%A3%8E%E6%A0%BC%E4%B8%80%E6%A0%B7%E7%9A%84go-array/'><meta property='og:site_name' content='Tech In Sight'><meta property='og:type' content='article'><meta property='article:section' content='Post'><meta property='article:published_time' content='2024-07-25T14:12:47+08:00'><meta property='article:modified_time' content='2024-07-25T14:12:47+08:00'><meta name=twitter:title content="像PHP风格一样的Go Array"><meta name=twitter:description content="Why? The first programming language I&rsquo;ve learnt is PHP and I love it today though I don&rsquo;t write it so frequently.\nThe most charming part of PHP is the design of array. It combines the concept of dict list in Python, someone would say it&rsquo;s not so clear but a man who has writen PHP for a long time would say that&rsquo;s a fucking good design.\nRecently I&rsquo;ve fallen in love with Golang because of its simplicity and readability. But there would be some awful times when it comes to retriet a value from a map. This project is designed for this.\n"><link rel="shortcut icon" href=/favicon.ico></head><body class=article-page><script>(function(){const e="StackColorScheme";localStorage.getItem(e)||localStorage.setItem(e,"auto")})()</script><script>(function(){const t="StackColorScheme",e=localStorage.getItem(t),n=window.matchMedia("(prefers-color-scheme: dark)").matches===!0;e=="dark"||e==="auto"&&n?document.documentElement.dataset.scheme="dark":document.documentElement.dataset.scheme="light"})()</script><div class="container main-container flex on-phone--column extended"><aside class="sidebar left-sidebar sticky"><button class="hamburger hamburger--spin" type=button id=toggle-menu aria-label=切换菜单>
+<span class=hamburger-box><span class=hamburger-inner></span></span></button><header><figure class=site-avatar><a href=/><img src=/img/avatar_hu_31786b9867641d1c.png width=300 height=280 class=site-logo loading=lazy alt=Avatar></a></figure><div class=site-meta><h1 class=site-name><a href=/>Tech In Sight</a></h1><h2 class=site-description>聊聊技术，聊聊人生</h2></div></header><ol class=menu-social><li><a href=https://github.com/lovelock target=_blank title=GitHub rel=me><svg class="icon icon-tabler icon-tabler-brand-github" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M9 19c-4.3 1.4-4.3-2.5-6-3m12 5v-3.5c0-1 .1-1.4-.5-2 2.8-.3 5.5-1.4 5.5-6a4.6 4.6.0 00-1.3-3.2 4.2 4.2.0 00-.1-3.2s-1.1-.3-3.5 1.3a12.3 12.3.0 00-6.2.0C6.5 2.8 5.4 3.1 5.4 3.1a4.2 4.2.0 00-.1 3.2A4.6 4.6.0 004 9.5c0 4.6 2.7 5.7 5.5 6-.6.6-.6 1.2-.5 2V21"/></svg></a></li><li><a href=https://twitter.com target=_blank title=Twitter rel=me><svg class="icon icon-tabler icon-tabler-brand-twitter" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M22 4.01c-1 .49-1.98.689-3 .99-1.121-1.265-2.783-1.335-4.38-.737S11.977 6.323 12 8v1c-3.245.083-6.135-1.395-8-4 0 0-4.182 7.433 4 11-1.872 1.247-3.739 2.088-6 2 3.308 1.803 6.913 2.423 10.034 1.517 3.58-1.04 6.522-3.723 7.651-7.742a13.84 13.84.0 00.497-3.753C20.18 7.773 21.692 5.25 22 4.009z"/></svg></a></li></ol><ol class=menu id=main-menu><li><a href=/><svg class="icon icon-tabler icon-tabler-home" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><polyline points="5 12 3 12 12 3 21 12 19 12"/><path d="M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7"/><path d="M9 21v-6a2 2 0 012-2h2a2 2 0 012 2v6"/></svg>
+<span>Home</span></a></li><li><a href=/archives/><svg class="icon icon-tabler icon-tabler-archive" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><rect x="3" y="4" width="18" height="4" rx="2"/><path d="M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8"/><line x1="10" y1="12" x2="14" y2="12"/></svg>
+<span>Archives</span></a></li><li><a href=/search/><svg class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="10" cy="10" r="7"/><line x1="21" y1="21" x2="15" y2="15"/></svg>
+<span>Search</span></a></li><li><a href=/links/><svg class="icon icon-tabler icon-tabler-link" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><path d="M10 14a3.5 3.5.0 005 0l4-4a3.5 3.5.0 00-5-5l-.5.5"/><path d="M14 10a3.5 3.5.0 00-5 0l-4 4a3.5 3.5.0 005 5l.5-.5"/></svg>
+<span>Links</span></a></li><li class=menu-bottom-section><ol class=menu><li id=dark-mode-toggle><svg class="icon icon-tabler icon-tabler-toggle-left" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="8" cy="12" r="2"/><rect x="2" y="6" width="20" height="12" rx="6"/></svg>
+<svg class="icon icon-tabler icon-tabler-toggle-right" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="16" cy="12" r="2"/><rect x="2" y="6" width="20" height="12" rx="6"/></svg>
+<span>暗色模式</span></li></ol></li></ol></aside><aside class="sidebar right-sidebar sticky"><section class="widget archives"><div class=widget-icon><svg class="icon icon-tabler icon-tabler-hash" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><line x1="5" y1="9" x2="19" y2="9"/><line x1="5" y1="15" x2="19" y2="15"/><line x1="11" y1="4" x2="7" y2="20"/><line x1="17" y1="4" x2="13" y2="20"/></svg></div><h2 class="widget-title section-title">目录</h2><div class=widget--toc><nav id=TableOfContents><ol><li><a href=#why>Why?</a></li><li><a href=#usage>Usage</a></li><li><a href=#what-problems-does-it-solve>What problems does it solve</a></li><li><a href=#examples>Examples</a></li></ol></nav></div></section></aside><main class="main full-width"><article class=main-article><header class=article-header><div class=article-details><div class=article-title-wrapper><h2 class=article-title><a href=/p/%E5%83%8Fphp%E9%A3%8E%E6%A0%BC%E4%B8%80%E6%A0%B7%E7%9A%84go-array/>像PHP风格一样的Go Array</a></h2></div><footer class=article-time><div><svg class="icon icon-tabler icon-tabler-calendar-time" width="56" height="56" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><path d="M11.795 21H5a2 2 0 01-2-2V7a2 2 0 012-2h12a2 2 0 012 2v4"/><circle cx="18" cy="18" r="4"/><path d="M15 3v4"/><path d="M7 3v4"/><path d="M3 11h16"/><path d="M18 16.496V18l1 1"/></svg>
+<time class=article-time--published>Jul 25, 2024</time></div><div><svg class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 15"/></svg>
+<time class=article-time--reading>阅读时长: 3 分钟</time></div></footer></div></header><section class=article-content><h2 id=why><a href=#why class=header-anchor></a>Why?</h2><p>The first programming language I&rsquo;ve learnt is PHP and I love it today though I don&rsquo;t write it so frequently.</p><p>The most charming part of PHP is the design of <strong>array</strong>. It combines the concept of dict list in Python, someone would say it&rsquo;s not so clear but a man who has writen PHP for a long time would say <strong>that&rsquo;s a fucking good design</strong>.</p><p>Recently I&rsquo;ve fallen in love with Golang because of its simplicity and readability. But there would be some awful times when it comes to retriet a value from a map. This project is designed for this.</p><h2 id=usage><a href=#usage class=header-anchor></a>Usage</h2><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span><span class=lnt>22
+</span><span class=lnt>23
+</span><span class=lnt>24
+</span><span class=lnt>25
+</span><span class=lnt>26
+</span><span class=lnt>27
+</span><span class=lnt>28
+</span><span class=lnt>29
+</span><span class=lnt>30
+</span><span class=lnt>31
+</span><span class=lnt>32
+</span><span class=lnt>33
+</span><span class=lnt>34
+</span><span class=lnt>35
+</span><span class=lnt>36
+</span><span class=lnt>37
+</span><span class=lnt>38
+</span><span class=lnt>39
+</span><span class=lnt>40
+</span><span class=lnt>41
+</span><span class=lnt>42
+</span><span class=lnt>43
+</span><span class=lnt>44
+</span><span class=lnt>45
+</span><span class=lnt>46
+</span><span class=lnt>47
+</span><span class=lnt>48
+</span><span class=lnt>49
+</span><span class=lnt>50
+</span><span class=lnt>51
+</span><span class=lnt>52
+</span><span class=lnt>53
+</span><span class=lnt>54
+</span><span class=lnt>55
+</span><span class=lnt>56
+</span><span class=lnt>57
+</span><span class=lnt>58
+</span><span class=lnt>59
+</span><span class=lnt>60
+</span><span class=lnt>61
+</span><span class=lnt>62
+</span><span class=lnt>63
+</span><span class=lnt>64
+</span><span class=lnt>65
+</span><span class=lnt>66
+</span><span class=lnt>67
+</span><span class=lnt>68
+</span><span class=lnt>69
+</span><span class=lnt>70
+</span><span class=lnt>71
+</span><span class=lnt>72
+</span><span class=lnt>73
+</span><span class=lnt>74
+</span><span class=lnt>75
+</span><span class=lnt>76
+</span><span class=lnt>77
+</span><span class=lnt>78
+</span><span class=lnt>79
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-golang data-lang=golang><span class=line><span class=cl><span class=kn>package</span><span class=w> </span><span class=nx>main</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=kn>import</span><span class=w> </span><span class=p>(</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w> </span><span class=s>&#34;encoding/json&#34;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w> </span><span class=s>&#34;fmt&#34;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w> </span><span class=nx>array</span><span class=w> </span><span class=s>&#34;github.com/lovelock/garray&#34;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=p>)</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=kd>func</span><span class=w> </span><span class=nf>main</span><span class=p>()</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w> </span><span class=nx>data</span><span class=w> </span><span class=o>:=</span><span class=w> </span><span class=s>`{
+</span></span></span><span class=line><span class=cl><span class=s>  &#34;name&#34;: &#34;John Doe&#34;,
+</span></span></span><span class=line><span class=cl><span class=s>  &#34;age&#34;: 30,
+</span></span></span><span class=line><span class=cl><span class=s>  &#34;email&#34;: &#34;john.doe@example.com&#34;,
+</span></span></span><span class=line><span class=cl><span class=s>  &#34;isActive&#34;: true,
+</span></span></span><span class=line><span class=cl><span class=s>  &#34;address&#34;: {
+</span></span></span><span class=line><span class=cl><span class=s>   &#34;street&#34;: &#34;123 Main St&#34;,
+</span></span></span><span class=line><span class=cl><span class=s>   &#34;city&#34;: &#34;Anytown&#34;,
+</span></span></span><span class=line><span class=cl><span class=s>   &#34;state&#34;: &#34;CA&#34;,
+</span></span></span><span class=line><span class=cl><span class=s>   &#34;postalCode&#34;: &#34;12345&#34;
+</span></span></span><span class=line><span class=cl><span class=s>  },
+</span></span></span><span class=line><span class=cl><span class=s>  &#34;phoneNumbers&#34;: [
+</span></span></span><span class=line><span class=cl><span class=s>   {
+</span></span></span><span class=line><span class=cl><span class=s>    &#34;type&#34;: &#34;home&#34;,
+</span></span></span><span class=line><span class=cl><span class=s>    &#34;number&#34;: &#34;555-555-5555&#34;
+</span></span></span><span class=line><span class=cl><span class=s>   },
+</span></span></span><span class=line><span class=cl><span class=s>   {
+</span></span></span><span class=line><span class=cl><span class=s>    &#34;type&#34;: &#34;work&#34;,
+</span></span></span><span class=line><span class=cl><span class=s>    &#34;number&#34;: &#34;555-555-5556&#34;
+</span></span></span><span class=line><span class=cl><span class=s>   }
+</span></span></span><span class=line><span class=cl><span class=s>  ],
+</span></span></span><span class=line><span class=cl><span class=s>  &#34;projects&#34;: [
+</span></span></span><span class=line><span class=cl><span class=s>   {
+</span></span></span><span class=line><span class=cl><span class=s>    &#34;name&#34;: &#34;Project Alpha&#34;,
+</span></span></span><span class=line><span class=cl><span class=s>    &#34;status&#34;: &#34;completed&#34;,
+</span></span></span><span class=line><span class=cl><span class=s>    &#34;tasks&#34;: [
+</span></span></span><span class=line><span class=cl><span class=s>     {
+</span></span></span><span class=line><span class=cl><span class=s>      &#34;name&#34;: &#34;Task 1&#34;,
+</span></span></span><span class=line><span class=cl><span class=s>      &#34;dueDate&#34;: &#34;2023-10-01&#34;,
+</span></span></span><span class=line><span class=cl><span class=s>      &#34;completed&#34;: true
+</span></span></span><span class=line><span class=cl><span class=s>     },
+</span></span></span><span class=line><span class=cl><span class=s>     {
+</span></span></span><span class=line><span class=cl><span class=s>      &#34;name&#34;: &#34;Task 2&#34;,
+</span></span></span><span class=line><span class=cl><span class=s>      &#34;dueDate&#34;: &#34;2023-10-15&#34;,
+</span></span></span><span class=line><span class=cl><span class=s>      &#34;completed&#34;: false
+</span></span></span><span class=line><span class=cl><span class=s>     }
+</span></span></span><span class=line><span class=cl><span class=s>    ]
+</span></span></span><span class=line><span class=cl><span class=s>   },
+</span></span></span><span class=line><span class=cl><span class=s>   {
+</span></span></span><span class=line><span class=cl><span class=s>    &#34;name&#34;: &#34;Project Beta&#34;,
+</span></span></span><span class=line><span class=cl><span class=s>    &#34;status&#34;: &#34;in progress&#34;,
+</span></span></span><span class=line><span class=cl><span class=s>    &#34;tasks&#34;: [
+</span></span></span><span class=line><span class=cl><span class=s>     {
+</span></span></span><span class=line><span class=cl><span class=s>      &#34;name&#34;: &#34;Task 3&#34;,
+</span></span></span><span class=line><span class=cl><span class=s>      &#34;dueDate&#34;: &#34;2023-11-01&#34;,
+</span></span></span><span class=line><span class=cl><span class=s>      &#34;completed&#34;: false
+</span></span></span><span class=line><span class=cl><span class=s>     },
+</span></span></span><span class=line><span class=cl><span class=s>     {
+</span></span></span><span class=line><span class=cl><span class=s>      &#34;name&#34;: &#34;Task 4&#34;,
+</span></span></span><span class=line><span class=cl><span class=s>      &#34;dueDate&#34;: &#34;2023-12-01&#34;,
+</span></span></span><span class=line><span class=cl><span class=s>      &#34;completed&#34;: false
+</span></span></span><span class=line><span class=cl><span class=s>     }
+</span></span></span><span class=line><span class=cl><span class=s>    ]
+</span></span></span><span class=line><span class=cl><span class=s>   }
+</span></span></span><span class=line><span class=cl><span class=s>  ],
+</span></span></span><span class=line><span class=cl><span class=s>  &#34;preferences&#34;: {
+</span></span></span><span class=line><span class=cl><span class=s>   &#34;contactMethod&#34;: &#34;email&#34;,
+</span></span></span><span class=line><span class=cl><span class=s>   &#34;newsletterSubscribed&#34;: true,
+</span></span></span><span class=line><span class=cl><span class=s>   &#34;languages&#34;: [&#34;English&#34;, &#34;Spanish&#34;, &#34;German&#34;]
+</span></span></span><span class=line><span class=cl><span class=s>  }
+</span></span></span><span class=line><span class=cl><span class=s> }`</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w> </span><span class=kd>var</span><span class=w> </span><span class=nx>jsonMap</span><span class=w> </span><span class=kd>map</span><span class=p>[</span><span class=kt>string</span><span class=p>]</span><span class=kt>any</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w> </span><span class=nx>json</span><span class=p>.</span><span class=nf>Unmarshal</span><span class=p>([]</span><span class=nb>byte</span><span class=p>(</span><span class=nx>data</span><span class=p>),</span><span class=w> </span><span class=o>&amp;</span><span class=nx>jsonMap</span><span class=p>)</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w> </span><span class=nx>completed</span><span class=p>,</span><span class=w> </span><span class=nx>err</span><span class=w> </span><span class=o>:=</span><span class=w> </span><span class=nx>array</span><span class=p>.</span><span class=nf>Get</span><span class=p>(</span><span class=nx>jsonMap</span><span class=p>,</span><span class=w> </span><span class=s>&#34;projects&#34;</span><span class=p>,</span><span class=w> </span><span class=s>&#34;1&#34;</span><span class=p>,</span><span class=w> </span><span class=s>&#34;tasks&#34;</span><span class=p>,</span><span class=w> </span><span class=s>&#34;1&#34;</span><span class=p>,</span><span class=w> </span><span class=s>&#34;completed&#34;</span><span class=p>)</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w> </span><span class=k>if</span><span class=w> </span><span class=nx>err</span><span class=w> </span><span class=o>!=</span><span class=w> </span><span class=kc>nil</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>  </span><span class=nx>fmt</span><span class=p>.</span><span class=nf>Println</span><span class=p>(</span><span class=s>&#34;statusOfTheSecondTaskOfTheFirstProject: &#34;</span><span class=p>,</span><span class=w> </span><span class=nx>completed</span><span class=p>)</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w> </span><span class=p>}</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=p>}</span><span class=w>
+</span></span></span></code></pre></td></tr></table></div></div><h2 id=what-problems-does-it-solve><a href=#what-problems-does-it-solve class=header-anchor></a>What problems does it solve</h2><p>Imagine you&rsquo;ve got a complex structure like this</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span><span class=lnt>22
+</span><span class=lnt>23
+</span><span class=lnt>24
+</span><span class=lnt>25
+</span><span class=lnt>26
+</span><span class=lnt>27
+</span><span class=lnt>28
+</span><span class=lnt>29
+</span><span class=lnt>30
+</span><span class=lnt>31
+</span><span class=lnt>32
+</span><span class=lnt>33
+</span><span class=lnt>34
+</span><span class=lnt>35
+</span><span class=lnt>36
+</span><span class=lnt>37
+</span><span class=lnt>38
+</span><span class=lnt>39
+</span><span class=lnt>40
+</span><span class=lnt>41
+</span><span class=lnt>42
+</span><span class=lnt>43
+</span><span class=lnt>44
+</span><span class=lnt>45
+</span><span class=lnt>46
+</span><span class=lnt>47
+</span><span class=lnt>48
+</span><span class=lnt>49
+</span><span class=lnt>50
+</span><span class=lnt>51
+</span><span class=lnt>52
+</span><span class=lnt>53
+</span><span class=lnt>54
+</span><span class=lnt>55
+</span><span class=lnt>56
+</span><span class=lnt>57
+</span><span class=lnt>58
+</span><span class=lnt>59
+</span><span class=lnt>60
+</span><span class=lnt>61
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-json data-lang=json><span class=line><span class=cl><span class=p>{</span>
+</span></span><span class=line><span class=cl>  <span class=nt>&#34;name&#34;</span><span class=p>:</span> <span class=s2>&#34;John Doe&#34;</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>  <span class=nt>&#34;age&#34;</span><span class=p>:</span> <span class=mi>30</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>  <span class=nt>&#34;email&#34;</span><span class=p>:</span> <span class=s2>&#34;john.doe@example.com&#34;</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>  <span class=nt>&#34;isActive&#34;</span><span class=p>:</span> <span class=kc>true</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>  <span class=nt>&#34;address&#34;</span><span class=p>:</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>    <span class=nt>&#34;street&#34;</span><span class=p>:</span> <span class=s2>&#34;123 Main St&#34;</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>    <span class=nt>&#34;city&#34;</span><span class=p>:</span> <span class=s2>&#34;Anytown&#34;</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>    <span class=nt>&#34;state&#34;</span><span class=p>:</span> <span class=s2>&#34;CA&#34;</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>    <span class=nt>&#34;postalCode&#34;</span><span class=p>:</span> <span class=s2>&#34;12345&#34;</span>
+</span></span><span class=line><span class=cl>  <span class=p>},</span>
+</span></span><span class=line><span class=cl>  <span class=nt>&#34;phoneNumbers&#34;</span><span class=p>:</span> <span class=p>[</span>
+</span></span><span class=line><span class=cl>    <span class=p>{</span>
+</span></span><span class=line><span class=cl>      <span class=nt>&#34;type&#34;</span><span class=p>:</span> <span class=s2>&#34;home&#34;</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>      <span class=nt>&#34;number&#34;</span><span class=p>:</span> <span class=s2>&#34;555-555-5555&#34;</span>
+</span></span><span class=line><span class=cl>    <span class=p>},</span>
+</span></span><span class=line><span class=cl>    <span class=p>{</span>
+</span></span><span class=line><span class=cl>      <span class=nt>&#34;type&#34;</span><span class=p>:</span> <span class=s2>&#34;work&#34;</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>      <span class=nt>&#34;number&#34;</span><span class=p>:</span> <span class=s2>&#34;555-555-5556&#34;</span>
+</span></span><span class=line><span class=cl>    <span class=p>}</span>
+</span></span><span class=line><span class=cl>  <span class=p>],</span>
+</span></span><span class=line><span class=cl>  <span class=nt>&#34;projects&#34;</span><span class=p>:</span> <span class=p>[</span>
+</span></span><span class=line><span class=cl>    <span class=p>{</span>
+</span></span><span class=line><span class=cl>      <span class=nt>&#34;name&#34;</span><span class=p>:</span> <span class=s2>&#34;Project Alpha&#34;</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>      <span class=nt>&#34;status&#34;</span><span class=p>:</span> <span class=s2>&#34;completed&#34;</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>      <span class=nt>&#34;tasks&#34;</span><span class=p>:</span> <span class=p>[</span>
+</span></span><span class=line><span class=cl>        <span class=p>{</span>
+</span></span><span class=line><span class=cl>          <span class=nt>&#34;name&#34;</span><span class=p>:</span> <span class=s2>&#34;Task 1&#34;</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>          <span class=nt>&#34;dueDate&#34;</span><span class=p>:</span> <span class=s2>&#34;2023-10-01&#34;</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>          <span class=nt>&#34;completed&#34;</span><span class=p>:</span> <span class=kc>true</span>
+</span></span><span class=line><span class=cl>        <span class=p>},</span>
+</span></span><span class=line><span class=cl>        <span class=p>{</span>
+</span></span><span class=line><span class=cl>          <span class=nt>&#34;name&#34;</span><span class=p>:</span> <span class=s2>&#34;Task 2&#34;</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>          <span class=nt>&#34;dueDate&#34;</span><span class=p>:</span> <span class=s2>&#34;2023-10-15&#34;</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>          <span class=nt>&#34;completed&#34;</span><span class=p>:</span> <span class=kc>false</span>
+</span></span><span class=line><span class=cl>        <span class=p>}</span>
+</span></span><span class=line><span class=cl>      <span class=p>]</span>
+</span></span><span class=line><span class=cl>    <span class=p>},</span>
+</span></span><span class=line><span class=cl>    <span class=p>{</span>
+</span></span><span class=line><span class=cl>      <span class=nt>&#34;name&#34;</span><span class=p>:</span> <span class=s2>&#34;Project Beta&#34;</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>      <span class=nt>&#34;status&#34;</span><span class=p>:</span> <span class=s2>&#34;in progress&#34;</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>      <span class=nt>&#34;tasks&#34;</span><span class=p>:</span> <span class=p>[</span>
+</span></span><span class=line><span class=cl>        <span class=p>{</span>
+</span></span><span class=line><span class=cl>          <span class=nt>&#34;name&#34;</span><span class=p>:</span> <span class=s2>&#34;Task 3&#34;</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>          <span class=nt>&#34;dueDate&#34;</span><span class=p>:</span> <span class=s2>&#34;2023-11-01&#34;</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>          <span class=nt>&#34;completed&#34;</span><span class=p>:</span> <span class=kc>false</span>
+</span></span><span class=line><span class=cl>        <span class=p>},</span>
+</span></span><span class=line><span class=cl>        <span class=p>{</span>
+</span></span><span class=line><span class=cl>          <span class=nt>&#34;name&#34;</span><span class=p>:</span> <span class=s2>&#34;Task 4&#34;</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>          <span class=nt>&#34;dueDate&#34;</span><span class=p>:</span> <span class=s2>&#34;2023-12-01&#34;</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>          <span class=nt>&#34;completed&#34;</span><span class=p>:</span> <span class=kc>false</span>
+</span></span><span class=line><span class=cl>        <span class=p>}</span>
+</span></span><span class=line><span class=cl>      <span class=p>]</span>
+</span></span><span class=line><span class=cl>    <span class=p>}</span>
+</span></span><span class=line><span class=cl>  <span class=p>],</span>
+</span></span><span class=line><span class=cl>  <span class=nt>&#34;preferences&#34;</span><span class=p>:</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>    <span class=nt>&#34;contactMethod&#34;</span><span class=p>:</span> <span class=s2>&#34;email&#34;</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>    <span class=nt>&#34;newsletterSubscribed&#34;</span><span class=p>:</span> <span class=kc>true</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>    <span class=nt>&#34;languages&#34;</span><span class=p>:</span> <span class=p>[</span><span class=s2>&#34;English&#34;</span><span class=p>,</span> <span class=s2>&#34;Spanish&#34;</span><span class=p>,</span> <span class=s2>&#34;German&#34;</span><span class=p>]</span>
+</span></span><span class=line><span class=cl>  <span class=p>}</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span></code></pre></td></tr></table></div></div><p>How can you check if the first projects second task is completed?</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>  1
+</span><span class=lnt>  2
+</span><span class=lnt>  3
+</span><span class=lnt>  4
+</span><span class=lnt>  5
+</span><span class=lnt>  6
+</span><span class=lnt>  7
+</span><span class=lnt>  8
+</span><span class=lnt>  9
+</span><span class=lnt> 10
+</span><span class=lnt> 11
+</span><span class=lnt> 12
+</span><span class=lnt> 13
+</span><span class=lnt> 14
+</span><span class=lnt> 15
+</span><span class=lnt> 16
+</span><span class=lnt> 17
+</span><span class=lnt> 18
+</span><span class=lnt> 19
+</span><span class=lnt> 20
+</span><span class=lnt> 21
+</span><span class=lnt> 22
+</span><span class=lnt> 23
+</span><span class=lnt> 24
+</span><span class=lnt> 25
+</span><span class=lnt> 26
+</span><span class=lnt> 27
+</span><span class=lnt> 28
+</span><span class=lnt> 29
+</span><span class=lnt> 30
+</span><span class=lnt> 31
+</span><span class=lnt> 32
+</span><span class=lnt> 33
+</span><span class=lnt> 34
+</span><span class=lnt> 35
+</span><span class=lnt> 36
+</span><span class=lnt> 37
+</span><span class=lnt> 38
+</span><span class=lnt> 39
+</span><span class=lnt> 40
+</span><span class=lnt> 41
+</span><span class=lnt> 42
+</span><span class=lnt> 43
+</span><span class=lnt> 44
+</span><span class=lnt> 45
+</span><span class=lnt> 46
+</span><span class=lnt> 47
+</span><span class=lnt> 48
+</span><span class=lnt> 49
+</span><span class=lnt> 50
+</span><span class=lnt> 51
+</span><span class=lnt> 52
+</span><span class=lnt> 53
+</span><span class=lnt> 54
+</span><span class=lnt> 55
+</span><span class=lnt> 56
+</span><span class=lnt> 57
+</span><span class=lnt> 58
+</span><span class=lnt> 59
+</span><span class=lnt> 60
+</span><span class=lnt> 61
+</span><span class=lnt> 62
+</span><span class=lnt> 63
+</span><span class=lnt> 64
+</span><span class=lnt> 65
+</span><span class=lnt> 66
+</span><span class=lnt> 67
+</span><span class=lnt> 68
+</span><span class=lnt> 69
+</span><span class=lnt> 70
+</span><span class=lnt> 71
+</span><span class=lnt> 72
+</span><span class=lnt> 73
+</span><span class=lnt> 74
+</span><span class=lnt> 75
+</span><span class=lnt> 76
+</span><span class=lnt> 77
+</span><span class=lnt> 78
+</span><span class=lnt> 79
+</span><span class=lnt> 80
+</span><span class=lnt> 81
+</span><span class=lnt> 82
+</span><span class=lnt> 83
+</span><span class=lnt> 84
+</span><span class=lnt> 85
+</span><span class=lnt> 86
+</span><span class=lnt> 87
+</span><span class=lnt> 88
+</span><span class=lnt> 89
+</span><span class=lnt> 90
+</span><span class=lnt> 91
+</span><span class=lnt> 92
+</span><span class=lnt> 93
+</span><span class=lnt> 94
+</span><span class=lnt> 95
+</span><span class=lnt> 96
+</span><span class=lnt> 97
+</span><span class=lnt> 98
+</span><span class=lnt> 99
+</span><span class=lnt>100
+</span><span class=lnt>101
+</span><span class=lnt>102
+</span><span class=lnt>103
+</span><span class=lnt>104
+</span><span class=lnt>105
+</span><span class=lnt>106
+</span><span class=lnt>107
+</span><span class=lnt>108
+</span><span class=lnt>109
+</span><span class=lnt>110
+</span><span class=lnt>111
+</span><span class=lnt>112
+</span><span class=lnt>113
+</span><span class=lnt>114
+</span><span class=lnt>115
+</span><span class=lnt>116
+</span><span class=lnt>117
+</span><span class=lnt>118
+</span><span class=lnt>119
+</span><span class=lnt>120
+</span><span class=lnt>121
+</span><span class=lnt>122
+</span><span class=lnt>123
+</span><span class=lnt>124
+</span><span class=lnt>125
+</span><span class=lnt>126
+</span><span class=lnt>127
+</span><span class=lnt>128
+</span><span class=lnt>129
+</span><span class=lnt>130
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-golang data-lang=golang><span class=line><span class=cl><span class=kn>package</span><span class=w> </span><span class=nx>main</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=kn>import</span><span class=w> </span><span class=p>(</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w> </span><span class=s>&#34;encoding/json&#34;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w> </span><span class=s>&#34;fmt&#34;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w> </span><span class=s>&#34;log&#34;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=p>)</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=c1>// 定义JSON结构体</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=kd>type</span><span class=w> </span><span class=nx>Address</span><span class=w> </span><span class=kd>struct</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w> </span><span class=nx>Street</span><span class=w>     </span><span class=kt>string</span><span class=w> </span><span class=s>`json:&#34;street&#34;`</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w> </span><span class=nx>City</span><span class=w>       </span><span class=kt>string</span><span class=w> </span><span class=s>`json:&#34;city&#34;`</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w> </span><span class=nx>State</span><span class=w>      </span><span class=kt>string</span><span class=w> </span><span class=s>`json:&#34;state&#34;`</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w> </span><span class=nx>PostalCode</span><span class=w> </span><span class=kt>string</span><span class=w> </span><span class=s>`json:&#34;postalCode&#34;`</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=p>}</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=kd>type</span><span class=w> </span><span class=nx>PhoneNumber</span><span class=w> </span><span class=kd>struct</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w> </span><span class=nx>Type</span><span class=w>   </span><span class=kt>string</span><span class=w> </span><span class=s>`json:&#34;type&#34;`</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w> </span><span class=nx>Number</span><span class=w> </span><span class=kt>string</span><span class=w> </span><span class=s>`json:&#34;number&#34;`</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=p>}</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=kd>type</span><span class=w> </span><span class=nx>Task</span><span class=w> </span><span class=kd>struct</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w> </span><span class=nx>Name</span><span class=w>      </span><span class=kt>string</span><span class=w> </span><span class=s>`json:&#34;name&#34;`</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w> </span><span class=nx>DueDate</span><span class=w>   </span><span class=kt>string</span><span class=w> </span><span class=s>`json:&#34;dueDate&#34;`</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w> </span><span class=nx>Completed</span><span class=w> </span><span class=kt>bool</span><span class=w>   </span><span class=s>`json:&#34;completed&#34;`</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=p>}</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=kd>type</span><span class=w> </span><span class=nx>Project</span><span class=w> </span><span class=kd>struct</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w> </span><span class=nx>Name</span><span class=w>   </span><span class=kt>string</span><span class=w> </span><span class=s>`json:&#34;name&#34;`</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w> </span><span class=nx>Status</span><span class=w> </span><span class=kt>string</span><span class=w> </span><span class=s>`json:&#34;status&#34;`</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w> </span><span class=nx>Tasks</span><span class=w>  </span><span class=p>[]</span><span class=nx>Task</span><span class=w> </span><span class=s>`json:&#34;tasks&#34;`</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=p>}</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=kd>type</span><span class=w> </span><span class=nx>Preferences</span><span class=w> </span><span class=kd>struct</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w> </span><span class=nx>ContactMethod</span><span class=w>       </span><span class=kt>string</span><span class=w>   </span><span class=s>`json:&#34;contactMethod&#34;`</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w> </span><span class=nx>NewsletterSubscribed</span><span class=w> </span><span class=kt>bool</span><span class=w>   </span><span class=s>`json:&#34;newsletterSubscribed&#34;`</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w> </span><span class=nx>Languages</span><span class=w>           </span><span class=p>[]</span><span class=kt>string</span><span class=w> </span><span class=s>`json:&#34;languages&#34;`</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=p>}</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=kd>type</span><span class=w> </span><span class=nx>Person</span><span class=w> </span><span class=kd>struct</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w> </span><span class=nx>Name</span><span class=w>         </span><span class=kt>string</span><span class=w>        </span><span class=s>`json:&#34;name&#34;`</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w> </span><span class=nx>Age</span><span class=w>          </span><span class=kt>int</span><span class=w>           </span><span class=s>`json:&#34;age&#34;`</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w> </span><span class=nx>Email</span><span class=w>        </span><span class=kt>string</span><span class=w>        </span><span class=s>`json:&#34;email&#34;`</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w> </span><span class=nx>IsActive</span><span class=w>     </span><span class=kt>bool</span><span class=w>          </span><span class=s>`json:&#34;isActive&#34;`</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w> </span><span class=nx>Address</span><span class=w>      </span><span class=nx>Address</span><span class=w>       </span><span class=s>`json:&#34;address&#34;`</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w> </span><span class=nx>PhoneNumbers</span><span class=w> </span><span class=p>[]</span><span class=nx>PhoneNumber</span><span class=w> </span><span class=s>`json:&#34;phoneNumbers&#34;`</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w> </span><span class=nx>Projects</span><span class=w>     </span><span class=p>[]</span><span class=nx>Project</span><span class=w>     </span><span class=s>`json:&#34;projects&#34;`</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w> </span><span class=nx>Preferences</span><span class=w>  </span><span class=nx>Preferences</span><span class=w>   </span><span class=s>`json:&#34;preferences&#34;`</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=p>}</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=kd>func</span><span class=w> </span><span class=nf>main</span><span class=p>()</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w> </span><span class=c1>// JSON数据</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w> </span><span class=nx>data</span><span class=w> </span><span class=o>:=</span><span class=w> </span><span class=s>`{
+</span></span></span><span class=line><span class=cl><span class=s>  &#34;name&#34;: &#34;John Doe&#34;,
+</span></span></span><span class=line><span class=cl><span class=s>  &#34;age&#34;: 30,
+</span></span></span><span class=line><span class=cl><span class=s>  &#34;email&#34;: &#34;john.doe@example.com&#34;,
+</span></span></span><span class=line><span class=cl><span class=s>  &#34;isActive&#34;: true,
+</span></span></span><span class=line><span class=cl><span class=s>  &#34;address&#34;: {
+</span></span></span><span class=line><span class=cl><span class=s>   &#34;street&#34;: &#34;123 Main St&#34;,
+</span></span></span><span class=line><span class=cl><span class=s>   &#34;city&#34;: &#34;Anytown&#34;,
+</span></span></span><span class=line><span class=cl><span class=s>   &#34;state&#34;: &#34;CA&#34;,
+</span></span></span><span class=line><span class=cl><span class=s>   &#34;postalCode&#34;: &#34;12345&#34;
+</span></span></span><span class=line><span class=cl><span class=s>  },
+</span></span></span><span class=line><span class=cl><span class=s>  &#34;phoneNumbers&#34;: [
+</span></span></span><span class=line><span class=cl><span class=s>   {
+</span></span></span><span class=line><span class=cl><span class=s>    &#34;type&#34;: &#34;home&#34;,
+</span></span></span><span class=line><span class=cl><span class=s>    &#34;number&#34;: &#34;555-555-5555&#34;
+</span></span></span><span class=line><span class=cl><span class=s>   },
+</span></span></span><span class=line><span class=cl><span class=s>   {
+</span></span></span><span class=line><span class=cl><span class=s>    &#34;type&#34;: &#34;work&#34;,
+</span></span></span><span class=line><span class=cl><span class=s>    &#34;number&#34;: &#34;555-555-5556&#34;
+</span></span></span><span class=line><span class=cl><span class=s>   }
+</span></span></span><span class=line><span class=cl><span class=s>  ],
+</span></span></span><span class=line><span class=cl><span class=s>  &#34;projects&#34;: [
+</span></span></span><span class=line><span class=cl><span class=s>   {
+</span></span></span><span class=line><span class=cl><span class=s>    &#34;name&#34;: &#34;Project Alpha&#34;,
+</span></span></span><span class=line><span class=cl><span class=s>    &#34;status&#34;: &#34;completed&#34;,
+</span></span></span><span class=line><span class=cl><span class=s>    &#34;tasks&#34;: [
+</span></span></span><span class=line><span class=cl><span class=s>     {
+</span></span></span><span class=line><span class=cl><span class=s>      &#34;name&#34;: &#34;Task 1&#34;,
+</span></span></span><span class=line><span class=cl><span class=s>      &#34;dueDate&#34;: &#34;2023-10-01&#34;,
+</span></span></span><span class=line><span class=cl><span class=s>      &#34;completed&#34;: true
+</span></span></span><span class=line><span class=cl><span class=s>     },
+</span></span></span><span class=line><span class=cl><span class=s>     {
+</span></span></span><span class=line><span class=cl><span class=s>      &#34;name&#34;: &#34;Task 2&#34;,
+</span></span></span><span class=line><span class=cl><span class=s>      &#34;dueDate&#34;: &#34;2023-10-15&#34;,
+</span></span></span><span class=line><span class=cl><span class=s>      &#34;completed&#34;: false
+</span></span></span><span class=line><span class=cl><span class=s>     }
+</span></span></span><span class=line><span class=cl><span class=s>    ]
+</span></span></span><span class=line><span class=cl><span class=s>   },
+</span></span></span><span class=line><span class=cl><span class=s>   {
+</span></span></span><span class=line><span class=cl><span class=s>    &#34;name&#34;: &#34;Project Beta&#34;,
+</span></span></span><span class=line><span class=cl><span class=s>    &#34;status&#34;: &#34;in progress&#34;,
+</span></span></span><span class=line><span class=cl><span class=s>    &#34;tasks&#34;: [
+</span></span></span><span class=line><span class=cl><span class=s>     {
+</span></span></span><span class=line><span class=cl><span class=s>      &#34;name&#34;: &#34;Task 3&#34;,
+</span></span></span><span class=line><span class=cl><span class=s>      &#34;dueDate&#34;: &#34;2023-11-01&#34;,
+</span></span></span><span class=line><span class=cl><span class=s>      &#34;completed&#34;: false
+</span></span></span><span class=line><span class=cl><span class=s>     },
+</span></span></span><span class=line><span class=cl><span class=s>     {
+</span></span></span><span class=line><span class=cl><span class=s>      &#34;name&#34;: &#34;Task 4&#34;,
+</span></span></span><span class=line><span class=cl><span class=s>      &#34;dueDate&#34;: &#34;2023-12-01&#34;,
+</span></span></span><span class=line><span class=cl><span class=s>      &#34;completed&#34;: false
+</span></span></span><span class=line><span class=cl><span class=s>     }
+</span></span></span><span class=line><span class=cl><span class=s>    ]
+</span></span></span><span class=line><span class=cl><span class=s>   }
+</span></span></span><span class=line><span class=cl><span class=s>  ],
+</span></span></span><span class=line><span class=cl><span class=s>  &#34;preferences&#34;: {
+</span></span></span><span class=line><span class=cl><span class=s>   &#34;contactMethod&#34;: &#34;email&#34;,
+</span></span></span><span class=line><span class=cl><span class=s>   &#34;newsletterSubscribed&#34;: true,
+</span></span></span><span class=line><span class=cl><span class=s>   &#34;languages&#34;: [&#34;English&#34;, &#34;Spanish&#34;, &#34;German&#34;]
+</span></span></span><span class=line><span class=cl><span class=s>  }
+</span></span></span><span class=line><span class=cl><span class=s> }`</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w> </span><span class=kd>var</span><span class=w> </span><span class=nx>person</span><span class=w> </span><span class=nx>Person</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w> </span><span class=c1>// 解析JSON数据</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w> </span><span class=nx>err</span><span class=w> </span><span class=o>:=</span><span class=w> </span><span class=nx>json</span><span class=p>.</span><span class=nf>Unmarshal</span><span class=p>([]</span><span class=nb>byte</span><span class=p>(</span><span class=nx>data</span><span class=p>),</span><span class=w> </span><span class=o>&amp;</span><span class=nx>person</span><span class=p>)</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w> </span><span class=k>if</span><span class=w> </span><span class=nx>err</span><span class=w> </span><span class=o>!=</span><span class=w> </span><span class=kc>nil</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>  </span><span class=nx>log</span><span class=p>.</span><span class=nf>Fatalf</span><span class=p>(</span><span class=s>&#34;Error parsing JSON: %v&#34;</span><span class=p>,</span><span class=w> </span><span class=nx>err</span><span class=p>)</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w> </span><span class=p>}</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w> </span><span class=c1>// 获取第一个项目的第二个任务是否完成</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w> </span><span class=k>if</span><span class=w> </span><span class=nb>len</span><span class=p>(</span><span class=nx>person</span><span class=p>.</span><span class=nx>Projects</span><span class=p>)</span><span class=w> </span><span class=p>&gt;</span><span class=w> </span><span class=mi>0</span><span class=w> </span><span class=o>&amp;&amp;</span><span class=w> </span><span class=nb>len</span><span class=p>(</span><span class=nx>person</span><span class=p>.</span><span class=nx>Projects</span><span class=p>[</span><span class=mi>0</span><span class=p>].</span><span class=nx>Tasks</span><span class=p>)</span><span class=w> </span><span class=p>&gt;</span><span class=w> </span><span class=mi>1</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>  </span><span class=nx>isCompleted</span><span class=w> </span><span class=o>:=</span><span class=w> </span><span class=nx>person</span><span class=p>.</span><span class=nx>Projects</span><span class=p>[</span><span class=mi>0</span><span class=p>].</span><span class=nx>Tasks</span><span class=p>[</span><span class=mi>1</span><span class=p>].</span><span class=nx>Completed</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>  </span><span class=nx>fmt</span><span class=p>.</span><span class=nf>Printf</span><span class=p>(</span><span class=s>&#34;The second task of the first project is completed: %v\n&#34;</span><span class=p>,</span><span class=w> </span><span class=nx>isCompleted</span><span class=p>)</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w> </span><span class=p>}</span><span class=w> </span><span class=k>else</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>  </span><span class=nx>fmt</span><span class=p>.</span><span class=nf>Println</span><span class=p>(</span><span class=s>&#34;The required task does not exist.&#34;</span><span class=p>)</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w> </span><span class=p>}</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=p>}</span><span class=w>
+</span></span></span></code></pre></td></tr></table></div></div><p>Too complicated? What if you do not want define the structs in advance?</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span><span class=lnt>22
+</span><span class=lnt>23
+</span><span class=lnt>24
+</span><span class=lnt>25
+</span><span class=lnt>26
+</span><span class=lnt>27
+</span><span class=lnt>28
+</span><span class=lnt>29
+</span><span class=lnt>30
+</span><span class=lnt>31
+</span><span class=lnt>32
+</span><span class=lnt>33
+</span><span class=lnt>34
+</span><span class=lnt>35
+</span><span class=lnt>36
+</span><span class=lnt>37
+</span><span class=lnt>38
+</span><span class=lnt>39
+</span><span class=lnt>40
+</span><span class=lnt>41
+</span><span class=lnt>42
+</span><span class=lnt>43
+</span><span class=lnt>44
+</span><span class=lnt>45
+</span><span class=lnt>46
+</span><span class=lnt>47
+</span><span class=lnt>48
+</span><span class=lnt>49
+</span><span class=lnt>50
+</span><span class=lnt>51
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-golang data-lang=golang><span class=line><span class=cl><span class=kn>package</span><span class=w> </span><span class=nx>main</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=kn>import</span><span class=w> </span><span class=p>(</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w> </span><span class=s>&#34;encoding/json&#34;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w> </span><span class=s>&#34;fmt&#34;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w> </span><span class=s>&#34;log&#34;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=p>)</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=kd>func</span><span class=w> </span><span class=nf>main</span><span class=p>()</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w> </span><span class=c1>// JSON数据</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w> </span><span class=nx>data</span><span class=w> </span><span class=o>:=</span><span class=w> </span><span class=s>`{
+</span></span></span><span class=line><span class=cl><span class=s> ...
+</span></span></span><span class=line><span class=cl><span class=s> }`</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w> </span><span class=c1>// 定义一个用来存储JSON数据的map</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w> </span><span class=kd>var</span><span class=w> </span><span class=nx>result</span><span class=w> </span><span class=kd>map</span><span class=p>[</span><span class=kt>string</span><span class=p>]</span><span class=kd>interface</span><span class=p>{}</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w> </span><span class=c1>// 解析JSON数据到map</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w> </span><span class=nx>err</span><span class=w> </span><span class=o>:=</span><span class=w> </span><span class=nx>json</span><span class=p>.</span><span class=nf>Unmarshal</span><span class=p>([]</span><span class=nb>byte</span><span class=p>(</span><span class=nx>data</span><span class=p>),</span><span class=w> </span><span class=o>&amp;</span><span class=nx>result</span><span class=p>)</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w> </span><span class=k>if</span><span class=w> </span><span class=nx>err</span><span class=w> </span><span class=o>!=</span><span class=w> </span><span class=kc>nil</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>  </span><span class=nx>log</span><span class=p>.</span><span class=nf>Fatalf</span><span class=p>(</span><span class=s>&#34;Error parsing JSON: %v&#34;</span><span class=p>,</span><span class=w> </span><span class=nx>err</span><span class=p>)</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w> </span><span class=p>}</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w> </span><span class=c1>// 获取第一个项目的第二个任务是否完成</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w> </span><span class=nx>projects</span><span class=p>,</span><span class=w> </span><span class=nx>ok</span><span class=w> </span><span class=o>:=</span><span class=w> </span><span class=nx>result</span><span class=p>[</span><span class=s>&#34;projects&#34;</span><span class=p>].([]</span><span class=kd>interface</span><span class=p>{})</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w> </span><span class=k>if</span><span class=w> </span><span class=p>!</span><span class=nx>ok</span><span class=w> </span><span class=o>||</span><span class=w> </span><span class=nb>len</span><span class=p>(</span><span class=nx>projects</span><span class=p>)</span><span class=w> </span><span class=o>==</span><span class=w> </span><span class=mi>0</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>  </span><span class=nx>log</span><span class=p>.</span><span class=nf>Fatalf</span><span class=p>(</span><span class=s>&#34;No projects found or format is incorrect&#34;</span><span class=p>)</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w> </span><span class=p>}</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w> </span><span class=nx>firstProject</span><span class=p>,</span><span class=w> </span><span class=nx>ok</span><span class=w> </span><span class=o>:=</span><span class=w> </span><span class=nx>projects</span><span class=p>[</span><span class=mi>0</span><span class=p>].(</span><span class=kd>map</span><span class=p>[</span><span class=kt>string</span><span class=p>]</span><span class=kd>interface</span><span class=p>{})</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w> </span><span class=k>if</span><span class=w> </span><span class=p>!</span><span class=nx>ok</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>  </span><span class=nx>log</span><span class=p>.</span><span class=nf>Fatalf</span><span class=p>(</span><span class=s>&#34;First project format is incorrect&#34;</span><span class=p>)</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w> </span><span class=p>}</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w> </span><span class=nx>tasks</span><span class=p>,</span><span class=w> </span><span class=nx>ok</span><span class=w> </span><span class=o>:=</span><span class=w> </span><span class=nx>firstProject</span><span class=p>[</span><span class=s>&#34;tasks&#34;</span><span class=p>].([]</span><span class=kd>interface</span><span class=p>{})</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w> </span><span class=k>if</span><span class=w> </span><span class=p>!</span><span class=nx>ok</span><span class=w> </span><span class=o>||</span><span class=w> </span><span class=nb>len</span><span class=p>(</span><span class=nx>tasks</span><span class=p>)</span><span class=w> </span><span class=p>&lt;</span><span class=w> </span><span class=mi>2</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>  </span><span class=nx>log</span><span class=p>.</span><span class=nf>Fatalf</span><span class=p>(</span><span class=s>&#34;No tasks found or insufficient tasks in the first project&#34;</span><span class=p>)</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w> </span><span class=p>}</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w> </span><span class=nx>secondTask</span><span class=p>,</span><span class=w> </span><span class=nx>ok</span><span class=w> </span><span class=o>:=</span><span class=w> </span><span class=nx>tasks</span><span class=p>[</span><span class=mi>1</span><span class=p>].(</span><span class=kd>map</span><span class=p>[</span><span class=kt>string</span><span class=p>]</span><span class=kd>interface</span><span class=p>{})</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w> </span><span class=k>if</span><span class=w> </span><span class=p>!</span><span class=nx>ok</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>  </span><span class=nx>log</span><span class=p>.</span><span class=nf>Fatalf</span><span class=p>(</span><span class=s>&#34;Second task format is incorrect&#34;</span><span class=p>)</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w> </span><span class=p>}</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w> </span><span class=nx>completed</span><span class=p>,</span><span class=w> </span><span class=nx>ok</span><span class=w> </span><span class=o>:=</span><span class=w> </span><span class=nx>secondTask</span><span class=p>[</span><span class=s>&#34;completed&#34;</span><span class=p>].(</span><span class=kt>bool</span><span class=p>)</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w> </span><span class=k>if</span><span class=w> </span><span class=p>!</span><span class=nx>ok</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>  </span><span class=nx>log</span><span class=p>.</span><span class=nf>Fatalf</span><span class=p>(</span><span class=s>&#34;Completed field is missing or not a boolean&#34;</span><span class=p>)</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w> </span><span class=p>}</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w> </span><span class=nx>fmt</span><span class=p>.</span><span class=nf>Printf</span><span class=p>(</span><span class=s>&#34;The second task of the first project is completed: %v\n&#34;</span><span class=p>,</span><span class=w> </span><span class=nx>completed</span><span class=p>)</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=p>}</span><span class=w>
+</span></span></span></code></pre></td></tr></table></div></div><p>Holy shit! Too many template code. Now do you miss the PHP way?</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span><span class=lnt>22
+</span><span class=lnt>23
+</span><span class=lnt>24
+</span><span class=lnt>25
+</span><span class=lnt>26
+</span><span class=lnt>27
+</span><span class=lnt>28
+</span><span class=lnt>29
+</span><span class=lnt>30
+</span><span class=lnt>31
+</span><span class=lnt>32
+</span><span class=lnt>33
+</span><span class=lnt>34
+</span><span class=lnt>35
+</span><span class=lnt>36
+</span><span class=lnt>37
+</span><span class=lnt>38
+</span><span class=lnt>39
+</span><span class=lnt>40
+</span><span class=lnt>41
+</span><span class=lnt>42
+</span><span class=lnt>43
+</span><span class=lnt>44
+</span><span class=lnt>45
+</span><span class=lnt>46
+</span><span class=lnt>47
+</span><span class=lnt>48
+</span><span class=lnt>49
+</span><span class=lnt>50
+</span><span class=lnt>51
+</span><span class=lnt>52
+</span><span class=lnt>53
+</span><span class=lnt>54
+</span><span class=lnt>55
+</span><span class=lnt>56
+</span><span class=lnt>57
+</span><span class=lnt>58
+</span><span class=lnt>59
+</span><span class=lnt>60
+</span><span class=lnt>61
+</span><span class=lnt>62
+</span><span class=lnt>63
+</span><span class=lnt>64
+</span><span class=lnt>65
+</span><span class=lnt>66
+</span><span class=lnt>67
+</span><span class=lnt>68
+</span><span class=lnt>69
+</span><span class=lnt>70
+</span><span class=lnt>71
+</span><span class=lnt>72
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-php data-lang=php><span class=line><span class=cl><span class=o>&lt;?</span><span class=nx>php</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=nv>$jsonStr</span> <span class=o>=</span> <span class=s>&lt;&lt;&lt;</span><span class=dl>EOF</span><span class=s>
+</span></span></span><span class=line><span class=cl><span class=s>{
+</span></span></span><span class=line><span class=cl><span class=s>  &#34;name&#34;: &#34;John Doe&#34;,
+</span></span></span><span class=line><span class=cl><span class=s>  &#34;age&#34;: 30,
+</span></span></span><span class=line><span class=cl><span class=s>  &#34;email&#34;: &#34;john.doe@example.com&#34;,
+</span></span></span><span class=line><span class=cl><span class=s>  &#34;isActive&#34;: true,
+</span></span></span><span class=line><span class=cl><span class=s>  &#34;address&#34;: {
+</span></span></span><span class=line><span class=cl><span class=s>   &#34;street&#34;: &#34;123 Main St&#34;,
+</span></span></span><span class=line><span class=cl><span class=s>   &#34;city&#34;: &#34;Anytown&#34;,
+</span></span></span><span class=line><span class=cl><span class=s>   &#34;state&#34;: &#34;CA&#34;,
+</span></span></span><span class=line><span class=cl><span class=s>   &#34;postalCode&#34;: &#34;12345&#34;
+</span></span></span><span class=line><span class=cl><span class=s>  },
+</span></span></span><span class=line><span class=cl><span class=s>  &#34;phoneNumbers&#34;: [
+</span></span></span><span class=line><span class=cl><span class=s>   {
+</span></span></span><span class=line><span class=cl><span class=s>    &#34;type&#34;: &#34;home&#34;,
+</span></span></span><span class=line><span class=cl><span class=s>    &#34;number&#34;: &#34;555-555-5555&#34;
+</span></span></span><span class=line><span class=cl><span class=s>   },
+</span></span></span><span class=line><span class=cl><span class=s>   {
+</span></span></span><span class=line><span class=cl><span class=s>    &#34;type&#34;: &#34;work&#34;,
+</span></span></span><span class=line><span class=cl><span class=s>    &#34;number&#34;: &#34;555-555-5556&#34;
+</span></span></span><span class=line><span class=cl><span class=s>   }
+</span></span></span><span class=line><span class=cl><span class=s>  ],
+</span></span></span><span class=line><span class=cl><span class=s>  &#34;projects&#34;: [
+</span></span></span><span class=line><span class=cl><span class=s>   {
+</span></span></span><span class=line><span class=cl><span class=s>    &#34;name&#34;: &#34;Project Alpha&#34;,
+</span></span></span><span class=line><span class=cl><span class=s>    &#34;status&#34;: &#34;completed&#34;,
+</span></span></span><span class=line><span class=cl><span class=s>    &#34;tasks&#34;: [
+</span></span></span><span class=line><span class=cl><span class=s>     {
+</span></span></span><span class=line><span class=cl><span class=s>      &#34;name&#34;: &#34;Task 1&#34;,
+</span></span></span><span class=line><span class=cl><span class=s>      &#34;dueDate&#34;: &#34;2023-10-01&#34;,
+</span></span></span><span class=line><span class=cl><span class=s>      &#34;completed&#34;: true
+</span></span></span><span class=line><span class=cl><span class=s>     },
+</span></span></span><span class=line><span class=cl><span class=s>     {
+</span></span></span><span class=line><span class=cl><span class=s>      &#34;name&#34;: &#34;Task 2&#34;,
+</span></span></span><span class=line><span class=cl><span class=s>      &#34;dueDate&#34;: &#34;2023-10-15&#34;,
+</span></span></span><span class=line><span class=cl><span class=s>      &#34;completed&#34;: false
+</span></span></span><span class=line><span class=cl><span class=s>     }
+</span></span></span><span class=line><span class=cl><span class=s>    ]
+</span></span></span><span class=line><span class=cl><span class=s>   },
+</span></span></span><span class=line><span class=cl><span class=s>   {
+</span></span></span><span class=line><span class=cl><span class=s>    &#34;name&#34;: &#34;Project Beta&#34;,
+</span></span></span><span class=line><span class=cl><span class=s>    &#34;status&#34;: &#34;in progress&#34;,
+</span></span></span><span class=line><span class=cl><span class=s>    &#34;tasks&#34;: [
+</span></span></span><span class=line><span class=cl><span class=s>     {
+</span></span></span><span class=line><span class=cl><span class=s>      &#34;name&#34;: &#34;Task 3&#34;,
+</span></span></span><span class=line><span class=cl><span class=s>      &#34;dueDate&#34;: &#34;2023-11-01&#34;,
+</span></span></span><span class=line><span class=cl><span class=s>      &#34;completed&#34;: false
+</span></span></span><span class=line><span class=cl><span class=s>     },
+</span></span></span><span class=line><span class=cl><span class=s>     {
+</span></span></span><span class=line><span class=cl><span class=s>      &#34;name&#34;: &#34;Task 4&#34;,
+</span></span></span><span class=line><span class=cl><span class=s>      &#34;dueDate&#34;: &#34;2023-12-01&#34;,
+</span></span></span><span class=line><span class=cl><span class=s>      &#34;completed&#34;: false
+</span></span></span><span class=line><span class=cl><span class=s>     }
+</span></span></span><span class=line><span class=cl><span class=s>    ]
+</span></span></span><span class=line><span class=cl><span class=s>   }
+</span></span></span><span class=line><span class=cl><span class=s>  ],
+</span></span></span><span class=line><span class=cl><span class=s>  &#34;preferences&#34;: {
+</span></span></span><span class=line><span class=cl><span class=s>   &#34;contactMethod&#34;: &#34;email&#34;,
+</span></span></span><span class=line><span class=cl><span class=s>   &#34;newsletterSubscribed&#34;: true,
+</span></span></span><span class=line><span class=cl><span class=s>   &#34;languages&#34;: [&#34;English&#34;, &#34;Spanish&#34;, &#34;German&#34;]
+</span></span></span><span class=line><span class=cl><span class=s>  }
+</span></span></span><span class=line><span class=cl><span class=s> }
+</span></span></span><span class=line><span class=cl><span class=dl>EOF</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=nv>$json</span> <span class=o>=</span> <span class=nx>json_decode</span><span class=p>(</span><span class=nv>$jsonStr</span><span class=p>,</span> <span class=k>true</span><span class=p>);</span>
+</span></span><span class=line><span class=cl><span class=nv>$statusOfTheSecondTaskOfTheFirstProject</span> <span class=o>=</span> <span class=nv>$json</span><span class=p>[</span><span class=s1>&#39;projects&#39;</span><span class=p>][</span><span class=mi>1</span><span class=p>][</span><span class=s1>&#39;completed&#39;</span><span class=p>]</span> <span class=o>??</span> <span class=k>false</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=nx>var_dump</span><span class=p>(</span><span class=nv>$statusOfTheSecondTaskOfTheFirstProject</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=nx>var_dump</span><span class=p>(</span><span class=nx>isset</span><span class=p>(</span><span class=nv>$json</span><span class=p>[</span><span class=s1>&#39;projects&#39;</span><span class=p>][</span><span class=mi>2</span><span class=p>][</span><span class=s1>&#39;completed&#39;</span><span class=p>]));</span>
+</span></span></code></pre></td></tr></table></div></div><p>In PHP you don&rsquo;t have to check the validatbility of every level and you can use <code>isset</code> to check only the target key.</p><p>In golang operators are not allowed to be overrided, so we can use variant variables.</p><h2 id=examples><a href=#examples class=header-anchor></a>Examples</h2><p>See the <code>*_test.go</code> files.</p></section><footer class=article-footer><section class=article-copyright><svg class="icon icon-tabler icon-tabler-copyright" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="12" r="9"/><path d="M14.5 9a3.5 4 0 100 6"/></svg>
+<span>Licensed under CC BY-NC-SA 4.0</span></section></footer><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css integrity=sha384-n8MVd4RsNIU0tAv4ct0nTaAbDJwPJzDEaqSD1odI+WdtXRGWt2kTvGFasHpSy3SV crossorigin=anonymous><script src=https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js integrity=sha384-XjKyOOlGwcjNTAIQHIpgOno0Hl1YQqzUOEleOLALmuqehneUG+vnGctmUb0ZY0l8 crossorigin=anonymous defer></script><script src=https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js integrity=sha384-+VBxd3r6XgURycqtZ117nYw44OOcIax56Z4dCRWbxyPt0Koah1uHoK0o4+/RRE05 crossorigin=anonymous defer></script><script>window.addEventListener("DOMContentLoaded",()=>{const e=document.querySelector(".main-article");renderMathInElement(e,{delimiters:[{left:"$$",right:"$$",display:!0},{left:"$",right:"$",display:!1},{left:"\\(",right:"\\)",display:!1},{left:"\\[",right:"\\]",display:!0}],ignoredClasses:["gist"]})})</script></article><div class=disqus-container></div><style>.disqus-container{background-color:var(--card-background);border-radius:var(--card-border-radius);box-shadow:var(--shadow-l1);padding:var(--card-padding)}</style><script>window.addEventListener("onColorSchemeChange",e=>{typeof DISQUS=="object"&&DISQUS.reset({reload:!0})})</script><footer class=site-footer><section class=copyright>&copy;
+2014 -
+2026 Tech In Sight</section><section class=powerby>使用 <a href=https://gohugo.io/ target=_blank rel=noopener>Hugo</a> 构建<br>主题 <b><a href=https://github.com/CaiJimmy/hugo-theme-stack target=_blank rel=noopener data-version=3.30.0>Stack</a></b> 由 <a href=https://jimmycai.com target=_blank rel=noopener>Jimmy</a> 设计</section></footer><div class=pswp tabindex=-1 role=dialog aria-hidden=true><div class=pswp__bg></div><div class=pswp__scroll-wrap><div class=pswp__container><div class=pswp__item></div><div class=pswp__item></div><div class=pswp__item></div></div><div class="pswp__ui pswp__ui--hidden"><div class=pswp__top-bar><div class=pswp__counter></div><button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+<button class="pswp__button pswp__button--share" title=Share></button>
+<button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+<button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button><div class=pswp__preloader><div class=pswp__preloader__icn><div class=pswp__preloader__cut><div class=pswp__preloader__donut></div></div></div></div></div><div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap"><div class=pswp__share-tooltip></div></div><button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+</button>
+<button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)"></button><div class=pswp__caption><div class=pswp__caption__center></div></div></div></div></div><script src=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js integrity="sha256-ePwmChbbvXbsO02lbM3HoHbSHTHFAeChekF1xKJdleo=" crossorigin=anonymous defer></script><script src=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js integrity="sha256-UKkzOn/w1mBxRmLLGrSeyB4e1xbrp4xylgAWb3M42pU=" crossorigin=anonymous defer></script><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.min.css crossorigin=anonymous><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.css crossorigin=anonymous></main></div><script src=https://cdn.jsdelivr.net/npm/node-vibrant@3.1.6/dist/vibrant.min.js integrity="sha256-awcR2jno4kI5X0zL8ex0vi2z+KMkF24hUW8WePSA9HM=" crossorigin=anonymous></script><script type=text/javascript src=/ts/main.1e9a3bafd846ced4c345d084b355fb8c7bae75701c338f8a1f8a82c780137826.js defer></script><script>(function(){const e=document.createElement("link");e.href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap",e.type="text/css",e.rel="stylesheet",document.head.appendChild(e)})()</script></body></html>
